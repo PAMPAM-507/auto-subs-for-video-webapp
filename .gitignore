@@ -1,0 +1,17 @@
+venv*
+**/__pycache__
+**/.idea
+**/.vscode
+**/~*
+**/venv*
+**/setenv.sh
+**/.env.dev
+**/*.json
+**/*.srt
+**/*.tsv
+**/*.vtt
+**/*.txt
+**/*.mp4
+!**/*requirements.txt
+!**/for_make_folder.txt
+

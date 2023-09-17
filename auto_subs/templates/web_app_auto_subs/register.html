@@ -1,0 +1,10 @@
+{% extends 'web_app_auto_subs/base.html' %}
+
+
+{% block content %}
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Регистрация</button>
+    </form>
+{% endblock content %}

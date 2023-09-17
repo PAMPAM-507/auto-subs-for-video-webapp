@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="utf-8" />
+    <title>{{title}}</title>
+
+    </head>
+    <body>
+        {% block main_menu %}
+            {% for i in menu %}
+                {% if cur_menu != i.title %}
+                    <li><a href="{% url i.url_name %}">{{ i.title }}</a></li>
+                {% else %}
+                    <li>{{ i.title }}</li>
+                {% endif %}
+            {% endfor %}
+        {% endblock main_menu %}
+
+        {% block register%}
+            {% if request.user.is_authenticated %}
+                <li>{{user.username}} | <a href="{% url 'logout' %}"> Выйти</a></li>
+            {% else %}
+                <li><a href="{% url 'register' %}">Регистрация</a> ||| <a href="{% url 'login' %}">Войти</a></li>
+            {% endif %}
+        {% endblock register %}
+
+        {% block message %}
+            {% if message %}
+                {{ message }}
+            {% endif %}
+        {% endblock message %}
+
+
+        {% block content %}
+
+        {% endblock content %}
+    </body>
+</html>

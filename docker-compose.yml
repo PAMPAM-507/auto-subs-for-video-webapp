@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - 6379:6379
+
+#  worker:
+#   restart: always
+#   build:
+#     context: ./
+#  #  command: ['celery', '--workdir=./subs', '-A', 'ClinicProject', 'worker']
+#     command: ['celery', '-A', 'tasks', 'worker', '--loglevel=INFO']
