@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Activate</title>
+</head>
+<body>
+
+
+{% if message %}
+    <a href="{% url redirect_url %}">{{redirect_title}}</a>
+    {{ message }}
+
+{% endif %}
+
+</body>
+</html>

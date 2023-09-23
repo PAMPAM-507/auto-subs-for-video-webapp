@@ -14,7 +14,7 @@ class DocumentForm(forms.ModelForm):
 
 
 class RegisterUser(UserCreationForm):
-    username = forms.EmailField(label='email ')
+    username = forms.EmailField(label='Email ')
     password1 = forms.CharField(widget=forms.PasswordInput, label='Пароль ')
     password2 = forms.CharField(widget=forms.PasswordInput, label='Повторение пароля ')
 
