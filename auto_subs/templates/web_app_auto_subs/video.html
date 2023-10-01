@@ -1,0 +1,26 @@
+{% extends 'web_app_auto_subs/base.html' %}
+
+
+
+
+{% block content %}
+    {{video.name_of_video}} || {{video.id}}
+    <br>
+    <br>
+    <br>
+    <video
+          id="my-video"
+          class="video-js"
+          controls
+          preload="auto"
+          width="500"
+          height="300"
+          data-setup="{}"
+    >
+        <source src="{% url 'stream' video.id %}" type="video/mp4"/>
+        <source src="{% url 'stream' video.id %}" type="video/webm"/>
+    </video>
+
+    <script src="https://vjs.zencdn.net/8.5.2/video.min.js"></script>
+
+{% endblock content %}

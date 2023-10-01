@@ -1,0 +1,10 @@
+{% extends 'web_app_auto_subs/base.html' %}
+
+
+{% block content %}
+
+    {% for video in videos %}
+        <a href="{{ video.get_absolute_url }}">{{ video.name_of_video }}</a>
+    {% endfor %}
+
+{% endblock content %}

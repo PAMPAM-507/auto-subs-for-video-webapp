@@ -108,7 +108,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 CELERY_BROKER_URL = 'redis://localhost:6379/'
 
 path_for_subtitles = str(BASE_DIR) + '/media/subtitles/'
-path_for_video_with_subs = str(BASE_DIR) + '/media/videos_with_subs/'
+path_for_video_with_subs = str(BASE_DIR) + '/media/video_with_subs/'
 base_path_of_video = str(BASE_DIR) + '/media/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

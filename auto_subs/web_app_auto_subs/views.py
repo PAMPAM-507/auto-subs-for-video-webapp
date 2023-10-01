@@ -1,10 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from .forms import *
 from .tasks import *
 from .utils.services.email.render_message import RenderMessage
 from .utils.services.email.token import account_activation_token
+from .services import open_file
 
+from django.http import StreamingHttpResponse
 from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponseNotFound
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -15,13 +17,13 @@ from django.views.generic.edit import CreateView
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
 from auto_subs.settings import BASE_DIR, base_path_of_video, EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_BACKEND, EMAIL_PORT, \
-    EMAIL_USE_TLS, EMAIL_HOST_USER
+    EMAIL_USE_TLS, EMAIL_HOST_USER, path_for_video_with_subs
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 menu = [
     {'title': 'Главная', 'url_name': 'main'},
     {'title': 'Загрузить видео', 'url_name': 'upload_video'},
-    # {'title': 'Профиль', 'url_name': 'profile'}
+    {'title': 'Профиль', 'url_name': 'personal_account'}
 
 ]
 
@@ -46,10 +48,13 @@ class UploadVideo(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST, request.FILES)
-
         if form.is_valid():
             obj = form.save(commit=False)
             obj.user = request.user
+            obj.videos_with_subs = (
+                                       (path_for_video_with_subs + f'{obj.video}')[0:-4]
+                                   ) + '_subtitled' + ".mp4"
+            obj.name_of_video = str(obj.video).split('/')[-1][0:-4]
             obj.save()
             path = UserVideos.objects.filter(user=request.user.id).latest('uploaded_at')
             path = path.video
@@ -124,7 +129,6 @@ class RegisterUser(View):
 
 
 def activate(request, uidb64, token):
-
     context = {
         'redirect_url': menu[0].get('url_name'),
         'redirect_title': menu[0].get('title'),
@@ -143,7 +147,8 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
 
-        context['message'] = 'Благодарим вас за подтверждение по электронной почте. Теперь вы можете войти в свою учетную запись'
+        context[
+            'message'] = 'Благодарим вас за подтверждение по электронной почте. Теперь вы можете войти в свою учетную запись'
 
         return render(request, 'web_app_auto_subs/render_to_string/activate_message.html', context)
 
@@ -172,19 +177,47 @@ class LoginUser(LoginView):
     def get_success_url(self):
         return reverse_lazy('main')
 
-# class MyRegisterUser(View):
-#     form_class = RegisterUser
-#     template_name = 'web_app_auto_subs/register.html'
-#     success_url = reverse_lazy('login')
-#
-#     def get(self, request, *args, **kwargs):
-#         form = self.form_class
-#
-#         context = {
-#             'form': form,
-#             'menu': menu,
-#             'title': 'ПАМ ПАМ',
-#
-#         }
-#
-#         return render(request, self.template_name, context)
+
+class PersonalAccount(LoginRequiredMixin, View):
+    login_url = "/login/"
+    template_name = 'web_app_auto_subs/personal_account.html'
+
+    def get(self, request, *args, **kwargs):
+        videos = UserVideos.objects.filter(user=request.user.id)
+
+        context = {
+            'menu': menu,
+            'title': 'ПАМ ПАМ',
+            'cur_menu': 'Профиль',
+            'videos': videos,
+
+        }
+
+        return render(request, self.template_name, context)
+
+
+class GetVideo(LoginRequiredMixin, View):
+    login_url = "/login/"
+    template_name = 'web_app_auto_subs/video.html'
+
+    def get(self, request, pk, *args, **kwargs):
+        video = UserVideos.objects.get(user=request.user.id, pk=pk)
+
+        context = {
+            'menu': menu,
+            'title': 'ПАМ ПАМ',
+            'video': video,
+
+        }
+
+        return render(request, self.template_name, context)
+
+
+def get_streaming_video(request, pk: int):
+    file, status_code, content_length, content_range = open_file(request, pk)
+    response = StreamingHttpResponse(file, status=status_code, content_type='video/mp4')
+    response['Accept-Ranges'] = 'bytes'
+    response['Content-Length'] = str(content_length)
+    response['Cache-Control'] = 'no-cache'
+    response['Content-Range'] = content_range
+    return response
