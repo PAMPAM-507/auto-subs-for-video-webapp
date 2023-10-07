@@ -4,7 +4,10 @@ from .forms import *
 from .tasks import *
 from .utils.services.email.render_message import RenderMessage
 from .utils.services.email.token import account_activation_token
-from .services import open_file
+from .utils.services.sending_video_stream.video_stream import VideoStream
+from .utils.dao.queries.all_query import AllQuery
+from .utils.dao.queries.filter_query import FilterQuery
+from .utils.dao.queries.get_query import GetQuery
 
 from django.http import StreamingHttpResponse
 from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponseNotFound
@@ -56,8 +59,12 @@ class UploadVideo(LoginRequiredMixin, View):
                                    ) + '_subtitled' + ".mp4"
             obj.name_of_video = str(obj.video).split('/')[-1][0:-4]
             obj.save()
-            path = UserVideos.objects.filter(user=request.user.id).latest('uploaded_at')
-            path = path.video
+
+            path = FilterQuery().filter_query_latest(UserVideos, 'video', 'id',
+                                                     user=request.user.id,
+                                                     attr_for_additional_method='uploaded_at'
+                                                     ).get('video')
+
             make_subs.delay(base_path_of_video + str(path))
             return redirect('main')
 
@@ -66,10 +73,19 @@ class MainMenu(View):
     template_name = 'web_app_auto_subs/base.html'
 
     def get(self, request, *args, **kwargs):
+        print(GetQuery().get_query(Title, 'title', 'id',
+                                   name='Описание',
+                                   ))
+        print(FilterQuery().filter_query_latest(UserVideos, 'video', 'id',
+                                                user=request.user.id,
+                                                attr_for_additional_method='uploaded_at'
+                                                ).get('video'))
+
         context = {
             'menu': menu,
             'title': 'ПАМ ПАМ',
-            'cur_menu': 'Главная'
+            'cur_menu': 'Главная',
+            'message': GetQuery().get_query(Title, 'title', name='Описание').get('title'),
         }
 
         return render(request, self.template_name, context)
@@ -214,7 +230,7 @@ class GetVideo(LoginRequiredMixin, View):
 
 
 def get_streaming_video(request, pk: int):
-    file, status_code, content_length, content_range = open_file(request, pk)
+    file, status_code, content_length, content_range = VideoStream().open_file(request, pk)
     response = StreamingHttpResponse(file, status=status_code, content_type='video/mp4')
     response['Accept-Ranges'] = 'bytes'
     response['Content-Length'] = str(content_length)

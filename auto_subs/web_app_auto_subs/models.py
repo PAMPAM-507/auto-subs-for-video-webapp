@@ -23,3 +23,8 @@ class UserVideos(models.Model):
 
     def get_absolute_url(self):
         return reverse('watch_video', kwargs={'pk': self.pk})
+
+
+class Title(models.Model):
+    title = models.TextField()
+    name = models.CharField(max_length=100)
