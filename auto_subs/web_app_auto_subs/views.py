@@ -22,6 +22,9 @@ from django.urls import reverse_lazy
 from auto_subs.settings import BASE_DIR, base_path_of_video, EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_BACKEND, EMAIL_PORT, \
     EMAIL_USE_TLS, EMAIL_HOST_USER, path_for_video_with_subs
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import connection
+from django.core.paginator import Paginator
+
 
 menu = [
     {'title': 'Главная', 'url_name': 'main'},
@@ -73,13 +76,15 @@ class MainMenu(View):
     template_name = 'web_app_auto_subs/base.html'
 
     def get(self, request, *args, **kwargs):
-        print(GetQuery().get_query(Title, 'title', 'id',
-                                   name='Описание',
-                                   ))
-        print(FilterQuery().filter_query_latest(UserVideos, 'video', 'id',
-                                                user=request.user.id,
-                                                attr_for_additional_method='uploaded_at'
-                                                ).get('video'))
+        # print(GetQuery().get_query(Title, 'title', 'id',
+        #                            name='Описание',
+        #                            ))
+        # print(FilterQuery().filter_query_latest(UserVideos, 'video', 'id',
+        #                                         user=request.user.id,
+        #                                         attr_for_additional_method='uploaded_at'
+        #                                         ).get('video'))
+        #
+        # print((UserVideos.objects.filter(user=request.user.id)).__dict__.get('model').__dict__.keys())
 
         context = {
             'menu': menu,
@@ -164,7 +169,7 @@ def activate(request, uidb64, token):
         user.save()
 
         context[
-            'message'] = 'Благодарим вас за подтверждение по электронной почте. Теперь вы можете войти в свою учетную запись'
+            'message'] = 'Благодарим вас за подтверждение электронной почты. Теперь вы можете войти в свою учетную запись'
 
         return render(request, 'web_app_auto_subs/render_to_string/activate_message.html', context)
 
@@ -199,13 +204,22 @@ class PersonalAccount(LoginRequiredMixin, View):
     template_name = 'web_app_auto_subs/personal_account.html'
 
     def get(self, request, *args, **kwargs):
-        videos = UserVideos.objects.filter(user=request.user.id)
+        # videos = UserVideos.objects.filter(user=request.user.id)
+
+        videos = FilterQuery().filter_query(UserVideos, 'name_of_video', 'get_absolute_url', 'pk',
+                                            user=request.user.id,
+                                            )
+        # print(videos)
+        paginator = Paginator(videos, 5)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
 
         context = {
             'menu': menu,
             'title': 'ПАМ ПАМ',
             'cur_menu': 'Профиль',
-            'videos': videos,
+            # 'videos': videos,
+            'page_obj': page_obj,
 
         }
 
@@ -217,7 +231,10 @@ class GetVideo(LoginRequiredMixin, View):
     template_name = 'web_app_auto_subs/video.html'
 
     def get(self, request, pk, *args, **kwargs):
-        video = UserVideos.objects.get(user=request.user.id, pk=pk)
+        # video = UserVideos.objects.get(user=request.user.id, pk=pk)
+        video = GetQuery().get_query(UserVideos, 'name_of_video', 'get_absolute_url', 'pk',
+                                     user=request.user.id, pk=pk,
+                                     )
 
         context = {
             'menu': menu,

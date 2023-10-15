@@ -3,8 +3,34 @@
 
 {% block content %}
 
-    {% for video in videos %}
-        <a href="{{ video.get_absolute_url }}">{{ video.name_of_video }}</a>
+    {% for video in page_obj %}
+        <a href="{{ video.get_absolute_url }}">{{ video.pk }}: {{ video.name_of_video }}</a>
+        <br>
+        <br>
     {% endfor %}
+
+<nav>
+    <ul>
+        {% for p in page_obj.paginator.page_range %}
+            {% if page_obj.number == p %}
+                {{ p }}
+            {% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %}
+                <a href="?page={{ p }}">{{ p }}</a>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</nav>
+
+    {% if page_obj.has_previous %}
+    <li>
+        <a href = "?page={{ page_obj.previous_page_number }}">&lt</a>
+    </li>
+    {% endif %}
+
+    {% if page_obj.has_next %}
+    <li>
+        <a href = "?page={{ page_obj.next_page_number }}">&gt</a>
+    </li>
+    {% endif %}
 
 {% endblock content %}

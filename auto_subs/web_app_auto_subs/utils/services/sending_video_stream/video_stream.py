@@ -3,6 +3,7 @@ from typing import IO, Generator
 from django.shortcuts import get_object_or_404
 from pathlib import Path
 from web_app_auto_subs.models import UserVideos
+from web_app_auto_subs.utils.dao.queries.get_query import GetQuery
 
 
 class VideoStreamABC(ABC):
@@ -38,7 +39,9 @@ class VideoStreamABC(ABC):
 class VideoStream(VideoStreamABC):
 
     def open_file(self, request, video_pk: int) -> tuple:
-        _video = get_object_or_404(UserVideos, pk=video_pk)
+        # _video = get_object_or_404(UserVideos, pk=video_pk)
+        _video = GetQuery().get_query(UserVideos, 'videos_with_subs',
+                                      pk=video_pk)
 
         path = Path(_video.videos_with_subs.path)
 
