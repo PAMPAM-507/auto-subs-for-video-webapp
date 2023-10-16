@@ -9,9 +9,9 @@ urlpatterns = [
     path('logout/', logout_user, name='logout'),
     path('activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/', activate,
          name='activate'),
-    path('personal_account/', PersonalAccount.as_view(), name='personal_account'),
-    path('personal_account/<int:pk>/', GetVideo.as_view(), name='watch_video'),
-    path('stream/<int:pk>/', get_streaming_video, name='stream'),
+    path('personal_account/<int:user_pk>/', PersonalAccount.as_view(), name='personal_account'),
+    path('personal_account/<int:user_pk>/<int:pk>/', GetVideo.as_view(), name='watch_video'),
+    path('stream/<int:user_pk>/<int:pk>/', get_streaming_video, name='stream'),
 
 
 ]

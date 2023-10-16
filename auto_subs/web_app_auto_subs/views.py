@@ -29,7 +29,7 @@ from django.core.paginator import Paginator
 menu = [
     {'title': 'Главная', 'url_name': 'main'},
     {'title': 'Загрузить видео', 'url_name': 'upload_video'},
-    {'title': 'Профиль', 'url_name': 'personal_account'}
+    # {'title': 'Профиль', 'url_name': 'personal_account'}
 
 ]
 
@@ -168,8 +168,7 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
 
-        context[
-            'message'] = 'Благодарим вас за подтверждение электронной почты. Теперь вы можете войти в свою учетную запись'
+        context['message'] = 'Благодарим вас за подтверждение электронной почты. Теперь вы можете войти в свою учетную запись'
 
         return render(request, 'web_app_auto_subs/render_to_string/activate_message.html', context)
 
@@ -203,13 +202,13 @@ class PersonalAccount(LoginRequiredMixin, View):
     login_url = "/login/"
     template_name = 'web_app_auto_subs/personal_account.html'
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, user_pk, *args, **kwargs):
         # videos = UserVideos.objects.filter(user=request.user.id)
 
         videos = FilterQuery().filter_query(UserVideos, 'name_of_video', 'get_absolute_url', 'pk',
-                                            user=request.user.id,
+                                            user=user_pk,
                                             )
-        # print(videos)
+
         paginator = Paginator(videos, 5)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
@@ -230,7 +229,7 @@ class GetVideo(LoginRequiredMixin, View):
     login_url = "/login/"
     template_name = 'web_app_auto_subs/video.html'
 
-    def get(self, request, pk, *args, **kwargs):
+    def get(self, request, user_pk, pk, *args, **kwargs):
         # video = UserVideos.objects.get(user=request.user.id, pk=pk)
         video = GetQuery().get_query(UserVideos, 'name_of_video', 'get_absolute_url', 'pk',
                                      user=request.user.id, pk=pk,
@@ -246,7 +245,7 @@ class GetVideo(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
 
 
-def get_streaming_video(request, pk: int):
+def get_streaming_video(request, user_pk, pk: int):
     file, status_code, content_length, content_range = VideoStream().open_file(request, pk)
     response = StreamingHttpResponse(file, status=status_code, content_type='video/mp4')
     response['Accept-Ranges'] = 'bytes'

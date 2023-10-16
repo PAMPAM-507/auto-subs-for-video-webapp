@@ -25,7 +25,7 @@ class UserVideos(models.Model):
                                      verbose_name='Название видео', null=True)
 
     def get_absolute_url(self):
-        return reverse('watch_video', kwargs={'pk': self.pk})
+        return reverse('watch_video', kwargs={'user_pk': self.user.pk, 'pk': self.pk})
 
     class Meta:
         verbose_name = 'Пользовательское видео'
@@ -39,3 +39,15 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Заголовок'
         verbose_name_plural = 'Заголовоки'
+
+
+class LanguagesForTranslateVideo(models.Model):
+    language = models.CharField(max_length=50, unique=True, verbose_name='Язык в символах')
+    name_of_language = models.CharField(max_length=50, unique=True, verbose_name='Язык', null=True)
+
+    class Meta:
+        verbose_name = 'Язык для перевода видео'
+        verbose_name_plural = 'Языки для перевода видео'
+
+    # def get_absolute_url(self):
+    #     return reverse('', kwargs={'language': self.language})

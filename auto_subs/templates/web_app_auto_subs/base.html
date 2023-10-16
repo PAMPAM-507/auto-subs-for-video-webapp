@@ -16,17 +16,27 @@
             {% endfor %}
         {% endblock main_menu %}
 
+        <br>
+        <br>
         {% block register%}
             {% if request.user.is_authenticated %}
+                <a href="{% url 'personal_account' request.user.id %}">Профиль</a>
+                <br>
+                <br>
                 <li>{{user.username}} | <a href="{% url 'logout' %}"> Выйти</a></li>
+                <br>
             {% else %}
+                <br>
                 <li><a href="{% url 'register' %}">Регистрация</a> ||| <a href="{% url 'login' %}">Войти</a></li>
             {% endif %}
         {% endblock register %}
 
+        <br>
+        <br>
+
         {% block message %}
             {% if message %}
-                {{ message }}
+                <h1>{{ message }}</h1>
             {% endif %}
         {% endblock message %}
 

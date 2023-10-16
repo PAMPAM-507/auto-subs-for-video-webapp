@@ -16,3 +16,11 @@ class TitleAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'name',)
     search_fields = ('id', 'name',)
     list_filter = ('id', 'name',)
+
+
+@admin.register(LanguagesForTranslateVideo)
+class LanguagesForTranslateVideoAdmin(admin.ModelAdmin):
+    list_display = ('id', 'language',)
+    list_display_links = ('id', 'language',)
+    search_fields = ('id', 'language',)
+    list_filter = ('id', 'language',)
