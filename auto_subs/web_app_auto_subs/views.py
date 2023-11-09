@@ -2,12 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from .forms import *
 from .tasks import *
+from .models import *
 from .utils.services.email.render_message import RenderMessage
 from .utils.services.email.token import account_activation_token
 from .utils.services.sending_video_stream.video_stream import VideoStream
 from .utils.dao.queries.all_query import AllQuery
 from .utils.dao.queries.filter_query import FilterQuery
 from .utils.dao.queries.get_query import GetQuery
+from .utils.dao.queries.update_query import GetLatestModel
 
 from django.http import StreamingHttpResponse
 from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponseNotFound
@@ -24,7 +26,6 @@ from auto_subs.settings import BASE_DIR, base_path_of_video, EMAIL_HOST_PASSWORD
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import connection
 from django.core.paginator import Paginator
-
 
 menu = [
     {'title': 'Главная', 'url_name': 'main'},
@@ -47,6 +48,7 @@ class UploadVideo(LoginRequiredMixin, View):
             'menu': menu,
             'title': 'ПАМ ПАМ',
             'cur_menu': 'Загрузить видео',
+            'message': GetQuery().get_query(Title, 'title', name='Подсказка').get('title'),
 
         }
 
@@ -55,20 +57,45 @@ class UploadVideo(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST, request.FILES)
         if form.is_valid():
+            subs_language = form.cleaned_data['subs_language']
             obj = form.save(commit=False)
             obj.user = request.user
-            obj.videos_with_subs = (
-                                       (path_for_video_with_subs + f'{obj.video}')[0:-4]
-                                   ) + '_subtitled' + ".mp4"
+
             obj.name_of_video = str(obj.video).split('/')[-1][0:-4]
             obj.save()
 
-            path = FilterQuery().filter_query_latest(UserVideos, 'video', 'id',
-                                                     user=request.user.id,
-                                                     attr_for_additional_method='uploaded_at'
-                                                     ).get('video')
+            name_of_video = (str(FilterQuery().filter_query_latest(
+                UserVideos,
+                'video',
+                user=request.user,
+                attr_for_additional_method='uploaded_at'
+            ).get('video')).split('/'))[-1][0:-4]
 
-            make_subs.delay(base_path_of_video + str(path))
+            video = GetLatestModel(UserVideos).get_latest(
+                attrs_for_search={'user': request.user},
+                attrs_for_update={
+                    'name_of_video': name_of_video,
+                    'videos_with_subs': path_for_video_with_subs + name_of_video + '_subtitled' + ".mp4",
+                },
+                args_for_additional_method='uploaded_at',)
+
+            video.name_of_video = name_of_video
+            video.videos_with_subs = path_for_video_with_subs + name_of_video + '_subtitled' + ".mp4"
+            video.save()
+
+            path = FilterQuery().filter_query_latest(
+                UserVideos, 'video', 'id',
+                user=request.user.id,
+                attr_for_additional_method='uploaded_at'
+            ).get('video')
+
+            subs_language = GetQuery().get_query(LanguagesForTranslateVideo,
+                                                 'language',
+                                                 name_of_language=subs_language,
+                                                 ).get('language')
+
+            make_subs.delay(base_path_of_video + str(path), str(subs_language))
+
             return redirect('main')
 
 
@@ -168,7 +195,8 @@ def activate(request, uidb64, token):
         user.is_active = True
         user.save()
 
-        context['message'] = 'Благодарим вас за подтверждение электронной почты. Теперь вы можете войти в свою учетную запись'
+        context[
+            'message'] = 'Благодарим вас за подтверждение электронной почты. Теперь вы можете войти в свою учетную запись'
 
         return render(request, 'web_app_auto_subs/render_to_string/activate_message.html', context)
 
@@ -247,7 +275,8 @@ class GetVideo(LoginRequiredMixin, View):
 
 def get_streaming_video(request, user_pk, pk: int):
     file, status_code, content_length, content_range = VideoStream().open_file(request, pk)
-    response = StreamingHttpResponse(file, status=status_code, content_type='video/mp4')
+    response = StreamingHttpResponse(
+        file, status=status_code, content_type='video/mp4')
     response['Accept-Ranges'] = 'bytes'
     response['Content-Length'] = str(content_length)
     response['Cache-Control'] = 'no-cache'

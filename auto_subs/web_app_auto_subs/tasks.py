@@ -1,5 +1,6 @@
 import os
-from .main import *
+# from .main import *
+from web_app_auto_subs.utils.business_logic.subtitles.main import execute_bs_for_make_subs
 
 from celery import shared_task
 from auto_subs.celery import app
@@ -10,11 +11,16 @@ from .utils.services.email.send_email import SendEmail
 
 
 @app.task
-def make_subs(path_of_video: str):
-    # path_for_subtitles = str(BASE_DIR) + '/media/subtitles/'
-    # path_for_video_with_subs = str(BASE_DIR) + '/media/videos_with_subs/'
-    os.system(f'cd {path_for_subtitles} && whisper {path_of_video}')
-    execute_bs_for_make_subs(path_of_video, path_for_subtitles, path_for_video_with_subs)
+def make_subs(path_of_video: str,
+              subs_language: str,
+              size_of_model: str = 'tiny',
+              language_for_model: str = 'en'):
+    os.system(
+        f'cd {path_for_subtitles} && whisper {path_of_video} --model {size_of_model} --language {language_for_model}'
+    )
+    execute_bs_for_make_subs(
+        path_of_video, path_for_subtitles, path_for_video_with_subs, subs_language
+    )
 
 
 @app.task
@@ -27,5 +33,4 @@ def send_email(subject: str, message: str, to_email: list):
         message=message,
         email_from=EMAIL_HOST_USER,
         to_email=to_email
-
     )

@@ -49,5 +49,8 @@ class LanguagesForTranslateVideo(models.Model):
         verbose_name = 'Язык для перевода видео'
         verbose_name_plural = 'Языки для перевода видео'
 
+    def __str__(self):
+        return self.name_of_language
+
     # def get_absolute_url(self):
     #     return reverse('', kwargs={'language': self.language})

@@ -6,6 +6,11 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 class DocumentForm(forms.ModelForm):
     # user = forms.CharField(editable=False)
+    subs_language = forms.ModelChoiceField(
+        queryset=LanguagesForTranslateVideo.objects.all(),
+        label='Выберите язык для субтитров',
+        empty_label=None,
+    )
 
     class Meta:
         model = UserVideos
@@ -21,3 +26,27 @@ class RegisterUser(UserCreationForm):
     class Meta:
         model = User
         fields = ("username", "password1", "password2")
+
+
+class LanguageForm(forms.ModelForm):
+    video_language = forms.ModelChoiceField(
+        queryset=LanguagesForTranslateVideo.objects.all(),
+        label='Язык оригинального файла',
+    )
+    subs_language = forms.ModelChoiceField(
+        queryset=LanguagesForTranslateVideo.objects.all(),
+        label='Выберите язык для субтитров',
+    )
+
+    class Meta:
+        model = LanguagesForTranslateVideo
+        fields = ('language',)
+
+
+# <!--<form method="post" enctype="multipart/form-data">
+#         {% scrf_token %}
+#         <div>{{ form2.non_field_errors }}</div>
+#         {% for f2 in form2 %}
+#             <p><label for="f2.id.for_label">{{ label }}</label>{{ f2 }}</p>
+#         {% endfor %}
+#     </form>-->
