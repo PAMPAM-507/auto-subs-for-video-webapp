@@ -52,5 +52,6 @@ class LanguagesForTranslateVideo(models.Model):
     def __str__(self):
         return self.name_of_language
 
+
     # def get_absolute_url(self):
     #     return reverse('', kwargs={'language': self.language})

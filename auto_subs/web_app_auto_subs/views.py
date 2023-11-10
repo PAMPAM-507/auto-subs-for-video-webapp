@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
+
+from .utils.business_logic.reduction_for_views.reductions import handle_redirect_for_ChangeUserInfo_view_with_post_method, handle_errors_for_ChangePassword_view_with_post_method
 from .forms import *
 from .tasks import *
 from .models import *
@@ -11,6 +13,9 @@ from .utils.dao.queries.filter_query import FilterQuery
 from .utils.dao.queries.get_query import GetQuery
 from .utils.dao.queries.update_query import GetLatestModel
 
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 from django.http import StreamingHttpResponse
 from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponseNotFound
 from django.utils.encoding import force_bytes, force_str
@@ -55,7 +60,9 @@ class UploadVideo(LoginRequiredMixin, View):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
+
         form = self.form_class(request.POST, request.FILES)
+
         if form.is_valid():
             subs_language = form.cleaned_data['subs_language']
             obj = form.save(commit=False)
@@ -80,7 +87,8 @@ class UploadVideo(LoginRequiredMixin, View):
                 args_for_additional_method='uploaded_at',)
 
             video.name_of_video = name_of_video
-            video.videos_with_subs = path_for_video_with_subs + name_of_video + '_subtitled' + ".mp4"
+            video.videos_with_subs = path_for_video_with_subs + \
+                name_of_video + '_subtitled' + ".mp4"
             video.save()
 
             path = FilterQuery().filter_query_latest(
@@ -213,7 +221,7 @@ def logout_user(request):
 
 
 class LoginUser(LoginView):
-    form_class = AuthenticationForm
+    form_class = LoginUserFrom
     template_name = 'web_app_auto_subs/login.html'
 
     def get_context_data(self, **kwargs):
@@ -247,14 +255,14 @@ class PersonalAccount(LoginRequiredMixin, View):
             'cur_menu': 'Профиль',
             # 'videos': videos,
             'page_obj': page_obj,
-
+            'user_pk': user_pk,
         }
 
         return render(request, self.template_name, context)
 
 
 class GetVideo(LoginRequiredMixin, View):
-    login_url = "/login/"
+    login_url = '/login/'
     template_name = 'web_app_auto_subs/video.html'
 
     def get(self, request, user_pk, pk, *args, **kwargs):
@@ -282,3 +290,81 @@ def get_streaming_video(request, user_pk, pk: int):
     response['Cache-Control'] = 'no-cache'
     response['Content-Range'] = content_range
     return response
+
+
+class ChangeUserInfo(LoginRequiredMixin, View):
+    form_class = ChangeUserInfoForm
+    template_name = 'web_app_auto_subs/edit_profile.html'
+
+    def get(self, request, user_pk, *args, **kwargs):
+
+        context = {
+            'menu': menu,
+            'title': 'ПАМ ПАМ',
+            'form': self.form_class,
+
+        }
+
+        return render(request, self.template_name, context)
+
+    def post(self, request, user_pk, *args, **kwargs):
+
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+
+            addr = handle_redirect_for_ChangeUserInfo_view_with_post_method(
+                choose_form=form.cleaned_data.get('choose_form')
+                )
+            
+            return redirect(addr, user_pk=user_pk)
+
+        return redirect('main')
+
+
+class ChangePassword(LoginRequiredMixin, View):
+    form_class = ChangePasswordForm
+    template_name = 'web_app_auto_subs/change_password.html'
+
+    def get(self, request, user_pk, *args, **kwargs):
+
+        context = {
+            'menu': menu,
+            'title': 'ПАМ ПАМ',
+            'form': self.form_class(request.user),
+        }
+
+        return render(request, self.template_name, context)
+
+    def post(self, request, user_pk, *args, **kwargs):
+
+        form = self.form_class(request.user, request.POST)
+
+        old_password = 'old_password'
+        new_password1 = 'new_password1'
+        new_password2 = 'new_password2'
+
+        if form.is_valid():
+
+            user = form.save()
+
+            user.set_password(form.cleaned_data.get('password1'))
+            update_session_auth_hash(request, user)
+
+            return redirect('login')
+
+        else:
+            message = handle_errors_for_ChangePassword_view_with_post_method(
+                new_password1=form.data.get(new_password1), 
+                new_password2=form.data.get(new_password2),
+                )
+            
+        context = {
+            'menu': menu,
+            'title': 'ПАМ ПАМ',
+            'form': self.form_class(request.user),
+            'message': message
+
+        }
+
+        return render(request, self.template_name, context)

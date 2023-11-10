@@ -1,0 +1,14 @@
+
+{% extends 'web_app_auto_subs/base.html' %}
+
+{% block content %}
+
+<h2>Редактирование пользовательских данных</h2>
+  <br>
+  <form method="post" action="">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Выбрать</button>
+  </form>
+
+{% endblock content %}

@@ -13,5 +13,11 @@ urlpatterns = [
     path('personal_account/<int:user_pk>/<int:pk>/', GetVideo.as_view(), name='watch_video'),
     path('stream/<int:user_pk>/<int:pk>/', get_streaming_video, name='stream'),
 
+    path('edit_profile/<int:user_pk>/', ChangeUserInfo.as_view(), name='edit_profile'),
+    
+    path('change_password/<int:user_pk>/', ChangePassword.as_view(), name='change_password'),
+    # path('change_email/<int:user_pk>/', ChangePassword.as_view(), name='change_password'),
+
+
 
 ]

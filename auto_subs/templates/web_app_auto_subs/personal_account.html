@@ -3,6 +3,13 @@
 
 {% block content %}
 
+    <a href="{% url 'edit_profile' user_pk %}">Изменить пользовательские данные</a>
+
+    <br>
+    <br>
+    <br>
+
+
     {% for video in page_obj %}
         <a href="{{ video.get_absolute_url }}">{{ video.pk }}: {{ video.name_of_video }}</a>
         <br>
