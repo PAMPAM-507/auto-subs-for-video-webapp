@@ -18,7 +18,7 @@ def handle_errors_for_ChangePassword_view_with_post_method(new_password1, new_pa
 
 
 
-def handle_redirect_for_ChangeUserInfo_view_with_post_method(choose_form):
+def handle_redirect_for_ChangeUserInfo_view_with_get_method(choose_form):
     if choose_form == '1':
         return 'change_password'
 

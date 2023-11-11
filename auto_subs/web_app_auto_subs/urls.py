@@ -16,7 +16,7 @@ urlpatterns = [
     path('edit_profile/<int:user_pk>/', ChangeUserInfo.as_view(), name='edit_profile'),
     
     path('change_password/<int:user_pk>/', ChangePassword.as_view(), name='change_password'),
-    # path('change_email/<int:user_pk>/', ChangePassword.as_view(), name='change_password'),
+    path('change_email/<int:user_pk>/', ChangeEmail.as_view(), name='change_email'),
 
 
 

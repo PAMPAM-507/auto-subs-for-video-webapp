@@ -1,0 +1,20 @@
+
+{% extends 'web_app_auto_subs/base.html' %}
+
+{% block content %}
+
+<h2>Введите новый email</h2>
+  <br>
+  <form method="post" action="">
+    {% csrf_token %}
+    {% for f in form %}
+        <div>{{ form.non_field_errors }}</div>
+        <p><label for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}</p>
+        <div>{{ f.errors }}</div>
+    {% endfor %}
+    
+
+    <button type="submit">Выбрать</button>
+  </form>
+
+{% endblock content %}

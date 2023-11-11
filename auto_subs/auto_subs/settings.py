@@ -111,11 +111,26 @@ path_for_subtitles = str(BASE_DIR) + '/media/subtitles/'
 path_for_video_with_subs = str(BASE_DIR) + '/media/video_with_subs/'
 base_path_of_video = str(BASE_DIR) + '/media/'
 
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.yandex.ru'
+# EMAIL_USE_TLS = False
+# EMAIL_PORT = 465
+# EMAIL_USE_SSL = True
+# EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.yandex.ru'
-EMAIL_USE_TLS = False
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_USE_SSL = False
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
+
+
+USE_ABS_API = False
+
+API_KEY = '0b84aeb8d4284cae91713495d558c506'
+
+API_URL = 'https://emailvalidation.abstractapi.com/v1/?api_key=' + API_KEY

@@ -53,5 +53,10 @@ class LanguagesForTranslateVideo(models.Model):
         return self.name_of_language
 
 
+class ExpansionForUser(models.Model):
+    email2 = models.CharField(max_length=100, verbose_name='Новый email', null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+
+
     # def get_absolute_url(self):
     #     return reverse('', kwargs={'language': self.language})

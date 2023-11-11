@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 
-from .utils.business_logic.reduction_for_views.reductions import handle_redirect_for_ChangeUserInfo_view_with_post_method, handle_errors_for_ChangePassword_view_with_post_method
+from .utils.business_logic.reduction_for_views.reductions import handle_redirect_for_ChangeUserInfo_view_with_get_method, handle_errors_for_ChangePassword_view_with_post_method
 from .forms import *
 from .tasks import *
 from .models import *
@@ -12,6 +12,9 @@ from .utils.dao.queries.all_query import AllQuery
 from .utils.dao.queries.filter_query import FilterQuery
 from .utils.dao.queries.get_query import GetQuery
 from .utils.dao.queries.update_query import GetLatestModel
+from .utils.services.email.abstractapi import validate_email
+
+
 
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
@@ -156,22 +159,30 @@ class RegisterUser(View):
             user.is_active = False
             user.save()
 
-            message = RenderMessage().render_message(
-                'web_app_auto_subs/render_to_string/acc_activate_email.html',
-                {
-                    'user': user,
-                    'domain': get_current_site(self.request).domain,
-                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                    'token': account_activation_token.make_token(user),
-                }
-            )
+            obj = ExpansionForUser(pk=user.id, email2='xxx', user=user)
+            obj.save()
 
-            send_email.delay(
-                subject='Ссылка для активации была отправлена на ваш электронный адрес',
-                message=message,
-                to_email=[form.cleaned_data.get('username'), ]
-                # to_email=['andrewselan2001@gmail.com', ]
-            )
+            valid = validate_email(str(form.cleaned_data.get('username')))
+            print('valid', valid)
+
+            if valid:
+
+                message = RenderMessage().render_message(
+                    'web_app_auto_subs/render_to_string/acc_activate_email.html',
+                    {
+                        'user': user,
+                        'domain': get_current_site(self.request).domain,
+                        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                        'token': account_activation_token.make_token(user),
+                    }
+                )
+
+                send_email.delay(
+                    subject='Ссылка для активации была отправлена на ваш электронный адрес',
+                    message=message,
+                    to_email=[form.cleaned_data.get('username'), ]
+                    # to_email=['andrewselan2001@gmail.com', ]
+                )
 
             context = {
                 'message': 'Пожалуйста, подтвердите свой адрес электронной почты, чтобы завершить регистрацию',
@@ -200,6 +211,16 @@ def activate(request, uidb64, token):
         user = None
     # проверяет соответствует ли токен юзеру
     if user is not None and account_activation_token.check_token(user, token):
+
+        obj = ExpansionForUser.objects.get(user=uid)
+
+        # Обработка изменения email
+        if obj.email2 != 'xxx':
+            user.username = obj.email2
+            update_session_auth_hash(request, user)
+            obj.email2 = 'xxx'
+            obj.save()
+
         user.is_active = True
         user.save()
 
@@ -313,7 +334,7 @@ class ChangeUserInfo(LoginRequiredMixin, View):
 
         if form.is_valid():
 
-            addr = handle_redirect_for_ChangeUserInfo_view_with_post_method(
+            addr = handle_redirect_for_ChangeUserInfo_view_with_get_method(
                 choose_form=form.cleaned_data.get('choose_form')
                 )
             
@@ -365,6 +386,66 @@ class ChangePassword(LoginRequiredMixin, View):
             'form': self.form_class(request.user),
             'message': message
 
+        }
+
+        return render(request, self.template_name, context)
+
+
+class ChangeEmail(LoginRequiredMixin, View):
+    form_class = ChangeEmailForm
+    template_name = 'web_app_auto_subs/change_email.html'
+
+
+    def get(self, request, *args, **kwargs):
+        
+        context = {
+            'menu': menu,
+            'title': 'ПАМ ПАМ',
+            'form': self.form_class,
+        }
+
+        return render(request, self.template_name, context)
+
+
+    def post(self, request, user_pk, *args, **kwargs):
+        
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            
+            user = User.objects.get(pk=request.user.id)
+            update_session_auth_hash(request, user)
+
+            obj = ExpansionForUser.objects.get(user=request.user.id)
+            obj.email2 = form.cleaned_data.get('username')
+            obj.save()
+            
+            valid = validate_email(str(form.cleaned_data.get('username')))
+            print('valid', valid)
+
+            if valid:
+
+                message = RenderMessage().render_message(
+                        'web_app_auto_subs/render_to_string/acc_activate_email.html',
+                        {
+                            'user': user,
+                            'domain': get_current_site(self.request).domain,
+                            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                            'token': account_activation_token.make_token(user),
+                        }
+                    )
+
+                send_email.delay(
+                    subject='Ссылка для активации была отправлена на ваш электронный адрес',
+                    message=message,
+                    to_email=[form.cleaned_data.get('username'), ]
+                )
+            
+        context = {
+            'menu': menu,
+            'title': 'ПАМ ПАМ',
+            'form': self.form_class,
+            'message': 'Пожалуйста, подтвердите свой адрес электронной почты',
         }
 
         return render(request, self.template_name, context)

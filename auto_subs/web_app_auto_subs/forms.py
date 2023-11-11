@@ -59,9 +59,12 @@ class ChangePasswordForm(PasswordChangeForm):
     #     fields = ('old_password', 'new_password1', 'new_password2',)
 
 
+class ChangeEmailForm(forms.Form):
+    username = forms.EmailField(label='Новый email ')
 
-
-
+    # class Meta:
+    #     model = User
+    #     fields = ('username',)
 
 # <!--<form method="post" enctype="multipart/form-data">
 #         {% scrf_token %}
