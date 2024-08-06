@@ -1,11 +1,9 @@
-FROM python:3.9.9
+FROM python:3.11-slim
 
 RUN apt-get update -y
 RUN apt-get upgrade -y
 
 WORKDIR /subs
+COPY . /subs/
 
-COPY ./subs/tasks.py ./subs
-COPY ./subs/translator.py ./subs
-COPY ./subs/subs.py ./subs
-COPY ./subs/requirements.txt ./subs
+RUN pip install -r requirements.txt

@@ -107,9 +107,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CELERY_BROKER_URL = 'redis://localhost:6379/'
 
-path_for_subtitles = str(BASE_DIR) + '/media/subtitles/'
-path_for_video_with_subs = str(BASE_DIR) + '/media/video_with_subs/'
-base_path_of_video = str(BASE_DIR) + '/media/'
+PATH_FOR_SUBTITLES = str(BASE_DIR) + '/media/subtitles/'
+PATH_FOR_VIDEO_WITH_SUBS= str(BASE_DIR) + '/media/video_with_subs/'
+BASE_PATH_OF_VIDEO= str(BASE_DIR) + '/media/'
 
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.yandex.ru'
@@ -134,3 +134,36 @@ USE_ABS_API = False
 API_KEY = '0b84aeb8d4284cae91713495d558c506'
 
 API_URL = 'https://emailvalidation.abstractapi.com/v1/?api_key=' + API_KEY
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'main_format': {
+            "format": "{asctime} - {levelname} - {module} - {filename} - {message}",
+            "style": "{",
+        },
+    },
+
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'main_format',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'formatter': 'main_format',
+            'filename': 'information.log',
+        },
+    },
+
+    'loggers': {
+        'main': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}

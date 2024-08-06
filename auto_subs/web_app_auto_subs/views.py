@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 
+from web_app_auto_subs.utils.business_logic.mixins.upload_video_mixin import UploadVideoMixin
+
 from .utils.business_logic.reduction_for_views.reductions import handle_redirect_for_ChangeUserInfo_view_with_get_method, handle_errors_for_ChangePassword_view_with_post_method
 from .forms import *
 from .tasks import *
@@ -26,11 +28,11 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, FormView
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
-from auto_subs.settings import BASE_DIR, base_path_of_video, EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_BACKEND, EMAIL_PORT, \
-    EMAIL_USE_TLS, EMAIL_HOST_USER, path_for_video_with_subs
+from auto_subs.settings import BASE_DIR, BASE_PATH_OF_VIDEO, EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_BACKEND, EMAIL_PORT, \
+    EMAIL_USE_TLS, EMAIL_HOST_USER, PATH_FOR_VIDEO_WITH_SUBS
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import connection
 from django.core.paginator import Paginator
@@ -41,6 +43,37 @@ menu = [
     # {'title': 'Профиль', 'url_name': 'personal_account'}
 
 ]
+
+
+class UploadVideo1(LoginRequiredMixin, UploadVideoMixin, FormView):
+    template_name = 'web_app_auto_subs/upload_video.html'
+    form_class = DocumentForm
+    success_url = reverse_lazy('main')
+    extra_context = {'menu': menu}
+
+    def form_valid(self, form):
+        
+        form = form.save(commit=False)
+
+        subs_language = self.request.POST.get('subs_language')
+
+        form.user = self.request.user
+        # form.name_of_video = self.get_name_of_video(video)
+        # form.videos_with_subs = self.get_name_of_video_with_subs(form.name_of_video)
+
+        form.save()
+
+        user_video = UserVideos.objects.filter(user=self.request.user).latest('uploaded_at')
+        user_video.name_of_video = self.get_name_of_video(user_video.video)
+        user_video.videos_with_subs = self.get_name_of_video_with_subs(user_video.name_of_video)
+        user_video.save()
+
+        user_video = UserVideos.objects.filter(user=self.request.user).latest('uploaded_at')
+
+        make_subs.delay(BASE_PATH_OF_VIDEO, str(user_video.video), str(subs_language))
+
+        return super().form_valid(form)
+
 
 
 class UploadVideo(LoginRequiredMixin, View):
@@ -85,12 +118,12 @@ class UploadVideo(LoginRequiredMixin, View):
                 attrs_for_search={'user': request.user},
                 attrs_for_update={
                     'name_of_video': name_of_video,
-                    'videos_with_subs': path_for_video_with_subs + name_of_video + '_subtitled' + ".mp4",
+                    'videos_with_subs': PATH_FOR_VIDEO_WITH_SUBS + name_of_video + '_subtitled' + ".mp4",
                 },
                 args_for_additional_method='uploaded_at',)
 
             video.name_of_video = name_of_video
-            video.videos_with_subs = path_for_video_with_subs + \
+            video.videos_with_subs = PATH_FOR_VIDEO_WITH_SUBS + \
                 name_of_video + '_subtitled' + ".mp4"
             video.save()
 
@@ -105,7 +138,8 @@ class UploadVideo(LoginRequiredMixin, View):
                                                  name_of_language=subs_language,
                                                  ).get('language')
 
-            make_subs.delay(base_path_of_video + str(path), str(subs_language))
+            make_subs.delay(BASE_PATH_OF_VIDEO + str(path), 'en'
+                            )
 
             return redirect('main')
 

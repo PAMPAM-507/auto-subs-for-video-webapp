@@ -1,11 +1,11 @@
 from django.urls import reverse
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.validators import FileExtensionValidator
 
 
 class UserVideos(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE,
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
                              verbose_name='Пользователь')
 
     video = models.FileField(upload_to='videos/%Y/%m/%d/',
@@ -55,7 +55,7 @@ class LanguagesForTranslateVideo(models.Model):
 
 class ExpansionForUser(models.Model):
     email2 = models.CharField(max_length=100, verbose_name='Новый email', null=True, blank=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, verbose_name='Пользователь')
 
 
     # def get_absolute_url(self):

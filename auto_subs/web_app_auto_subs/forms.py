@@ -10,13 +10,19 @@ class DocumentForm(forms.ModelForm):
     subs_language = forms.ModelChoiceField(
         queryset=LanguagesForTranslateVideo.objects.all(),
         label='Выберите язык для субтитров',
-        empty_label=None,
+        # empty_label='Русский',
     )
+    video = forms.FileField(
+        validators=[FileExtensionValidator(allowed_extensions=['mp4'])],
+        label='Загрузка видео'
+        
+                                 
+        )
 
     class Meta:
         model = UserVideos
         fields = ('video',)
-        widgets = {'user': forms.HiddenInput()}
+        widgets = {'user': forms.HiddenInput(),}
 
 
 class RegisterUser(UserCreationForm):

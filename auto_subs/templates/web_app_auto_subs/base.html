@@ -23,7 +23,7 @@
                 <a href="{% url 'personal_account' request.user.id %}">Профиль</a>
                 <br>
                 <br>
-                <li>{{user.username}} | <a href="{% url 'logout' %}"> Выйти</a></li>
+                <li>{{request.user.username}} | <a href="{% url 'logout' %}"> Выйти</a></li>
                 <br>
             {% else %}
                 <br>

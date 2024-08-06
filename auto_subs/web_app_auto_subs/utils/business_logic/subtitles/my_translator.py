@@ -4,7 +4,7 @@ import os
 from googletrans import Translator, constants
 from pprint import pprint
 import pysrt
-from auto_subs.settings import BASE_DIR, path_for_subtitles
+from auto_subs.settings import BASE_DIR, PATH_FOR_SUBTITLES
 
 
 class MYTranslatorABC(ABC):
@@ -32,4 +32,4 @@ class MyTranslator(MYTranslatorABC):
             if sentences[i].start == subtitles[i].start and sentences[i].end == subtitles[i].end:
                 subtitles[i].text = lst[i]
 
-        subtitles.save(path_for_subtitles + name_of_video + '.srt')
+        subtitles.save(PATH_FOR_SUBTITLES + name_of_video + '.srt')
