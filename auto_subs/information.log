@@ -14,3 +14,23 @@
 2024-08-07 04:46:33,307 - INFO - tasks - tasks.py - Command executed successfully
 2024-08-07 04:49:28,385 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/2024/08/07/test_LRf5BLA.mp4 --model tiny --language en
 2024-08-07 04:49:36,933 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 07:24:16,895 - INFO - tasks - tasks.py - Executing command: cd /mnt/g/auto-subs-webapp/auto_subs/media/subtitles/ && whisper G:\auto-subs-webapp\auto_subs/media/videos/2024/08/06/test3_oLmT4Ou.mp4 --model tiny --language en
+2024-08-07 07:24:16,898 - INFO - tasks - tasks.py - Executing command: cd /mnt/g/auto-subs-webapp/auto_subs/media/subtitles/ && whisper G:\auto-subs-webapp\auto_subs/media/videos/2024/08/06/test3_Kw3Qrrs.mp4 --model tiny --language en
+2024-08-07 07:24:39,696 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 07:24:39,723 - INFO - tasks - tasks.py - Executing command: cd /mnt/g/auto-subs-webapp/auto_subs/media/subtitles/ && whisper G:\auto-subs-webapp\auto_subs/media/videos/2024/08/06/test3_qcsPJcx.mp4 --model tiny --language en
+2024-08-07 07:24:44,839 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 07:24:44,859 - INFO - tasks - tasks.py - Executing command: cd /mnt/g/auto-subs-webapp/auto_subs/media/subtitles/ && whisper G:\auto-subs-webapp\auto_subs/media/videos/2024/08/06/test3_iI5Px7E.mp4 --model tiny --language en
+2024-08-07 07:24:54,481 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 07:25:00,151 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 07:26:22,579 - INFO - tasks - tasks.py - Executing command: cd /mnt/g/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /mnt/g/auto-subs-webapp/auto_subs/media/videos/2024/08/07/test3.mp4 --model tiny --language en
+2024-08-07 07:26:36,789 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 07:28:36,520 - INFO - tasks - tasks.py - Executing command: cd /mnt/g/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /mnt/g/auto-subs-webapp/auto_subs/media/videos/2024/08/07/test3_BuWyVDG.mp4 --model tiny --language en
+2024-08-07 07:28:50,866 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 07:30:39,051 - INFO - tasks - tasks.py - Executing command: cd /mnt/g/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /mnt/g/auto-subs-webapp/auto_subs/media/videos/2024/08/07/test3_kr3JBfl.mp4 --model tiny --language en
+2024-08-07 07:31:09,825 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 07:32:21,239 - INFO - tasks - tasks.py - Executing command: cd /mnt/g/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /mnt/g/auto-subs-webapp/auto_subs/media/videos/2024/08/07/test3_T8vXNUU.mp4 --model tiny --language en
+2024-08-07 07:32:49,449 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 07:35:35,713 - INFO - tasks - tasks.py - Executing command: cd /mnt/g/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /mnt/g/auto-subs-webapp/auto_subs/media/videos/2024/08/07/test3_qtGhV5q.mp4 --model tiny --language en
+2024-08-07 07:36:04,210 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 07:40:38,677 - INFO - tasks - tasks.py - Executing command: cd /mnt/g/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /mnt/g/auto-subs-webapp/auto_subs/media/videos/2024/08/07/test3_zVqmrOa.mp4 --model tiny --language en
+2024-08-07 07:41:09,946 - INFO - tasks - tasks.py - Command executed successfully

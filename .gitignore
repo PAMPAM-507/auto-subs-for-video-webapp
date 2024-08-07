@@ -13,6 +13,7 @@ venv*
 **/*.txt
 **/*.mp4
 **/t.py
+**/*.log
 !**/*requirements.txt
 !**/for_make_folder.txt
 
