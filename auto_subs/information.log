@@ -1,0 +1,16 @@
+2024-08-07 04:12:01,866 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/2024/08/07/test.mp4 --model tiny --language en
+2024-08-07 04:12:10,304 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 04:13:46,795 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/ --model 1 --language en
+2024-08-07 04:13:48,444 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 04:19:36,672 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/ --model ru --language en
+2024-08-07 04:19:38,328 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 04:20:10,690 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/ --model ru --language en
+2024-08-07 04:20:12,368 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 04:32:57,806 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/2024/08/07/test_pQb8f1p.mp4 --model tiny --language en
+2024-08-07 04:33:06,136 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 04:44:06,177 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/2024/08/07/test_WkF3slM.mp4 --model tiny --language en
+2024-08-07 04:44:14,560 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 04:46:24,973 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/2024/08/07/test_YMW5FDR.mp4 --model tiny --language en
+2024-08-07 04:46:33,307 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 04:49:28,385 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/2024/08/07/test_LRf5BLA.mp4 --model tiny --language en
+2024-08-07 04:49:36,933 - INFO - tasks - tasks.py - Command executed successfully

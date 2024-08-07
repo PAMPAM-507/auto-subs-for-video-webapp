@@ -2,6 +2,7 @@ import os
 # from .main import *
 from web_app_auto_subs.utils.services.make_srt import MakingSrt
 import whisper.transcribe
+from django.core.mail import send_mail, send_mass_mail
 
 from web_app_auto_subs.utils.business_logic.subtitles.main import execute_bs_for_make_subs
 
@@ -55,12 +56,9 @@ def make_subs(path_of_video: str,
 
 @app.task
 def send_email(subject: str, message: str, to_email: list):
-    SendEmail(
-        EMAIL_HOST, EMAIL_PORT, EMAIL_HOST_USER,
-        EMAIL_HOST_PASSWORD, EMAIL_USE_TLS,
-    ).send(
-        subject=subject,
-        message=message,
-        email_from=EMAIL_HOST_USER,
-        to_email=to_email
+    send_mail(
+        subject,
+        message,
+        EMAIL_HOST_USER,
+        to_email,
     )

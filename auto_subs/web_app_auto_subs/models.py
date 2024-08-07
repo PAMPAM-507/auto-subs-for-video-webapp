@@ -18,11 +18,12 @@ class UserVideos(models.Model):
     videos_with_subs = models.FileField(
         # upload_to='videos_with_subs/%Y/%m/%d/',
         upload_to='videos_with_subs/',
-        null=True, verbose_name='Видео с субтитрами'
+        null=True, verbose_name='Видео с субтитрами',
+        blank=True
     )
 
     name_of_video = models.CharField(max_length=50,
-                                     verbose_name='Название видео', null=True)
+                                     verbose_name='Название видео', null=True, blank=True)
 
     def get_absolute_url(self):
         return reverse('watch_video', kwargs={'user_pk': self.user.pk, 'pk': self.pk})

@@ -3,7 +3,9 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('SECRET_KEY_SUBS')
+# SECRET_KEY = os.environ.get('SECRET_KEY_SUBS')
+# SECRET_KEY = os.getenv('SECRET_KEY_SUBS')
+SECRET_KEY = 'django-insecure-zkcl(a!k!b9)u1=#2el^dacn3u#1k@3leg+3)dypg)&&!t2x-!'
 
 DEBUG = True
 
@@ -126,6 +128,7 @@ EMAIL_PORT = 587
 EMAIL_USE_SSL = False
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
 
 
 

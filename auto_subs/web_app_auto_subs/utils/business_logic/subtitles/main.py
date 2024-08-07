@@ -13,7 +13,7 @@ def execute_bs_for_make_subs(path_of_video: str,
                              ):
 
     mp4filename = path_of_video
-    srtfilename = (path_for_subtitles + path_of_video.split('/')[-1])[0:-4] + '.srt'
+    srtfilename = path_for_subtitles + str(path_of_video).split('/')[-1][0:-4] + '.srt'
     subtitles = pysrt.open(srtfilename)
     name_of_video = path_of_video.split('/')[-1][0:-4]
 

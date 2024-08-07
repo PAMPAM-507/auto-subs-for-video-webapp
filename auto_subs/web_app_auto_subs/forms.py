@@ -25,7 +25,7 @@ class DocumentForm(forms.ModelForm):
         widgets = {'user': forms.HiddenInput(),}
 
 
-class RegisterUser(UserCreationForm):
+class RegisterUserForm(UserCreationForm):
     username = forms.EmailField(label='Email ')
     password1 = forms.CharField(widget=forms.PasswordInput, label='Пароль ')
     password2 = forms.CharField(
