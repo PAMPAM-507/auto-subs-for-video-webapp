@@ -32,7 +32,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.views.generic.edit import CreateView, FormView
 from django.views.generic import TemplateView
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth import logout
 from django.urls import reverse_lazy
 from auto_subs.settings import BASE_DIR, BASE_PATH_OF_VIDEO, EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_BACKEND, EMAIL_PORT, \
     EMAIL_USE_TLS, EMAIL_HOST_USER, PATH_FOR_VIDEO_WITH_SUBS
@@ -81,8 +82,14 @@ class UploadVideo(LoginRequiredMixin, UploadVideoMixin, ContextMixin, FormView):
         subs_language = LanguagesForTranslateVideo.objects.get(
             pk=subs_language_pk)
 
-        make_subs.delay(BASE_PATH_OF_VIDEO +
-                        str(user_video.video), str(subs_language.language))
+        # make_subs.delay(BASE_PATH_OF_VIDEO +
+        #                 str(user_video.video), str(subs_language.language))
+        
+        make_subs(BASE_PATH_OF_VIDEO +
+                        str(user_video.video), 
+                        str(subs_language.language),
+                        bool(user_video.make_audio_record),
+                        )
 
         return super().form_valid(form)
 
@@ -184,6 +191,13 @@ class LoginUser(ContextMixin, LoginView):
     def get_success_url(self):
         return reverse_lazy('main')
 
+
+class LogoutViewWithGet(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            logout(request)
+        return redirect('main')
+    
 
 class PersonalAccount(LoginRequiredMixin, View):
     login_url = "/login/"

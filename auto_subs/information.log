@@ -34,3 +34,5 @@
 2024-08-07 07:36:04,210 - INFO - tasks - tasks.py - Command executed successfully
 2024-08-07 07:40:38,677 - INFO - tasks - tasks.py - Executing command: cd /mnt/g/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /mnt/g/auto-subs-webapp/auto_subs/media/videos/2024/08/07/test3_zVqmrOa.mp4 --model tiny --language en
 2024-08-07 07:41:09,946 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-07 19:22:45,413 - INFO - tasks - tasks.py - Executing command: cd /mnt/d/auto-subs-for-video-webapp/auto_subs/media/subtitles/ && whisper /mnt/d/auto-subs-for-video-webapp/auto_subs/media/videos/2024/08/07/test3.mp4 --model tiny --language en
+2024-08-07 19:25:32,482 - INFO - tasks - tasks.py - Command executed successfully

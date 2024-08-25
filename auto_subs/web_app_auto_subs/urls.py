@@ -9,7 +9,8 @@ urlpatterns = [
 
     path('register/', RegisterUser.as_view(), name='register'),
     path('login/', LoginUser.as_view(), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),
+    path('logout/', LogoutViewWithGet.as_view(), name='logout'),
+    
     path('activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/', activate,
          name='activate'),
     path('personal_account/<int:user_pk>/', PersonalAccount.as_view(), name='personal_account'),

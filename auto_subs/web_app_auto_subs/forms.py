@@ -14,14 +14,12 @@ class DocumentForm(forms.ModelForm):
     )
     video = forms.FileField(
         validators=[FileExtensionValidator(allowed_extensions=['mp4'])],
-        label='Загрузка видео'
-        
-                                 
+        label='Загрузка видео'                  
         )
 
     class Meta:
         model = UserVideos
-        fields = ('video',)
+        fields = ('video', 'make_audio_record')
         widgets = {'user': forms.HiddenInput(),}
 
 

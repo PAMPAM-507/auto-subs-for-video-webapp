@@ -112,6 +112,7 @@ CELERY_BROKER_URL = 'redis://localhost:6379/'
 PATH_FOR_SUBTITLES = str(BASE_DIR) + '/media/subtitles/'
 PATH_FOR_VIDEO_WITH_SUBS= str(BASE_DIR) + '/media/video_with_subs/'
 BASE_PATH_OF_VIDEO= str(BASE_DIR) + '/media/'
+PATH_FOR_AUDIO = str(BASE_DIR) + '/media/records/'
 
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.yandex.ru'

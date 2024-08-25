@@ -24,7 +24,9 @@ class UserVideos(models.Model):
 
     name_of_video = models.CharField(max_length=50,
                                      verbose_name='Название видео', null=True, blank=True)
-
+    
+    make_audio_record = models.BooleanField(null=True, default=False, verbose_name='Нужно ли сделать аудио перевод',)
+    
     def get_absolute_url(self):
         return reverse('watch_video', kwargs={'user_pk': self.user.pk, 'pk': self.pk})
 
