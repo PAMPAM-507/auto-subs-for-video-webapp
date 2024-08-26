@@ -1,24 +1,7 @@
 from typing import Any
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-
-from web_app_auto_subs.utils.business_logic.mixins.register_mixin import RegisterMixin
-from web_app_auto_subs.utils.business_logic.mixins.context_mixin import ContextMixin
-from web_app_auto_subs.utils.business_logic.mixins.upload_video_mixin import UploadVideoMixin
-
-from .utils.business_logic.reduction_for_views.reductions import handle_redirect_for_ChangeUserInfo_view_with_get_method, handle_errors_for_ChangePassword_view_with_post_method
-from .forms import *
-from .tasks import *
-from .models import *
-from .utils.services.email.render_message import RenderMessage
-from .utils.services.email.token import account_activation_token
-from .utils.services.sending_video_stream.video_stream import VideoStream
-from .utils.dao.queries.all_query import AllQuery
-from .utils.dao.queries.filter_query import FilterQuery
-from .utils.dao.queries.get_query import GetQuery
-from .utils.dao.queries.update_query import GetLatestModel
-from .utils.services.email.abstractapi import validate_email
-
 
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
@@ -41,6 +24,24 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import connection
 from django.core.paginator import Paginator
 
+
+from web_app_auto_subs.utils.business_logic.mixins.register_mixin import RegisterMixin
+from web_app_auto_subs.utils.business_logic.mixins.context_mixin import ContextMixin
+from web_app_auto_subs.utils.business_logic.mixins.upload_video_mixin import UploadVideoMixin
+
+from .utils.business_logic.reduction_for_views.reductions import handle_redirect_for_ChangeUserInfo_view_with_get_method, handle_errors_for_ChangePassword_view_with_post_method
+from .forms import *
+from .tasks import *
+from .models import *
+from .utils.services.email.render_message import RenderMessage
+from .utils.services.email.token import account_activation_token
+from .utils.services.sending_video_stream.video_stream import VideoStream
+from .utils.dao.queries.all_query import AllQuery
+from .utils.dao.queries.filter_query import FilterQuery
+from .utils.dao.queries.get_query import GetQuery
+from .utils.dao.queries.update_query import GetLatestModel
+from .utils.services.email.abstractapi import validate_email
+
 menu = [
     {'title': 'Главная', 'url_name': 'main'},
     {'title': 'Загрузить видео', 'url_name': 'upload_video'},
@@ -56,7 +57,7 @@ class UploadVideo(LoginRequiredMixin, UploadVideoMixin, ContextMixin, FormView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context = self.get_mixin_context(context,)
+        context = self.get_mixin_context(context, cur_menu='Загрузить видео')
         return context
 
     def form_valid(self, form):
@@ -85,7 +86,7 @@ class UploadVideo(LoginRequiredMixin, UploadVideoMixin, ContextMixin, FormView):
         # make_subs.delay(BASE_PATH_OF_VIDEO +
         #                 str(user_video.video), str(subs_language.language))
         
-        make_subs(BASE_PATH_OF_VIDEO +
+        make_subs.delay(BASE_PATH_OF_VIDEO +
                         str(user_video.video), 
                         str(subs_language.language),
                         bool(user_video.make_audio_record),
@@ -99,8 +100,8 @@ class MainMenu(ContextMixin, TemplateView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        self.get_mixin_context(
-            context, message=Title.objects.get(name='Описание').title)
+        context = self.get_mixin_context(
+            context, message=Title.objects.get(name='Описание').title, cur_menu='Главная')
         return context
 
 
@@ -111,7 +112,7 @@ class RegisterUser(RegisterMixin, ContextMixin, CreateView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context= super().get_context_data(**kwargs)
-        self.get_mixin_context(context, cur_menu=' ')
+        context = self.get_mixin_context(context, cur_menu=' ')
 
         return context
 
@@ -200,7 +201,6 @@ class LogoutViewWithGet(LoginRequiredMixin, View):
     
 
 class PersonalAccount(LoginRequiredMixin, View):
-    login_url = "/login/"
     template_name = 'web_app_auto_subs/personal_account.html'
 
     def get(self, request, user_pk, *args, **kwargs):

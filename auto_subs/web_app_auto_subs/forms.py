@@ -10,7 +10,7 @@ class DocumentForm(forms.ModelForm):
     subs_language = forms.ModelChoiceField(
         queryset=LanguagesForTranslateVideo.objects.all(),
         label='Выберите язык для субтитров',
-        # empty_label='Русский',
+        # initial ='Русский',
     )
     video = forms.FileField(
         validators=[FileExtensionValidator(allowed_extensions=['mp4'])],

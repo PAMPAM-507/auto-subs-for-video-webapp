@@ -13,6 +13,7 @@ auto_subs/web_app_auto_subs/utils/business_logic/subtitles1/model
 **/*.vtt
 **/*.txt
 **/*.mp4
+**/*.mp3
 **/t.py
 **/*.log
 !**/*requirements.txt
