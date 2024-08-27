@@ -28,7 +28,7 @@ class UserVideos(models.Model):
     make_audio_record = models.BooleanField(null=True, default=False, verbose_name='Нужно ли сделать аудио перевод',)
     
     def get_absolute_url(self):
-        return reverse('watch_video', kwargs={'user_pk': self.user.pk, 'pk': self.pk})
+        return reverse('watch_video', kwargs={'pk': self.pk})
 
     class Meta:
         verbose_name = 'Пользовательское видео'
@@ -56,9 +56,9 @@ class LanguagesForTranslateVideo(models.Model):
         return self.name_of_language
 
 
-class ExpansionForUser(models.Model):
+class ChangeEmailModel(models.Model):
     email2 = models.CharField(max_length=100, verbose_name='Новый email', null=True, blank=True)
-    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, verbose_name='Пользователь')
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, verbose_name='Пользователь', unique=True)
 
 
     # def get_absolute_url(self):

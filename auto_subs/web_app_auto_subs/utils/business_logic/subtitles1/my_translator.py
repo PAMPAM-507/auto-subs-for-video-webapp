@@ -42,6 +42,8 @@ class MyGoogleTranslator(MYTranslatorABC):
         for i in range(len(subtitles)):
             if sentences[i].start == subtitles[i].start and sentences[i].end == subtitles[i].end:
                 subtitles[i].text = lst[i]
+        
+        print('MyGoogleTranslator')
 
         subtitles.save(path_for_subs)
 
@@ -63,6 +65,7 @@ class MyLocalTranslator(MYTranslatorABC):
         return out_text[0]
 
     def make_translate(self, subtitles: pysrt, path_for_subs: str) -> NoReturn:
+        
         lst = []
         for s in subtitles:
             lst.append(s)

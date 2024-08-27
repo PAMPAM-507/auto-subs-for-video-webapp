@@ -111,7 +111,7 @@ LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_REDIRECT_URL = 'home'
 
-CELERY_BROKER_URL = 'redis://localhost:6379/'
+CELERY_BROKER_URL = 'redis://localhost:6380/'
 
 PATH_FOR_SUBTITLES = str(BASE_DIR) + '/media/subtitles/'
 PATH_FOR_VIDEO_WITH_SUBS= str(BASE_DIR) + '/media/video_with_subs/'

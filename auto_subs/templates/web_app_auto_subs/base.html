@@ -20,7 +20,7 @@
         <br>
         {% block register%}
             {% if request.user.is_authenticated %}
-                <a href="{% url 'personal_account' request.user.id %}">Профиль</a>
+                <a href="{% url 'personal_account' %}">Профиль</a>
                 <br>
                 <br>
                 <li>{{request.user.username}} | <a href="{% url 'logout' %}"> Выйти</a></li>

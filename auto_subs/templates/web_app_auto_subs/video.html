@@ -17,8 +17,8 @@
           height="300"
           data-setup="{}"
     >
-        <source src="{% url 'stream' user.pk video.pk %}" type="video/mp4"/>
-        <source src="{% url 'stream' user.pk video.pk %}" type="video/webm"/>
+        <source src="{% url 'stream' video.pk %}" type="video/mp4"/>
+        <source src="{% url 'stream' video.pk %}" type="video/webm"/>
     </video>
 
     <script src="https://vjs.zencdn.net/8.5.2/video.min.js"></script>

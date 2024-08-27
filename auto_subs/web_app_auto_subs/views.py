@@ -1,45 +1,37 @@
 from typing import Any
 
+from django.db.models.base import Model as Model
+from django.forms import Form as Form
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-
-from django.contrib.auth.forms import PasswordChangeForm
-from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
-from django.http import StreamingHttpResponse
-from django.http import HttpResponse, Http404, HttpResponseRedirect, HttpResponseNotFound
+from django.db.models import QuerySet
+from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse, HttpRequest
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.views.generic.edit import CreateView, FormView
+from django.views.generic.edit import CreateView, FormView, UpdateView
+from django.views.generic import ListView, DetailView
 from django.views.generic import TemplateView
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.contrib.auth import logout
 from django.urls import reverse_lazy
-from auto_subs.settings import BASE_DIR, BASE_PATH_OF_VIDEO, EMAIL_HOST_PASSWORD, EMAIL_HOST, EMAIL_BACKEND, EMAIL_PORT, \
-    EMAIL_USE_TLS, EMAIL_HOST_USER, PATH_FOR_VIDEO_WITH_SUBS
+from auto_subs.settings import BASE_PATH_OF_VIDEO
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import connection
-from django.core.paginator import Paginator
 
-
+from web_app_auto_subs.utils.business_logic.mixins.change_email_mixin import ChangeEmailMixin
 from web_app_auto_subs.utils.business_logic.mixins.register_mixin import RegisterMixin
 from web_app_auto_subs.utils.business_logic.mixins.context_mixin import ContextMixin
 from web_app_auto_subs.utils.business_logic.mixins.upload_video_mixin import UploadVideoMixin
 
-from .utils.business_logic.reduction_for_views.reductions import handle_redirect_for_ChangeUserInfo_view_with_get_method, handle_errors_for_ChangePassword_view_with_post_method
 from .forms import *
 from .tasks import *
 from .models import *
 from .utils.services.email.render_message import RenderMessage
 from .utils.services.email.token import account_activation_token
 from .utils.services.sending_video_stream.video_stream import VideoStream
-from .utils.dao.queries.all_query import AllQuery
-from .utils.dao.queries.filter_query import FilterQuery
-from .utils.dao.queries.get_query import GetQuery
-from .utils.dao.queries.update_query import GetLatestModel
 from .utils.services.email.abstractapi import validate_email
 
 menu = [
@@ -51,16 +43,16 @@ menu = [
 
 
 class UploadVideo(LoginRequiredMixin, UploadVideoMixin, ContextMixin, FormView):
-    template_name = 'web_app_auto_subs/upload_video.html'
-    form_class = DocumentForm
-    success_url = reverse_lazy('main')
+    template_name: str = 'web_app_auto_subs/upload_video.html'
+    form_class: Form = DocumentForm
+    success_url: str = reverse_lazy('main')
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context = self.get_mixin_context(context, cur_menu='Загрузить видео')
         return context
 
-    def form_valid(self, form):
+    def form_valid(self, form: Form) -> HttpResponse:
 
         form = form.save(commit=False)
 
@@ -83,11 +75,8 @@ class UploadVideo(LoginRequiredMixin, UploadVideoMixin, ContextMixin, FormView):
         subs_language = LanguagesForTranslateVideo.objects.get(
             pk=subs_language_pk)
 
-        # make_subs.delay(BASE_PATH_OF_VIDEO +
-        #                 str(user_video.video), str(subs_language.language))
-        
         make_subs.delay(BASE_PATH_OF_VIDEO +
-                        str(user_video.video), 
+                        str(user_video.video),
                         str(subs_language.language),
                         bool(user_video.make_audio_record),
                         )
@@ -96,7 +85,7 @@ class UploadVideo(LoginRequiredMixin, UploadVideoMixin, ContextMixin, FormView):
 
 
 class MainMenu(ContextMixin, TemplateView):
-    template_name = 'web_app_auto_subs/base.html'
+    template_name: str = 'web_app_auto_subs/base.html'
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -106,23 +95,23 @@ class MainMenu(ContextMixin, TemplateView):
 
 
 class RegisterUser(RegisterMixin, ContextMixin, CreateView):
-    form_class = RegisterUserForm  # UserCreationForm
-    template_name = 'web_app_auto_subs/register.html'
-    success_url = reverse_lazy('login')
+    form_class: Form = RegisterUserForm  # UserCreationForm
+    template_name: str = 'web_app_auto_subs/register.html'
+    success_url: str = reverse_lazy('login')
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
-        context= super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context = self.get_mixin_context(context, cur_menu=' ')
 
         return context
 
-    def form_valid(self, form):
+    def form_valid(self, form: Form) -> HttpResponse:
 
         user = form.save(commit=False)
         user.is_active = False
         user.save()
 
-        obj = ExpansionForUser(pk=user.id, email2='xxx', user=user)
+        obj = ChangeEmailModel(pk=user.id, email2='xxx', user=user)
         obj.save()
 
         try:
@@ -133,12 +122,10 @@ class RegisterUser(RegisterMixin, ContextMixin, CreateView):
 
             self.handle_errors_related_to_wrong_adding_user(user)
 
-
         return super().form_valid(form)
-    
 
 
-def activate(request, uidb64, token):
+def activate(request, uidb64, token) -> HttpResponse:
     context = {
         'redirect_url': menu[0].get('url_name'),
         'redirect_title': menu[0].get('title'),
@@ -155,7 +142,7 @@ def activate(request, uidb64, token):
     # проверяет соответствует ли токен юзеру
     if user is not None and account_activation_token.check_token(user, token):
 
-        obj = ExpansionForUser.objects.get(user=uid)
+        obj = ChangeEmailModel.objects.get(user=uid)
 
         # Обработка изменения email
         if obj.email2 != 'xxx':
@@ -180,73 +167,57 @@ def activate(request, uidb64, token):
 
 
 class LoginUser(ContextMixin, LoginView):
-    form_class = LoginUserFrom
-    template_name = 'web_app_auto_subs/login.html'
+    form_class: Form = LoginUserFrom
+    template_name: str = 'web_app_auto_subs/login.html'
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context = self.get_mixin_context(context)
 
         return context
 
-    def get_success_url(self):
+    def get_success_url(self) -> str:
         return reverse_lazy('main')
 
 
 class LogoutViewWithGet(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         if request.user.is_authenticated:
             logout(request)
         return redirect('main')
-    
-
-class PersonalAccount(LoginRequiredMixin, View):
-    template_name = 'web_app_auto_subs/personal_account.html'
-
-    def get(self, request, user_pk, *args, **kwargs):
-        # videos = UserVideos.objects.filter(user=request.user.id)
-
-        videos = FilterQuery().filter_query(UserVideos, 'name_of_video', 'get_absolute_url', 'pk',
-                                            user=user_pk,
-                                            )
-
-        paginator = Paginator(videos, 5)
-        page_number = request.GET.get('page')
-        page_obj = paginator.get_page(page_number)
-
-        context = {
-            'menu': menu,
-            'title': 'ПАМ ПАМ',
-            'cur_menu': 'Профиль',
-            # 'videos': videos,
-            'page_obj': page_obj,
-            'user_pk': user_pk,
-        }
-
-        return render(request, self.template_name, context)
 
 
-class GetVideo(LoginRequiredMixin, View):
-    login_url = '/login/'
-    template_name = 'web_app_auto_subs/video.html'
+class PersonalAccount(LoginRequiredMixin, ContextMixin, ListView):
+    template_name: str = 'web_app_auto_subs/personal_account.html'
+    context_object_name: str = 'videos'
+    paginate_by: int = 5
 
-    def get(self, request, user_pk, pk, *args, **kwargs):
-        # video = UserVideos.objects.get(user=request.user.id, pk=pk)
-        video = GetQuery().get_query(UserVideos, 'name_of_video', 'get_absolute_url', 'pk',
-                                     user=request.user.id, pk=pk,
-                                     )
+    def get_queryset(self) -> QuerySet[UserVideos]:
+        return UserVideos.objects.filter(user=self.request.user,)
 
-        context = {
-            'menu': menu,
-            'title': 'ПАМ ПАМ',
-            'video': video,
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context = self.get_mixin_context(context, cur_menu='Профиль',)
 
-        }
-
-        return render(request, self.template_name, context)
+        return context
 
 
-def get_streaming_video(request, user_pk, pk: int):
+class GetVideo(LoginRequiredMixin, ContextMixin, DetailView):
+    template_name: str = 'web_app_auto_subs/video.html'
+    pk_url_kwarg: str = 'pk'
+    context_object_name: str = 'video'
+
+    def get_object(self, get_queryset=None) -> Model:
+        return get_object_or_404(UserVideos, user=self.request.user.id, pk=self.kwargs['pk'])
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context = self.get_mixin_context(context, )
+
+        return context
+
+
+def get_streaming_video(request, pk: int) -> StreamingHttpResponse:
     file, status_code, content_length, content_range = VideoStream().open_file(request, pk)
     response = StreamingHttpResponse(
         file, status=status_code, content_type='video/mp4')
@@ -257,137 +228,93 @@ def get_streaming_video(request, user_pk, pk: int):
     return response
 
 
-class ChangeUserInfo(LoginRequiredMixin, View):
-    form_class = ChangeUserInfoForm
-    template_name = 'web_app_auto_subs/edit_profile.html'
+class ChangeUserInfo(LoginRequiredMixin, FormView):
+    form_class: Form = ChangeUserInfoForm
+    template_name: str = 'web_app_auto_subs/edit_profile.html'
+    success_url: str = reverse_lazy('edit_profile')
 
-    def get(self, request, user_pk, *args, **kwargs):
+    def get_success_url(self) -> str:
 
-        context = {
-            'menu': menu,
-            'title': 'ПАМ ПАМ',
-            'form': self.form_class,
+        return reverse_lazy('password_change') if self.choose_form == 0 else reverse_lazy('change_email')
 
-        }
+    def form_valid(self, form: ChangeUserInfoForm) -> HttpResponse:
+        self.choose_form = int(form.cleaned_data.get('choose_form'))
 
-        return render(request, self.template_name, context)
+        return super().form_valid(form)
 
-    def post(self, request, user_pk, *args, **kwargs):
 
-        form = self.form_class(request.POST)
+class ChangePassword(LoginRequiredMixin, ContextMixin, PasswordChangeView):
+    form_class: Form = ChangePasswordForm
+    template_name: str = 'web_app_auto_subs/password_change.html'
+    success_url: str = reverse_lazy('password_change_done')
 
-        if form.is_valid():
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context = self.get_mixin_context(context)
 
-            addr = handle_redirect_for_ChangeUserInfo_view_with_get_method(
-                choose_form=form.cleaned_data.get('choose_form')
+        return context
+
+    def form_valid(self, form: ChangePasswordForm) -> HttpResponse:
+        update_session_auth_hash(self.request, self.request.user)
+
+        return super().form_valid(form)
+
+
+class ChangeEmailDone(LoginRequiredMixin, ContextMixin, TemplateView):
+    template_name: str = 'web_app_auto_subs/change_email_done.html'
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context = self.get_mixin_context(context)
+
+        return context
+
+
+class ChangeEmail(LoginRequiredMixin, ChangeEmailMixin, ContextMixin, FormView):
+    form_class: Form = ChangeEmailForm
+    template_name: str = 'web_app_auto_subs/change_email.html'
+    success_url: str = reverse_lazy('change_email_done')
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        context = super().get_context_data(**kwargs)
+        context = self.get_mixin_context(context)
+
+        return context
+
+    def form_valid(self, form) -> HttpResponse:
+        valid = validate_email(str(form.cleaned_data.get('username')))
+        print('valid', valid)
+
+        if valid:
+
+            user = self.request.user
+            
+            self.mark_user_for_changing_password(
+                user=user,
+                email=form.cleaned_data.get('username'),
             )
 
-            return redirect(addr, user_pk=user_pk)
+            update_session_auth_hash(self.request, user)
 
-        return redirect('main')
+            message = RenderMessage().render_message(
+                'web_app_auto_subs/render_to_string/acc_activate_email.html',
+                {
+                    'user': user,
+                    'domain': get_current_site(self.request).domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token': account_activation_token.make_token(user),
+                }
+            )
 
-
-class ChangePassword(LoginRequiredMixin, View):
-    form_class = ChangePasswordForm
-    template_name = 'web_app_auto_subs/change_password.html'
-
-    def get(self, request, user_pk, *args, **kwargs):
-
-        context = {
-            'menu': menu,
-            'title': 'ПАМ ПАМ',
-            'form': self.form_class(request.user),
-        }
-
-        return render(request, self.template_name, context)
-
-    def post(self, request, user_pk, *args, **kwargs):
-
-        form = self.form_class(request.user, request.POST)
-
-        old_password = 'old_password'
-        new_password1 = 'new_password1'
-        new_password2 = 'new_password2'
-
-        if form.is_valid():
-
-            user = form.save()
-
-            user.set_password(form.cleaned_data.get('password1'))
-            update_session_auth_hash(request, user)
-
-            return redirect('login')
-
+            send_email.delay(
+                subject='Ссылка для активации была отправлена на ваш электронный адрес',
+                message=message,
+                to_email=[form.cleaned_data.get('username'), ]
+            )
+            
+            
+            
         else:
-            message = handle_errors_for_ChangePassword_view_with_post_method(
-                new_password1=form.data.get(new_password1),
-                new_password2=form.data.get(new_password2),
-            )
+            form.add_error(None, 'Почта не прошла процесс валидации')
 
-        context = {
-            'menu': menu,
-            'title': 'ПАМ ПАМ',
-            'form': self.form_class(request.user),
-            'message': message
-
-        }
-
-        return render(request, self.template_name, context)
-
-
-class ChangeEmail(LoginRequiredMixin, View):
-    form_class = ChangeEmailForm
-    template_name = 'web_app_auto_subs/change_email.html'
-
-    def get(self, request, *args, **kwargs):
-
-        context = {
-            'menu': menu,
-            'title': 'ПАМ ПАМ',
-            'form': self.form_class,
-        }
-
-        return render(request, self.template_name, context)
-
-    def post(self, request, user_pk, *args, **kwargs):
-
-        form = self.form_class(request.POST)
-
-        if form.is_valid():
-
-            user = User.objects.get(pk=request.user.id)
-            update_session_auth_hash(request, user)
-
-            obj = ExpansionForUser.objects.get(user=request.user.id)
-            obj.email2 = form.cleaned_data.get('username')
-            obj.save()
-
-            valid = validate_email(str(form.cleaned_data.get('username')))
-            print('valid', valid)
-
-            if valid:
-
-                message = RenderMessage().render_message(
-                    'web_app_auto_subs/render_to_string/acc_activate_email.html',
-                    {
-                        'user': user,
-                        'domain': get_current_site(self.request).domain,
-                        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                        'token': account_activation_token.make_token(user),
-                    }
-                )
-
-                send_email.delay(
-                    subject='Ссылка для активации была отправлена на ваш электронный адрес',
-                    message=message,
-                    to_email=[form.cleaned_data.get('username'), ]
-                )
-
-        context = {
-            'menu': menu,
-            'title': 'ПАМ ПАМ',
-            'form': self.form_class,
-            'message': 'Пожалуйста, подтвердите свой адрес электронной почты',
-        }
-
-        return render(request, self.template_name, context)
+        return super().form_valid(form)

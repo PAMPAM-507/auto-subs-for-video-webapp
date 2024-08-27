@@ -38,6 +38,8 @@ class HandleVideo():
         
         ):
         
+        
+        
         try:
             mp4filename = name_of_video
             srtfilename = path_with_str + (name_of_video)[0:-4] + '.srt'
@@ -48,9 +50,10 @@ class HandleVideo():
             print('handle_video ', e)
         
         try:
+            
 
-            # MyGoogleTranslator().make_translate(subtitles, srtfilename)
-            MyLocalTranslator().make_translate(subtitles, srtfilename)
+            MyGoogleTranslator().make_translate(subtitles, srtfilename)
+            # MyLocalTranslator().make_translate(subtitles, srtfilename)
 
         except Exception as e:
             print('MyLocalTranslator ', e)
