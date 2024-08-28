@@ -9,12 +9,27 @@
 # tokenizer.save_pretrained(Path.cwd() / 'web_app_auto_subs' / 'utils' / 'business_logic' / 'subtitles1' / 'model' / 'en-ru-local')
 # model.save_pretrained(Path.cwd() / 'web_app_auto_subs' / 'utils' / 'business_logic' / 'subtitles1' / 'model' / 'en-ru-local')
 
-import torch
+# import torch
 
 
-print(torch.cuda.is_available())
-if torch.cuda.is_available():
-    for i in range(torch.cuda.device_count()):
-        print(f"GPU {i}: {torch.cuda.get_device_name(i)}")
-else:
-    print("CUDA is not available. No GPU found.")
+# print(torch.cuda.is_available())
+# if torch.cuda.is_available():
+#     for i in range(torch.cuda.device_count()):
+#         print(f"GPU {i}: {torch.cuda.get_device_name(i)}")
+# else:
+#     print("CUDA is not available. No GPU found.")
+
+
+import redis
+
+
+with redis.Redis(host='localhost', port=6380, db=0) as r:
+        
+        
+    moviepy_progress = r.get(f'moviepy_progress{98}')
+    whisper_progress = int(r.get(f'whisper_progress{98}'))
+    
+    print(whisper_progress)
+    
+    
+    print(list(r.scan_iter('*')))

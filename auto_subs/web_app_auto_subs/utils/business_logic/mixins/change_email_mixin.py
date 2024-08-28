@@ -20,6 +20,6 @@ class ChangeEmailMixin():
             obj = ChangeEmailModel(user=user, email2=email)
             obj.save()
         
-        user.is_active = False
-        user.save()
+        # user.is_active = False
+        # user.save()
         

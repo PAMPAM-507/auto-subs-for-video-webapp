@@ -8,7 +8,7 @@ class UserVideos(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE,
                              verbose_name='Пользователь')
 
-    video = models.FileField(upload_to='videos/%Y/%m/%d/',
+    video = models.FileField(upload_to='videos',
                              verbose_name='Видео',
                              validators=[FileExtensionValidator(
                                  allowed_extensions=['mp4'])])

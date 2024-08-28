@@ -15,7 +15,9 @@ urlpatterns = [
     
     path('activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/', activate,
          name='activate'),
+    
     path('personal_account/', PersonalAccount.as_view(), name='personal_account'),
+    
     path('personal_account/<int:pk>/', GetVideo.as_view(), name='watch_video'),
     path('stream/<int:pk>/', get_streaming_video, name='stream'),
 
@@ -28,5 +30,5 @@ urlpatterns = [
     path('change_email_done/', ChangeEmailDone.as_view(), name='change_email_done'),
 
 
-
+    path('progress_bar/', test.as_view(), name='progress_bar'),
 ]

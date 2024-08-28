@@ -1,16 +1,22 @@
 {% extends 'web_app_auto_subs/base.html' %}
 
 {% block content %}
-
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
+        <div class="form-errors">
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
         {% for f in form %}
-            <div>{{ form.non_field_errors }}</div>
-            <p><label for="{{ f.id_for_label }}">{{ f.label }}</label> {{ f }}</p>
-            <div>{{ f.errors }}</div>
+            <div class="form-field">
+                <p>
+                    <label for="{{ f.id_for_label }}">{{ f.label }}</label>
+                    {{ f }}
+                </p>
+                <div class="form-errors">{{ f.errors }}</div>
+            </div>
         {% endfor %}
-
         <button type="submit">Загрузить видео для обработки</button>
     </form>
-
 {% endblock content %}

@@ -76,10 +76,8 @@ class MakeAudioRecordABC(ABC):
 class MakeAudioRecord(MakeAudioRecordABC):
 
     def make_audio_for_each_subtitles(
-            cls, subtitles: pysrt, path_of_audio: str, new_speed_for_audio: float=1.0, new_volume_for_audio: float=1.0
+            cls, subtitles: pysrt, base_filename: str, path_of_audio: str, new_speed_for_audio: float=1.0, new_volume_for_audio: float=1.0
             ) -> CompositeAudioClip:
-
-        # cls.check_directory(f'./{path_of_audio}/records')
 
         audio_clips = []
 
@@ -89,14 +87,15 @@ class MakeAudioRecord(MakeAudioRecordABC):
             duration = end_time - start_time
             text = subtitle.text
 
-            # audio_file = f"./{path_of_audio}/records/audio_{i}.mp3"
-            audio_file = f"{path_of_audio}records/audio_{i}.mp3"
+            audio_file = f"{path_of_audio}/{base_filename}.{i}.mp3"
             if cls.text_to_speech(text, audio_file):
 
-                # modified_audio_file = f"./{path_of_audio}/records/modified_audio_{i}.mp3"
-                modified_audio_file = f"{path_of_audio}records/modified_audio_{i}.mp3"
+                modified_audio_file = f"{path_of_audio}/{base_filename}.modified.{i}.mp3"
                 
-                cls.change_audio_speed_without_distortion(audio_file=audio_file, path_for_output_file=modified_audio_file, speed_factor=new_speed_for_audio,
+                cls.change_audio_speed_without_distortion(
+                    audio_file=audio_file, 
+                    path_for_output_file=modified_audio_file, 
+                    speed_factor=new_speed_for_audio,
                     )
 
                 audio_clip = AudioFileClip(modified_audio_file)
@@ -111,11 +110,12 @@ class MakeAudioRecord(MakeAudioRecordABC):
         return CompositeAudioClip(audio_clips), audio_clips
 
     def perform_audio_creation(
-            cls, subtitles, path_of_audio: str, new_speed_for_audio: float=1, new_volume_for_audio: float=1
-                               ) -> CompositeAudioClip:
+            cls, subtitles, base_filename, path_of_audio: str, new_speed_for_audio: float=1, new_volume_for_audio: float=1
+                               ) -> tuple[CompositeAudioClip, list]:
 
         new_audio, audio_clips = cls.make_audio_for_each_subtitles(
-            subtitles=subtitles, 
+            subtitles=subtitles,
+            base_filename=base_filename,
             path_of_audio=path_of_audio, 
             new_speed_for_audio=new_speed_for_audio, 
             new_volume_for_audio=new_volume_for_audio

@@ -1,6 +1,8 @@
+
 import pysrt
 import os
 import sys
+
 
 from .put_subs import PutSubs
 from .my_translator import MyGoogleTranslator, MyLocalTranslator
@@ -70,7 +72,8 @@ class HandleVideo():
             #     print('MakeAudioRecord ', e)
         
             new_audio_filename, audio_clips = MakeAudioRecord().perform_audio_creation(
-                subtitles=subtitles, 
+                subtitles=subtitles,
+                base_filename=name_of_video.split(".")[0],
                 path_of_audio=path_of_audio,
                 new_speed_for_audio=1.3, 
                 new_volume_for_audio=6.0,
@@ -81,7 +84,23 @@ class HandleVideo():
         #             path_for_new_video, new_audio_filename).generate_video_with_subtitles()
         # except Exception as e:
         #     print('PutSubs ', e)
+        
+        # import contextlib
+        
+        # import moviepy
+        
+        # from web_app_auto_subs.progress_bar import _CustomProgressBar
+        
+        # @contextlib.contextmanager
+        # def temporary_tqdm_replacement():
+        #     original_tqdm = moviepy.video.io.ffmpeg_tools.tqdm
+        #     moviepy.video.io.ffmpeg_tools.tqdm = _CustomProgressBar
+        #     try:
+        #         yield
+        #     finally:
+        #         moviepy.video.io.ffmpeg_tools.tqdm = original_tqdm
 
+        # with temporary_tqdm_replacement():
         PutSubs(mp4filename, srtfilename, path_for_video,
                     path_for_new_video, new_audio_filename).generate_video_with_subtitles()
         

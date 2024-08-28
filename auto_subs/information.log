@@ -72,3 +72,98 @@
 2024-08-26 23:18:57,010 - INFO - tasks - tasks.py - Command executed successfully
 2024-08-27 01:03:30,918 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/2024/08/27/test.mp4 --model tiny --language en
 2024-08-27 01:03:36,937 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-28 00:20:38,945 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/2024/08/28/test.mp4 --model tiny --language en
+2024-08-28 00:20:46,694 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-28 00:23:06,382 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/2024/08/28/test_XOLRML8.mp4 --model tiny --language en
+2024-08-28 00:23:12,297 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-28 00:25:13,965 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/2024/08/28/test_lzS1xZV.mp4 --model tiny --language en
+2024-08-28 00:25:20,497 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-28 01:13:18,201 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/2024/08/28/test.mp4 --model tiny --language en
+2024-08-28 01:13:25,645 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-28 01:16:04,991 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/2024/08/28/test.mp4 --model tiny --language en
+2024-08-28 01:16:11,339 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-28 01:17:19,277 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/2024/08/28/test_WLQhIMj.mp4 --model tiny --language en
+2024-08-28 01:17:25,437 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-28 01:21:09,676 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/2024/08/28/test.mp4 --model tiny --language en
+2024-08-28 01:21:16,166 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-28 01:22:13,055 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/2024/08/28/test_wSZgBpx.mp4 --model tiny --language en
+2024-08-28 01:22:19,001 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-28 01:26:24,260 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/2024/08/28/test.mp4 --model tiny --language en
+2024-08-28 01:26:30,103 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-28 01:42:50,918 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/test.mp4 --model tiny --language en
+2024-08-28 01:42:56,929 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-28 01:45:06,255 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/test.mp4 --model tiny --language en
+2024-08-28 01:45:12,028 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-28 01:46:42,907 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/test.mp4 --model tiny --language en
+2024-08-28 01:46:49,345 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-28 02:56:47,342 - ERROR - tasks - tasks.py - Error occurred: cannot access local variable 'model' where it is not associated with a value
+2024-08-28 03:06:24,788 - ERROR - tasks - tasks.py - Error occurred: load_model() got an unexpected keyword argument 'weights_only'
+2024-08-28 03:36:39,586 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/test_dV5I2fI.mp4 --model tiny --language en
+2024-08-28 03:36:46,899 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-28 03:42:10,273 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/test.mp4 --model tiny --language en
+2024-08-28 03:42:16,781 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-28 03:42:52,211 - INFO - tasks - tasks.py - Executing command: cd /home/andrey/auto-subs-webapp/auto_subs/media/subtitles/ && whisper /home/andrey/auto-subs-webapp/auto_subs/media/videos/test.mp4 --model tiny --language en
+2024-08-28 03:42:59,585 - INFO - tasks - tasks.py - Command executed successfully
+2024-08-28 03:48:11,081 - ERROR - tasks - tasks.py - Error occurred: cannot access local variable 'subtitles' where it is not associated with a value
+2024-08-28 04:00:29,764 - ERROR - tasks - tasks.py - Error occurred: cannot access local variable 'model' where it is not associated with a value
+2024-08-28 04:15:48,449 - ERROR - tasks - tasks.py - Error occurred: 'generator' object does not support the context manager protocol
+2024-08-28 04:19:33,834 - ERROR - tasks - tasks.py - Error occurred: module 'moviepy.video.io.ffmpeg_tools' has no attribute 'tqdm'
+2024-08-28 04:22:42,404 - ERROR - tasks - tasks.py - Error occurred: module 'moviepy.video.io.ffmpeg_tools' has no attribute 'tqdm'
+2024-08-28 04:23:52,176 - ERROR - tasks - tasks.py - Error occurred: 'CompositeVideoClip' object has no attribute 'custom_write_videofile'
+2024-08-28 04:25:35,524 - ERROR - tasks - tasks.py - Error occurred: VideoClip.write_videofile() missing 1 required positional argument: 'filename'
+2024-08-28 04:36:24,639 - ERROR - tasks - tasks.py - Error occurred: '_CustomProgressBar' object has no attribute 'get_progress'
+2024-08-28 04:38:43,392 - ERROR - tasks - tasks.py - Error occurred: '_CustomProgressBar' object has no attribute 'get_progress'
+2024-08-28 06:11:45,524 - ERROR - tasks - tasks.py - Error occurred: make_subs.<locals>.temporary_tqdm_replacement() missing 1 required positional argument: 'video_id'
+2024-08-28 06:23:27,093 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:24:27,085 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:25:27,084 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:26:27,091 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:26:32,789 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:26:33,792 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:26:34,212 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:26:34,707 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:26:34,919 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:36:40,962 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:02,825 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:25,849 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:26,714 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:27,468 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:28,286 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:29,168 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:29,865 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:30,617 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:35,352 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:36,002 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:38,248 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:38,884 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:39,521 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:40,095 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:41,688 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:42,178 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:42,738 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:43,337 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:42:59,562 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:43:00,135 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:43:14,838 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:43:15,543 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:43:16,040 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:43:16,548 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:49:54,842 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:50:27,979 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:50:29,053 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:50:29,717 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:50:47,635 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:50:48,567 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:50:49,264 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:51:09,240 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:51:10,523 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:51:11,208 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:51:37,010 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:51:40,536 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:52:03,744 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:52:18,784 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:52:20,152 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:52:49,850 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:53:27,861 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:53:44,487 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-28 06:53:45,568 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'

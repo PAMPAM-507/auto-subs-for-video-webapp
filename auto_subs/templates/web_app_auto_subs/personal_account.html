@@ -1,44 +1,88 @@
 {% extends 'web_app_auto_subs/base.html' %}
 
-
 {% block content %}
+    <a href="{% url 'edit_profile' %}" class="edit-profile-link">Изменить пользовательские данные</a>
 
-    <a href="{% url 'edit_profile'%}">Изменить пользовательские данные</a>
+    <br><br><br>
 
-    <br>
-    <br>
-    <br>
+    <div id="progressContainer">
+        {% for video in videos %}
+            <div class="video-item">
+                <a href="{{ video.get_absolute_url }}">{{ video.pk }}: {{ video.name_of_video }}</a>
+                <br>
 
+                <div class="progressBar">
+                    <span id="moviepyProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;"></span>
+                    <div>MoviePy Progress: <span id="moviepyText{{ video.pk }}">0%</span></div>
+                </div>
+                <div class="progressBar">
+                    <span id="whisperProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;"></span>
+                    <div>Whisper Progress: <span id="whisperText{{ video.pk }}">0%</span></div>
+                </div>
 
-    {% for video in page_obj %}
-        <a href="{{ video.get_absolute_url }}">{{ video.pk }}: {{ video.name_of_video }}</a>
-        <br>
-        <br>
-    {% endfor %}
-
-<nav>
-    <ul>
-        {% if page_obj.has_previous %}
-            <a href = "?page={{ page_obj.previous_page_number }}">&lt</a>
-
-        {% endif %}
-
-        {% for p in paginator.page_range %}
-            {% if page_obj.number == p %}
-                {{ p }}
-            {% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %}
-                <a href="?page={{ p }}">{{ p }}</a>
-            {% endif %}
+                <br>
+            </div>
         {% endfor %}
+    </div>
 
-        {% if page_obj.has_next %}
-            <a href = "?page={{ page_obj.next_page_number }}">&gt</a>
-        {% endif %}
-    </ul>
-</nav>
+    <nav>
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+                <li><a href="?page={{ page_obj.previous_page_number }}">&lt;</a></li>
+            {% endif %}
 
-    
+            {% for p in paginator.page_range %}
+                {% if page_obj.number == p %}
+                    <li><span class="current">{{ p }}</span></li>
+                {% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %}
+                    <li><a href="?page={{ p }}">{{ p }}</a></li>
+                {% endif %}
+            {% endfor %}
 
-    
+            {% if page_obj.has_next %}
+                <li><a href="?page={{ page_obj.next_page_number }}">&gt;</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- JavaScript код -->
+    <script>
+        // Функция для запроса прогресса по videoId
+        async function fetchProgress(videoId) {
+            try {
+                const response = await fetch(`http://localhost:8000/progress_bar/?video_id=${videoId}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+
+                // Обновление UI для каждого видео
+                document.getElementById(`moviepyProgress${videoId}`).style.width = data.moviepy_progress + '%';
+                document.getElementById(`whisperProgress${videoId}`).style.width = data.whisper_progress + '%';
+                document.getElementById(`moviepyText${videoId}`).textContent = data.moviepy_progress + '%';
+                document.getElementById(`whisperText${videoId}`).textContent = data.whisper_progress + '%';
+            } catch (error) {
+                console.error('Error fetching progress for video ID:', videoId, error);
+            }
+        }
+
+        // Функция для обновления прогресса для всех видео
+        function updateProgressForAllVideos() {
+            // Получаем список идентификаторов видео из JSON
+            const videoIds = JSON.parse(document.getElementById('videoIds').textContent);
+            videoIds.forEach(videoId => {
+                fetchProgress(videoId); // Запрашиваем прогресс для каждого видео
+            });
+        }
+
+        const interval = 5000; // Интервал в миллисекундах (300000 = 5 минут)
+        updateProgressForAllVideos(); // Начальная загрузка данных
+        setInterval(updateProgressForAllVideos, interval); // Обновление данных каждые 5 минут
+    </script>
+
+    <!-- Передача списка идентификаторов видео в виде JSON -->
+    <script id="videoIds" type="application/json">
+        {{ video_ids|json_script:"videoIds" }}
+    </script>
 
 {% endblock content %}

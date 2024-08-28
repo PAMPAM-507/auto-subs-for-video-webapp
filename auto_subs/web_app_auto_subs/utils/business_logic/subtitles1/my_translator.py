@@ -22,7 +22,7 @@ class MyGoogleTranslator(MYTranslatorABC):
 
     translator = Translator()
 
-    def make_translate(self, subtitles, path_for_subs):
+    def make_translate(self, subtitles: pysrt, path_for_subs: str) -> NoReturn:
         lst = []
         for s in subtitles:
             lst.append(s)

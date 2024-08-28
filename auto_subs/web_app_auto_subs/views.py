@@ -17,10 +17,11 @@ from django.views.generic import TemplateView
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.contrib.auth import logout
 from django.urls import reverse_lazy
-from auto_subs.settings import BASE_PATH_OF_VIDEO
+import redis
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import connection
 
+from auto_subs.settings import BASE_PATH_OF_VIDEO
 from web_app_auto_subs.utils.business_logic.mixins.change_email_mixin import ChangeEmailMixin
 from web_app_auto_subs.utils.business_logic.mixins.register_mixin import RegisterMixin
 from web_app_auto_subs.utils.business_logic.mixins.context_mixin import ContextMixin
@@ -75,7 +76,8 @@ class UploadVideo(LoginRequiredMixin, UploadVideoMixin, ContextMixin, FormView):
         subs_language = LanguagesForTranslateVideo.objects.get(
             pk=subs_language_pk)
 
-        make_subs.delay(BASE_PATH_OF_VIDEO +
+        make_subs.delay(user_video.pk,
+                        BASE_PATH_OF_VIDEO +
                         str(user_video.video),
                         str(subs_language.language),
                         bool(user_video.make_audio_record),
@@ -197,7 +199,11 @@ class PersonalAccount(LoginRequiredMixin, ContextMixin, ListView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context = self.get_mixin_context(context, cur_menu='Профиль',)
+        context = self.get_mixin_context(context, cur_menu='Профиль')
+
+        # Получение списка идентификаторов видео и добавление их в контекст
+        video_ids = list(context['videos'].values_list('pk', flat=True))
+        context['video_ids'] = video_ids
 
         return context
 
@@ -318,3 +324,31 @@ class ChangeEmail(LoginRequiredMixin, ChangeEmailMixin, ContextMixin, FormView):
             form.add_error(None, 'Почта не прошла процесс валидации')
 
         return super().form_valid(form)
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+class test(APIView):
+    
+    def get(self, request, *args, **kwargs):
+        moviepy_progress, whisper_progress = 0, 0
+        
+        with redis.Redis(host='localhost', port=6380, db=0) as r:
+            
+        
+            video_id = int(request.GET.get("video_id"))
+            
+            
+            moviepy_progress = r.get(f'moviepy_progress{98}')
+            whisper_progress = int(r.get(f'whisper_progress{98}'))
+
+            
+            print(video_id, whisper_progress)
+            print(list(r.scan_iter('*')))
+                
+        return Response({
+            "video_id": video_id,
+            'moviepy_progress': moviepy_progress,
+            'whisper_progress': whisper_progress,
+                         })

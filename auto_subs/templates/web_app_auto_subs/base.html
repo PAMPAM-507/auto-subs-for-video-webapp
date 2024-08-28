@@ -1,48 +1,61 @@
 <!DOCTYPE html>
 <html>
-    <head>
+<head>
     <meta charset="utf-8" />
     <title>{{title}}</title>
     <link href="https://vjs.zencdn.net/8.5.2/video-js.css" rel="stylesheet" />
-    </head>
-    <body>
-        {% block main_menu %}
-            {% for i in menu %}
-                {% if cur_menu != i.title %}
-                    <li><a href="{% url i.url_name %}">{{ i.title }}</a></li>
-                {% else %}
-                    <li>{{ i.title }}</li>
-                {% endif %}
-            {% endfor %}
-        {% endblock main_menu %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'web_app_auto_subs/css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>{{title}}</h1>
+    </header>
+    
+    <nav>
+        <div class="menu-container">
+            <ul class="menu-list">
+                {% block main_menu %}
+                    {% for i in menu %}
+                        {% if cur_menu != i.title %}
+                            <li><a href="{% url i.url_name %}">{{ i.title }}</a></li>
+                        {% else %}
+                            <li><a href="#">{{ i.title }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                {% endblock main_menu %}
+            </ul>
 
-        <br>
-        <br>
-        {% block register%}
-            {% if request.user.is_authenticated %}
-                <a href="{% url 'personal_account' %}">Профиль</a>
-                <br>
-                <br>
-                <li>{{request.user.username}} | <a href="{% url 'logout' %}"> Выйти</a></li>
-                <br>
-            {% else %}
-                <br>
-                <li><a href="{% url 'register' %}">Регистрация</a> ||| <a href="{% url 'login' %}">Войти</a></li>
-            {% endif %}
-        {% endblock register %}
+            <ul class="auth-links">
+                {% block register %}
+                    {% if request.user.is_authenticated %}
+                        <li class="profile-link"><a href="{% url 'personal_account' %}">Профиль</a></li>
+                        <li>{{ request.user.username }} | <a href="{% url 'logout' %}">Выйти</a></li>
+                    {% else %}
+                        <li><a href="{% url 'register' %}">Регистрация</a> ||| <a href="{% url 'login' %}">Войти</a></li>
+                    {% endif %}
+                {% endblock register %}
+            </ul>
+        </div>
+    </nav>
 
-        <br>
-        <br>
-
-        {% block message %}
-            {% if message %}
+    {% block message %}
+        {% if message %}
+            <div class="message">
                 <h1>{{ message }}</h1>
-            {% endif %}
-        {% endblock message %}
+            </div>
+        {% endif %}
+    {% endblock message %}
 
-
+    <div class="content">
         {% block content %}
-
+            <!-- Основное содержимое страницы -->
         {% endblock content %}
-    </body>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Your Company. All rights reserved.</p>
+    </footer>
+</body>
+
 </html>
