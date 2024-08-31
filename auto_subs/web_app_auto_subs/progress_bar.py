@@ -8,10 +8,10 @@ import datetime
 import redis
 
 class _CustomProgressBar(tqdm.tqdm):
-    def __init__(self, video_id=None, *args, **kwargs):
+    def __init__(self, video_pk: int=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._current = self.n
-        self.video_id = video_id
+        self.video_pk = video_pk
 
     def update(self, n):
         super().update(n)
@@ -21,18 +21,24 @@ class _CustomProgressBar(tqdm.tqdm):
         # print('Progress of transcription process: ', int(((self._current * 100) / self.total)), '%')
 
         with redis.Redis(host='localhost', port=6380, db=0) as r:
-            r.set(f'whisper_progress{self.video_id}', int(((self._current * 100) / self.total)))
-            print('Progress of transcription process: ', int(r.get(f'whisper_progress{self.video_id}')))
+            r.set(f'whisper_progress{self.video_pk}', int(((self._current * 100) / self.total)))
+            print('Progress of transcription process: ', int(r.get(f'whisper_progress{self.video_pk}')))
 
 
 from proglog import ProgressBarLogger
 
 class MyBarLogger(ProgressBarLogger):
 
-    def __init__(self):
+    def __init__(self, video_pk: int):
         super().__init__()
         self.last_message = ''
-        self.previous_percentage = 0    
+        self.previous_percentage = 0
+        self.video_pk = video_pk
+        
+    def __del__(self, ):
+        if self.video_pk < 100 or self.video_pk > 100:
+            with redis.Redis(host='localhost', port=6380, db=0) as r:
+                r.set(f'moviepy_progress{self.video_pk}', 100)
 
     def callback(self, **changes):
         # Every time the logger message is updated, this function is called with
@@ -49,7 +55,7 @@ class MyBarLogger(ProgressBarLogger):
                 if int(percentage) != self.previous_percentage:
                     self.previous_percentage = int(percentage)
                     with redis.Redis(host='localhost', port=6380, db=0) as r:
-                        r.set('moviepy_progress', self.previous_percentage)
-                        print('Progress of transcription process: ', int(r.get('moviepy_progress')))
+                        r.set(f'moviepy_progress{self.video_pk}', self.previous_percentage)
+                        print('Progress of transcription process: ', int(r.get(f'moviepy_progress{self.video_pk}')))
 
-logger = MyBarLogger()
+# logger = MyBarLogger()

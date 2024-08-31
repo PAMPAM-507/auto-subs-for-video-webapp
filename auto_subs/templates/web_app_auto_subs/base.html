@@ -6,6 +6,9 @@
     <link href="https://vjs.zencdn.net/8.5.2/video-js.css" rel="stylesheet" />
     {% load static %}
     <link rel="stylesheet" href="{% static 'web_app_auto_subs/css/styles.css' %}">
+    <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
     <header>
@@ -30,7 +33,10 @@
                 {% block register %}
                     {% if request.user.is_authenticated %}
                         <li class="profile-link"><a href="{% url 'personal_account' %}">Профиль</a></li>
-                        <li>{{ request.user.username }} | <a href="{% url 'logout' %}">Выйти</a></li>
+                        <li class="profile-link">
+                            <span class="username">{{ request.user.username }}</span> | 
+                            <a href="{% url 'logout' %}">Выйти</a>
+                        </li>
                     {% else %}
                         <li><a href="{% url 'register' %}">Регистрация</a> ||| <a href="{% url 'login' %}">Войти</a></li>
                     {% endif %}

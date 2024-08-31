@@ -1,17 +1,14 @@
+import logging
 import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECRET_KEY = os.environ.get('SECRET_KEY_SUBS')
-# SECRET_KEY = os.getenv('SECRET_KEY_SUBS')
-SECRET_KEY = 'django-insecure-zkcl(a!k!b9)u1=#2el^dacn3u#1k@3leg+3)dypg)&&!t2x-!'
+SECRET_KEY = os.environ.get('SECRET_KEY_SUBS')
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-# Application definition
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.0.109', 'auto-subs', 'subs']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -23,6 +20,7 @@ INSTALLED_APPS = [
     
     'corsheaders',
     'rest_framework',
+    'social_django',
     
     'web_app_auto_subs.apps.WebAppAutoSubsConfig',
 ]
@@ -38,6 +36,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 
 ]
 
@@ -54,6 +54,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -89,6 +92,17 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.github.GithubOAuth2',
+    
+    
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+# SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY')
+# SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET')
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -118,8 +132,8 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 LOGIN_URL = 'login'
-LOGOUT_REDIRECT_URL = 'home'
-LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'main'
+LOGIN_REDIRECT_URL = 'main'
 
 CELERY_BROKER_URL = 'redis://localhost:6380/'
 
@@ -183,6 +197,8 @@ LOGGING = {
         },
     },
 }
+
+logger = logging.getLogger('main')
 
 
 CORS_ALLOW_ALL_ORIGINS = True

@@ -167,3 +167,11 @@
 2024-08-28 06:53:27,861 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
 2024-08-28 06:53:44,487 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
 2024-08-28 06:53:45,568 - ERROR - views - views.py - test view with redisint() argument must be a string, a bytes-like object or a real number, not 'NoneType'
+2024-08-31 00:40:22,965 - ERROR - tasks - tasks.py - Error occurred: cannot access local variable 'subtitles' where it is not associated with a value
+2024-08-31 00:48:06,009 - ERROR - tasks - tasks.py - Error occurred: cannot access local variable 'subtitles' where it is not associated with a value
+2024-08-31 00:50:18,052 - ERROR - tasks - tasks.py - Error occurred: cannot access local variable 'subtitles' where it is not associated with a value
+2024-08-31 01:03:06,981 - ERROR - tasks - tasks.py - Error occurred: [Errno 32] Broken pipe
+
+MoviePy error: FFMPEG encountered the following error while writing file /home/andrey/auto-subs-webapp/auto_subs/media/video_with_subs//test_jqIhH8H_subtitled.mp4:
+
+ b''

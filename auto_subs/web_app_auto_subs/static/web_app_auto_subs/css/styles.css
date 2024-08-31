@@ -24,12 +24,12 @@ header {
 
 /* Стили для навигационной панели */
 nav {
-    background-color: #2c3035;
+    background-color: #1b1d20;
     padding: 10px 20px;
-    display: flex;
+    /* display: flex; */
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(228, 135, 135, 0.1);
 }
 
 /* Стили для контейнера меню */
@@ -38,6 +38,10 @@ nav {
     justify-content: space-between;
     align-items: center;
     width: 100%;
+}
+
+.username {
+    color: #ffffff; /* замените #ff0000 на нужный вам цвет */
 }
 
 /* Стили для списка меню */
@@ -184,7 +188,7 @@ footer {
 }
 
 .content nav a {
-    color: #333;
+    /* color: #333; */
     text-decoration: none;
     padding: 5px 10px;
     border-radius: 3px;
@@ -202,7 +206,7 @@ footer {
 }
 
 .content .pagination a {
-    color: #333;
+    color: #0056b3;
     text-decoration: none;
     padding: 8px 12px;
     border-radius: 3px;
@@ -238,7 +242,9 @@ footer {
 }
 
 
-
+.curr {
+    color: #ddd;
+}
 
 
 
@@ -267,7 +273,7 @@ footer {
 .content form input[type="email"],
 .content form input[type="file"],
 .content form textarea {
-    width: 100%;
+    /* width: 100%; */
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;

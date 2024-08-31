@@ -192,7 +192,7 @@ class LogoutViewWithGet(LoginRequiredMixin, View):
 class PersonalAccount(LoginRequiredMixin, ContextMixin, ListView):
     template_name: str = 'web_app_auto_subs/personal_account.html'
     context_object_name: str = 'videos'
-    paginate_by: int = 5
+    paginate_by: int = 1
 
     def get_queryset(self) -> QuerySet[UserVideos]:
         return UserVideos.objects.filter(user=self.request.user,)
@@ -337,18 +337,31 @@ class test(APIView):
         with redis.Redis(host='localhost', port=6380, db=0) as r:
             
         
-            video_id = int(request.GET.get("video_id"))
+            video_pk = int(request.GET.get("video_id"))
+            # print(list(r.scan_iter('*')))
             
+            try:
+                moviepy_progress = r.get(f'moviepy_progress{video_pk}')
+                
+                if moviepy_progress == None:
+                    moviepy_progress = 'Выполняется ...'
+                
+            except (ValueError, TypeError) as e:
+                logger.error(f'Error occurred: {e}')
+                
+            try:
+                whisper_progress = int(r.get(f'whisper_progress{video_pk}'))
+                
+                if moviepy_progress == None:
+                    moviepy_progress = 'Выполняется ...'
+                
+            except (ValueError, TypeError) as e:
+                logger.error(f'Error occurred: {e}')
             
-            moviepy_progress = r.get(f'moviepy_progress{98}')
-            whisper_progress = int(r.get(f'whisper_progress{98}'))
-
-            
-            print(video_id, whisper_progress)
-            print(list(r.scan_iter('*')))
+            # print(video_pk, whisper_progress)
                 
         return Response({
-            "video_id": video_id,
+            "video_id": video_pk,
             'moviepy_progress': moviepy_progress,
             'whisper_progress': whisper_progress,
                          })

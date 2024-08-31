@@ -7,34 +7,38 @@
 
     <div id="progressContainer">
         {% for video in videos %}
-            <div class="video-item">
+            <div class="video-item" data-video-pk="{{ video.pk }}">
                 <a href="{{ video.get_absolute_url }}">{{ video.pk }}: {{ video.name_of_video }}</a>
                 <br>
-
+                <br>
                 <div class="progressBar">
-                    <span id="moviepyProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;"></span>
-                    <div>MoviePy Progress: <span id="moviepyText{{ video.pk }}">0%</span></div>
-                </div>
-                <div class="progressBar">
+                    <div>Процесс транскрипции: <span id="whisperText{{ video.pk }}">0%</span></div>
                     <span id="whisperProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;"></span>
-                    <div>Whisper Progress: <span id="whisperText{{ video.pk }}">0%</span></div>
                 </div>
-
+                <div class="progressBar">
+                    <div>Рендеринг: <span id="moviepyText{{ video.pk }}">0%</span></div>
+                    <span id="moviepyProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;"></span>
+                </div>
+                
                 <br>
             </div>
         {% endfor %}
     </div>
 
+    <br>
+    <br>
+    <br>
+    
     <nav>
-        <ul class="pagination">
+        <ul class="D">
             {% if page_obj.has_previous %}
                 <li><a href="?page={{ page_obj.previous_page_number }}">&lt;</a></li>
             {% endif %}
 
             {% for p in paginator.page_range %}
                 {% if page_obj.number == p %}
-                    <li><span class="current">{{ p }}</span></li>
-                {% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %}
+                    <li><span class="current curr">{{ p }}</span></li>
+                {% elif p >= page_obj.number|add:-5 and p <= page_obj.number|add:5 %}
                     <li><a href="?page={{ p }}">{{ p }}</a></li>
                 {% endif %}
             {% endfor %}
@@ -47,42 +51,65 @@
 
     <!-- JavaScript код -->
     <script>
-        // Функция для запроса прогресса по videoId
-        async function fetchProgress(videoId) {
-            try {
-                const response = await fetch(`http://localhost:8000/progress_bar/?video_id=${videoId}`);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data = await response.json();
+        // Создаем пустой массив для хранения значений video.pk
+        const videoPKs = [];
 
-                // Обновление UI для каждого видео
-                document.getElementById(`moviepyProgress${videoId}`).style.width = data.moviepy_progress + '%';
-                document.getElementById(`whisperProgress${videoId}`).style.width = data.whisper_progress + '%';
-                document.getElementById(`moviepyText${videoId}`).textContent = data.moviepy_progress + '%';
-                document.getElementById(`whisperText${videoId}`).textContent = data.whisper_progress + '%';
-            } catch (error) {
-                console.error('Error fetching progress for video ID:', videoId, error);
+        // Получаем все элементы с классом "video-item"
+        const videoItems = document.querySelectorAll('.video-item');
+
+        // Проходим по каждому элементу и получаем значение атрибута data-video-pk
+        videoItems.forEach(item => {
+            const pk = item.getAttribute('data-video-pk');
+            videoPKs.push(pk); // Сохраняем значение pk в массив
+        });
+
+        // Теперь массив videoPKs содержит все значения video.pk
+        console.log(videoPKs);
+
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Функция для выполнения AJAX-запросов и обновления прогресса
+            function updateProgress() {
+                // Получаем все элементы с классом "video-item"
+                const videoItems = document.querySelectorAll('.video-item');
+        
+                // Проходим по каждому элементу
+                videoItems.forEach(item => {
+                    const videoPk = item.getAttribute('data-video-pk'); // Получаем значение video.pk
+        
+                    // AJAX-запрос для получения прогресса
+                    $.ajax({
+                        url: `http://localhost:8000/progress_bar/?video_id=${videoPk}`,
+                        type: 'GET',
+                        success: function(response) {
+                            // Обновляем значения прогресса на странице
+                            if (response.moviepy_progress !== null) {
+                                $(`#moviepyProgress${response.video_id}`).css('width', response.moviepy_progress + '%');
+                                $(`#moviepyText${response.video_id}`).text(response.moviepy_progress + '%');
+                            }
+        
+                            if (response.whisper_progress !== null) {
+                                $(`#whisperProgress${response.video_id}`).css('width', response.whisper_progress + '%');
+                                $(`#whisperText${response.video_id}`).text(response.whisper_progress + '%');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Ошибка при выполнении запроса:', error);
+                        }
+                    });
+                });
             }
-        }
-
-        // Функция для обновления прогресса для всех видео
-        function updateProgressForAllVideos() {
-            // Получаем список идентификаторов видео из JSON
-            const videoIds = JSON.parse(document.getElementById('videoIds').textContent);
-            videoIds.forEach(videoId => {
-                fetchProgress(videoId); // Запрашиваем прогресс для каждого видео
-            });
-        }
-
-        const interval = 5000; // Интервал в миллисекундах (300000 = 5 минут)
-        updateProgressForAllVideos(); // Начальная загрузка данных
-        setInterval(updateProgressForAllVideos, interval); // Обновление данных каждые 5 минут
+        
+            // Выполняем первый запрос сразу при загрузке страницы
+            updateProgress();
+        
+            // Устанавливаем интервал для выполнения запроса каждые 5 секунд (5000 мс)
+            setInterval(updateProgress, 5000);
+        });
     </script>
+        
 
-    <!-- Передача списка идентификаторов видео в виде JSON -->
-    <script id="videoIds" type="application/json">
-        {{ video_ids|json_script:"videoIds" }}
-    </script>
 
 {% endblock content %}

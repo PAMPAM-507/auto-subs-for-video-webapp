@@ -6,7 +6,7 @@ import pysrt
 from moviepy.editor import VideoFileClip, TextClip, CompositeVideoClip, CompositeAudioClip
 
 
-from web_app_auto_subs.progress_bar import _CustomProgressBar, logger
+from web_app_auto_subs.progress_bar import _CustomProgressBar, MyBarLogger
 from .make_subs import MakeSubs
 
 
@@ -20,7 +20,7 @@ class PutSubsABC(ABC):
 
 class PutSubs(PutSubsABC):
 
-    def __init__(self, mp4filename: str, srtfilename: str, path_for_video: str, path_for_new_video: str, new_audio_filename: str=None):
+    def __init__(self, mp4filename: str, srtfilename: str, video_pk: int,  path_for_video: str, path_for_new_video: str, new_audio_filename: str=None):
         self.__begin, self.__end = mp4filename.split(".mp4")
         self.__video = VideoFileClip(path_for_video)
         self.__subtitles = pysrt.open(srtfilename)
@@ -28,6 +28,7 @@ class PutSubs(PutSubsABC):
         self.path_for_new_video = str(path_for_new_video)
         self.__new_audio = new_audio_filename
         self.__old_audio = self.__video.audio
+        self.logger = MyBarLogger(video_pk)
         
 
     @staticmethod
@@ -43,7 +44,7 @@ class PutSubs(PutSubsABC):
         return CompositeVideoClip([video] + subtitle_clips)
     
     @staticmethod
-    def __save_final_video(final_video, output_video_file, path_for_new_video):
+    def __save_final_video(final_video, output_video_file, path_for_new_video, logger):
         final_video.write_videofile(f'{path_for_new_video}/{output_video_file}', 
                                     logger=logger)
 
@@ -54,7 +55,7 @@ class PutSubs(PutSubsABC):
                 self.__subtitles, self.__video,
                 ), 
             old_audio=self.__old_audio, new_audio=self.__new_audio
-        ), self.__output_video_file, self.path_for_new_video
+        ), self.__output_video_file, self.path_for_new_video, logger=self.logger
         )
         
         

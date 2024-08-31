@@ -31,6 +31,7 @@ class HandleVideo():
 
     @staticmethod
     def handle_video(
+        video_pk: int,
         name_of_video, 
         path_for_video, 
         path_for_new_video,
@@ -101,7 +102,7 @@ class HandleVideo():
         #         moviepy.video.io.ffmpeg_tools.tqdm = original_tqdm
 
         # with temporary_tqdm_replacement():
-        PutSubs(mp4filename, srtfilename, path_for_video,
+        PutSubs(mp4filename, srtfilename, video_pk, path_for_video,
                     path_for_new_video, new_audio_filename).generate_video_with_subtitles()
         
 
