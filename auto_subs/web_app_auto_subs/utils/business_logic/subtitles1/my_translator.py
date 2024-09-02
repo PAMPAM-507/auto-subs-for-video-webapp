@@ -1,13 +1,14 @@
 from abc import ABC, abstractmethod
 import os
 import re
-from typing import NoReturn
+from typing import NoReturn, IO
 
 import pysrt
 from googletrans import Translator, constants
 from pprint import pprint
 from pathlib import Path
 from colorama import Fore, init
+import redis
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 
@@ -22,28 +23,60 @@ class MyGoogleTranslator(MYTranslatorABC):
 
     translator = Translator()
 
-    def make_translate(self, subtitles: pysrt, path_for_subs: str) -> NoReturn:
+    def make_translate(self, subtitles: IO, path_for_subs: str, video_pk: int) -> NoReturn:
+        
+        
+        
         lst = []
         for s in subtitles:
             lst.append(s)
 
+        subs_len = len(lst)
         sentences = lst
         lst = []
+        
+        checking_counter = 0
+        k = 0
 
         for j in range(len(sentences)):
             try:
                 translation = self.translator.translate(
                     text=sentences[j].text, src='en', dest="ru")
                 lst.append(translation.text)
+                k += 1
+                checking_counter += 1
                 
+                percentages = int((k * 100 / subs_len) / 2)
+                if checking_counter > 15:
+                    with redis.Redis(host='localhost', port=6380, db=0) as r:
+                        r.set(f'translate_progress{video_pk}', percentages)
+                        print('Translate progress: ', int(r.get(f'translate_progress{video_pk}')))
+                    checking_counter = 0
+                    
             except Exception as e:
                 lst.append(f'translation error! Original text: {sentences[j].text}')
 
+
+        checking_counter = 0
+        k = 0
+        
         for i in range(len(subtitles)):
             if sentences[i].start == subtitles[i].start and sentences[i].end == subtitles[i].end:
                 subtitles[i].text = lst[i]
+            k += 1
+            checking_counter += 1
+            
+            
+            percentages2 = percentages + int((k * 100 / subs_len) / 2)
+            if checking_counter > 15:
+                with redis.Redis(host='localhost', port=6380, db=0) as r:
+                    r.set(f'translate_progress{video_pk}', percentages2)
+                    print('Translate progress: ', int(r.get(f'translate_progress{video_pk}')))
+                checking_counter = 0
         
-        print('MyGoogleTranslator')
+            with redis.Redis(host='localhost', port=6380, db=0) as r:
+                r.set(f'translate_progress{video_pk}', 100)
+                print('Translate progress: ', int(r.get(f'translate_progress{video_pk}')))
 
         subtitles.save(path_for_subs)
 

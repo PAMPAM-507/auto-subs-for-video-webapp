@@ -1,7 +1,9 @@
 {% extends 'web_app_auto_subs/base.html' %}
 
 {% block content %}
-    <a href="{% url 'edit_profile' %}" class="edit-profile-link">Изменить пользовательские данные</a>
+    {% if not perms.auth.social_auth %}
+        <a href="{% url 'edit_profile' %}" class="edit-profile-link">Изменить пользовательские данные</a>
+    {% endif %}
 
     <br><br><br>
 
@@ -49,7 +51,7 @@
         </ul>
     </nav>
 
-    <!-- JavaScript код -->
+   
     <script>
         // Создаем пустой массив для хранения значений video.pk
         const videoPKs = [];
@@ -78,27 +80,42 @@
                 // Проходим по каждому элементу
                 videoItems.forEach(item => {
                     const videoPk = item.getAttribute('data-video-pk'); // Получаем значение video.pk
-        
-                    // AJAX-запрос для получения прогресса
-                    $.ajax({
-                        url: `http://localhost:8000/progress_bar/?video_id=${videoPk}`,
-                        type: 'GET',
-                        success: function(response) {
-                            // Обновляем значения прогресса на странице
-                            if (response.moviepy_progress !== null) {
-                                $(`#moviepyProgress${response.video_id}`).css('width', response.moviepy_progress + '%');
-                                $(`#moviepyText${response.video_id}`).text(response.moviepy_progress + '%');
+    
+                    // Получаем текущее значение прогресса из атрибутов
+                    const moviepyProgress = parseInt($(`#moviepyProgress${videoPk}`).attr('data-moviepy-progress')) || 0;
+                    const whisperProgress = parseInt($(`#whisperProgress${videoPk}`).attr('data-whisper-progress')) || 0;
+                    
+                    // Логируем текущие значения прогресса для отладки
+                    console.log(`Видео ID: ${videoPk}, MoviePy Progress: ${moviepyProgress}, Whisper Progress: ${whisperProgress}`);
+    
+                    // Проверяем прогресс, если он не равен 100, отправляем запрос
+                    if (moviepyProgress < 100 || whisperProgress < 100) {
+                        // AJAX-запрос для получения прогресса
+                        $.ajax({
+                            url: `http://localhost:8000/progress_bar/?video_id=${videoPk}`,
+                            type: 'GET',
+                            success: function(response) {
+                                // Логируем ответ сервера для отладки
+                                console.log(`Ответ сервера для видео ${response.video_id}:`, response);
+    
+                                // Обновляем значения прогресса на странице
+                                if (response.moviepy_progress !== null) {
+                                    $(`#moviepyProgress${response.video_id}`).css('width', response.moviepy_progress + '%');
+                                    $(`#moviepyProgress${response.video_id}`).attr('data-moviepy-progress', response.moviepy_progress); // обновляем атрибут
+                                    $(`#moviepyText${response.video_id}`).text(response.moviepy_progress + '%');
+                                }
+    
+                                if (response.whisper_progress !== null) {
+                                    $(`#whisperProgress${response.video_id}`).css('width', response.whisper_progress + '%');
+                                    $(`#whisperProgress${response.video_id}`).attr('data-whisper-progress', response.whisper_progress); // обновляем атрибут
+                                    $(`#whisperText${response.video_id}`).text(response.whisper_progress + '%');
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Ошибка при выполнении запроса:', error);
                             }
-        
-                            if (response.whisper_progress !== null) {
-                                $(`#whisperProgress${response.video_id}`).css('width', response.whisper_progress + '%');
-                                $(`#whisperText${response.video_id}`).text(response.whisper_progress + '%');
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Ошибка при выполнении запроса:', error);
-                        }
-                    });
+                        });
+                    }
                 });
             }
         
@@ -109,6 +126,8 @@
             setInterval(updateProgress, 5000);
         });
     </script>
+    
+    
         
 
 

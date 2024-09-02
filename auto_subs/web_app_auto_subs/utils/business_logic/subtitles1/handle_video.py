@@ -55,7 +55,7 @@ class HandleVideo():
         try:
             
 
-            MyGoogleTranslator().make_translate(subtitles, srtfilename)
+            MyGoogleTranslator().make_translate(subtitles, srtfilename, video_pk)
             # MyLocalTranslator().make_translate(subtitles, srtfilename)
 
         except Exception as e:
@@ -76,7 +76,7 @@ class HandleVideo():
                 subtitles=subtitles,
                 base_filename=name_of_video.split(".")[0],
                 path_of_audio=path_of_audio,
-                new_speed_for_audio=1.3, 
+                new_speed_for_audio=1.5, 
                 new_volume_for_audio=6.0,
                 )
 

@@ -23,7 +23,7 @@ urlpatterns = [
 
     path('edit_profile/', ChangeUserInfo.as_view(), name='edit_profile'),
     
-    path('change_password/', ChangePassword.as_view(), name='password_change'),
+    path('change_password/', PasswordChange.as_view(), name='password_change'),
     path('change_password_done/', PasswordChangeDoneView.as_view(template_name='web_app_auto_subs/password_change_done.html'), name='password_change_done'),
     
     path('change_email/', ChangeEmail.as_view(), name='change_email'),

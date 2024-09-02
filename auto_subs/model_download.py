@@ -26,10 +26,9 @@ import redis
 with redis.Redis(host='localhost', port=6380, db=0) as r:
         
         
-    moviepy_progress = r.get(f'moviepy_progress{98}')
-    whisper_progress = int(r.get(f'whisper_progress{98}'))
+    r.delete(f'moviepy_progress{10}')
+    r.delete(f'whisper_progress{10}')
     
-    print(whisper_progress)
     
     
     print(list(r.scan_iter('*')))

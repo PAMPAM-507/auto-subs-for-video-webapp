@@ -6,10 +6,10 @@ class RemoveAllHelpingFiles:
     @staticmethod
     def remove(path: str, base_filename: str) -> NoReturn:
         """
-        Удаляет все файлы с определённым базовым именем по указанному пути.
+        Deletes all files with a specific base name at the specified path.
         
-        :param path: Путь к директории, где необходимо удалить файлы.
-        :param base_filename: Базовое имя файлов для удаления (без расширения).
+        :param path: The path to the directory where you want to delete files.
+        :param base_filename: The base name of the files to delete (without extension).
         """
         if not os.path.exists(path):
             print(f"Путь {path} не существует.")

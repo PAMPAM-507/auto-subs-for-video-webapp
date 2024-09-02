@@ -22,6 +22,11 @@ header {
     z-index: 1000;
 }
 
+/* .social-auth img {
+    width: 10px;
+    height: 10px;
+} */
+
 /* Стили для навигационной панели */
 nav {
     background-color: #1b1d20;
@@ -344,3 +349,6 @@ footer {
 .content .video-info br {
     display: none;
 }
+
+
+

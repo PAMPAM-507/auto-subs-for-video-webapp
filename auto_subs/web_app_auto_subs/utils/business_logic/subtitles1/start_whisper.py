@@ -102,6 +102,7 @@ class StartWhisper():
                     
                     percentages = self.calculate_percentages(total_seconds, duration_in_seconds)
                     
+                    
                     with redis.Redis(host='localhost', port=6380, db=0) as r:
                         r.set(f'whisper_progress{video_pk}', percentages)
                         print('Progress of transcription process: ', int(r.get(f'whisper_progress{video_pk}')))
@@ -115,6 +116,7 @@ class StartWhisper():
                     percentages = int(r.get(f'whisper_progress{video_pk}'))
                     if percentages < 100:
                         percentages = 100
+                        r.set(f'whisper_progress{video_pk}', percentages)
 
         except Exception as e:
             logger.error(f'Error occurred: {e}')

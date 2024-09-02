@@ -34,11 +34,11 @@ class MyBarLogger(ProgressBarLogger):
         self.last_message = ''
         self.previous_percentage = 0
         self.video_pk = video_pk
+        self.k = 0
         
     def __del__(self, ):
-        if self.video_pk < 100 or self.video_pk > 100:
-            with redis.Redis(host='localhost', port=6380, db=0) as r:
-                r.set(f'moviepy_progress{self.video_pk}', 100)
+        with redis.Redis(host='localhost', port=6380, db=0) as r:
+            r.set(f'moviepy_progress{self.video_pk}', 100)
 
     def callback(self, **changes):
         # Every time the logger message is updated, this function is called with
@@ -54,8 +54,11 @@ class MyBarLogger(ProgressBarLogger):
             if percentage > 0 and percentage < 100:
                 if int(percentage) != self.previous_percentage:
                     self.previous_percentage = int(percentage)
-                    with redis.Redis(host='localhost', port=6380, db=0) as r:
-                        r.set(f'moviepy_progress{self.video_pk}', self.previous_percentage)
-                        print('Progress of transcription process: ', int(r.get(f'moviepy_progress{self.video_pk}')))
-
+                    self.k += 1
+                    if self.k > 20:
+                        with redis.Redis(host='localhost', port=6380, db=0) as r:
+                            r.set(f'moviepy_progress{self.video_pk}', self.previous_percentage)
+                            print('Rendering progress: ', int(r.get(f'moviepy_progress{self.video_pk}')))
+                        self.k = 0
+                        
 # logger = MyBarLogger()

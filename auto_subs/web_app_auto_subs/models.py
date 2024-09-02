@@ -27,6 +27,9 @@ class UserVideos(models.Model):
     
     make_audio_record = models.BooleanField(null=True, default=False, verbose_name='Нужно ли сделать аудио перевод',)
     
+    rendering_progress = models.IntegerField(null=True, blank=True, verbose_name='Прогресс рендеринга')
+    whisper_progress = models.IntegerField(null=True, blank=True, verbose_name='Прогресс транскрипции')
+    
     def get_absolute_url(self):
         return reverse('watch_video', kwargs={'pk': self.pk})
 

@@ -13,5 +13,18 @@
         <button type="submit">Авторизоваться</button>
     </form>
 
-    <a href="{% url 'social:begin' 'github' %}"><img src="/web_app_auto_subs/static/github.png" alt="GitHub"/></a>
-{% endblock content %}
+    <p class="social-auth">
+        <p>Авторизоваться с помощью</p>
+
+        <a href="{% url 'social:begin' 'github' %}"><img src="/static/github.png" alt="GitHub" style="width: 40px; height: 40px;"/></a>
+        {% comment %} <a href="{% url 'social:begin' 'vk-oauth2' %}"><img src="/static/vkimg.png" alt="VK" style="width: 40px; height: 40px;"/></a> {% endcomment %}
+        <a href="{% url 'social:begin' 'google-oauth2' %}"><img src="/static/google.png" alt="Google" style="width: 40px; height: 40px;"/></a>
+    </p>
+
+    {% comment %} {% load socialaccount %}
+    <h2>Google Login</h2>
+    <a href="{% provider_login_url 'google' %}?next=/">Login With Google</a>
+    {% endcomment %}
+
+
+    {% endblock content %} 

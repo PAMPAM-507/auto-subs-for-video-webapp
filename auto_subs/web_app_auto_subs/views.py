@@ -1,3 +1,5 @@
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from typing import Any
 
 from django.db.models.base import Model as Model
@@ -16,9 +18,11 @@ from django.views.generic import ListView, DetailView
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.contrib.auth import logout
+from django.contrib.auth.models import Group
 from django.urls import reverse_lazy
 import redis
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import connection
 
 from auto_subs.settings import BASE_PATH_OF_VIDEO
@@ -108,10 +112,15 @@ class RegisterUser(RegisterMixin, ContextMixin, CreateView):
         return context
 
     def form_valid(self, form: Form) -> HttpResponse:
+        group = Group.objects.get(name='Usual user')
 
         user = form.save(commit=False)
         user.is_active = False
+
         user.save()
+
+        if group:
+            user.groups.add(group)
 
         obj = ChangeEmailModel(pk=user.id, email2='xxx', user=user)
         obj.save()
@@ -193,6 +202,7 @@ class PersonalAccount(LoginRequiredMixin, ContextMixin, ListView):
     template_name: str = 'web_app_auto_subs/personal_account.html'
     context_object_name: str = 'videos'
     paginate_by: int = 1
+    # permission_required: str = 'web_app_auto_subs.social_auth'
 
     def get_queryset(self) -> QuerySet[UserVideos]:
         return UserVideos.objects.filter(user=self.request.user,)
@@ -234,10 +244,11 @@ def get_streaming_video(request, pk: int) -> StreamingHttpResponse:
     return response
 
 
-class ChangeUserInfo(LoginRequiredMixin, FormView):
+class ChangeUserInfo(PermissionRequiredMixin, LoginRequiredMixin, FormView):
     form_class: Form = ChangeUserInfoForm
     template_name: str = 'web_app_auto_subs/edit_profile.html'
     success_url: str = reverse_lazy('edit_profile')
+    permission_required: str = 'auth.usual_user'
 
     def get_success_url(self) -> str:
 
@@ -249,10 +260,11 @@ class ChangeUserInfo(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
 
-class ChangePassword(LoginRequiredMixin, ContextMixin, PasswordChangeView):
+class PasswordChange(PermissionRequiredMixin, LoginRequiredMixin, ContextMixin, PasswordChangeView):
     form_class: Form = ChangePasswordForm
     template_name: str = 'web_app_auto_subs/password_change.html'
     success_url: str = reverse_lazy('password_change_done')
+    permission_required: str = 'auth.usual_user'
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -266,8 +278,9 @@ class ChangePassword(LoginRequiredMixin, ContextMixin, PasswordChangeView):
         return super().form_valid(form)
 
 
-class ChangeEmailDone(LoginRequiredMixin, ContextMixin, TemplateView):
+class ChangeEmailDone(PermissionRequiredMixin, LoginRequiredMixin, ContextMixin, TemplateView):
     template_name: str = 'web_app_auto_subs/change_email_done.html'
+    permission_required: str = 'auth.usual_user'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -276,10 +289,11 @@ class ChangeEmailDone(LoginRequiredMixin, ContextMixin, TemplateView):
         return context
 
 
-class ChangeEmail(LoginRequiredMixin, ChangeEmailMixin, ContextMixin, FormView):
+class ChangeEmail(PermissionRequiredMixin, LoginRequiredMixin, ChangeEmailMixin, ContextMixin, FormView):
     form_class: Form = ChangeEmailForm
     template_name: str = 'web_app_auto_subs/change_email.html'
     success_url: str = reverse_lazy('change_email_done')
+    permission_required: str = 'auth.usual_user'
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
@@ -294,7 +308,7 @@ class ChangeEmail(LoginRequiredMixin, ChangeEmailMixin, ContextMixin, FormView):
         if valid:
 
             user = self.request.user
-            
+
             self.mark_user_for_changing_password(
                 user=user,
                 email=form.cleaned_data.get('username'),
@@ -317,51 +331,65 @@ class ChangeEmail(LoginRequiredMixin, ChangeEmailMixin, ContextMixin, FormView):
                 message=message,
                 to_email=[form.cleaned_data.get('username'), ]
             )
-            
-            
-            
+
         else:
             form.add_error(None, 'Почта не прошла процесс валидации')
 
         return super().form_valid(form)
 
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-
 class test(APIView):
-    
-    def get(self, request, *args, **kwargs):
+
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        video_pk = int(request.GET.get("video_id"))
+
         moviepy_progress, whisper_progress = 0, 0
-        
+
         with redis.Redis(host='localhost', port=6380, db=0) as r:
-            
-        
-            video_pk = int(request.GET.get("video_id"))
+
             # print(list(r.scan_iter('*')))
-            
+
             try:
-                moviepy_progress = r.get(f'moviepy_progress{video_pk}')
-                
+                moviepy_progress = int(r.get(f'moviepy_progress{video_pk}'))
+
                 if moviepy_progress == None:
                     moviepy_progress = 'Выполняется ...'
-                
-            except (ValueError, TypeError) as e:
+
+            except (ValueError, TypeError, ConnectionError) as e:
                 logger.error(f'Error occurred: {e}')
-                
+            except Exception as e:
+                logger.error(f'Error occurred: {e}')
+
             try:
                 whisper_progress = int(r.get(f'whisper_progress{video_pk}'))
-                
-                if moviepy_progress == None:
-                    moviepy_progress = 'Выполняется ...'
-                
-            except (ValueError, TypeError) as e:
+
+                if whisper_progress == None:
+                    whisper_progress = 'Выполняется ...'
+
+            except (ValueError, TypeError, ConnectionError) as e:
                 logger.error(f'Error occurred: {e}')
-            
+            except Exception as e:
+                logger.error(f'Error occurred: {e}')
+
+            video = UserVideos.objects.filter(pk=video_pk)
+
+            if moviepy_progress == 100 \
+                and whisper_progress == 100 \
+                and video[0].rendering_progress != 100 \
+                and video[0].whisper_progress != 100:
+                    
+                video.update(
+                    rendering_progress=100,
+                    whisper_progress=100,)
+
+            print(moviepy_progress, whisper_progress)
+            if not moviepy_progress and not whisper_progress:
+                moviepy_progress, whisper_progress = video[0].rendering_progress, video[0].whisper_progress
+
             # print(video_pk, whisper_progress)
-                
+
         return Response({
             "video_id": video_pk,
             'moviepy_progress': moviepy_progress,
             'whisper_progress': whisper_progress,
-                         })
+        })
