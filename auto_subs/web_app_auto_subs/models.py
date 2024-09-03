@@ -29,6 +29,9 @@ class UserVideos(models.Model):
     
     rendering_progress = models.IntegerField(null=True, blank=True, verbose_name='Прогресс рендеринга')
     whisper_progress = models.IntegerField(null=True, blank=True, verbose_name='Прогресс транскрипции')
+    translate_progress = models.IntegerField(null=True, blank=True, verbose_name='Прогресс перевода')
+    voiceover_progress = models.IntegerField(null=True, blank=True, verbose_name='Прогресс озвучки')
+    
     
     def get_absolute_url(self):
         return reverse('watch_video', kwargs={'pk': self.pk})

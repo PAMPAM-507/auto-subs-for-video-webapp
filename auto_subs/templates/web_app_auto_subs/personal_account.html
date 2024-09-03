@@ -13,13 +13,20 @@
                 <a href="{{ video.get_absolute_url }}">{{ video.pk }}: {{ video.name_of_video }}</a>
                 <br>
                 <br>
+                
                 <div class="progressBar">
                     <div>Процесс транскрипции: <span id="whisperText{{ video.pk }}">0%</span></div>
-                    <span id="whisperProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;"></span>
+                    <span id="whisperProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;" data-whisper-progress="0"></span>
                 </div>
+
+                <div class="progressBar">
+                    <div>Прогресс перевода: <span id="translateText{{ video.pk }}">0%</span></div>
+                    <span id="translateProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;" data-translate-progress="0"></span>
+                </div>
+
                 <div class="progressBar">
                     <div>Рендеринг: <span id="moviepyText{{ video.pk }}">0%</span></div>
-                    <span id="moviepyProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;"></span>
+                    <span id="moviepyProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;" data-moviepy-progress="0"></span>
                 </div>
                 
                 <br>
@@ -51,7 +58,6 @@
         </ul>
     </nav>
 
-   
     <script>
         // Создаем пустой массив для хранения значений video.pk
         const videoPKs = [];
@@ -84,12 +90,13 @@
                     // Получаем текущее значение прогресса из атрибутов
                     const moviepyProgress = parseInt($(`#moviepyProgress${videoPk}`).attr('data-moviepy-progress')) || 0;
                     const whisperProgress = parseInt($(`#whisperProgress${videoPk}`).attr('data-whisper-progress')) || 0;
+                    const translateProgress = parseInt($(`#translateProgress${videoPk}`).attr('data-translate-progress')) || 0; // Добавлено для перевода
                     
                     // Логируем текущие значения прогресса для отладки
-                    console.log(`Видео ID: ${videoPk}, MoviePy Progress: ${moviepyProgress}, Whisper Progress: ${whisperProgress}`);
+                    console.log(`Видео ID: ${videoPk}, MoviePy Progress: ${moviepyProgress}, Whisper Progress: ${whisperProgress}, Translate Progress: ${translateProgress}`);
     
                     // Проверяем прогресс, если он не равен 100, отправляем запрос
-                    if (moviepyProgress < 100 || whisperProgress < 100) {
+                    if (moviepyProgress < 100 || whisperProgress < 100 || translateProgress < 100) {
                         // AJAX-запрос для получения прогресса
                         $.ajax({
                             url: `http://localhost:8000/progress_bar/?video_id=${videoPk}`,
@@ -110,6 +117,12 @@
                                     $(`#whisperProgress${response.video_id}`).attr('data-whisper-progress', response.whisper_progress); // обновляем атрибут
                                     $(`#whisperText${response.video_id}`).text(response.whisper_progress + '%');
                                 }
+    
+                                if (response.translate_progress !== null) {
+                                    $(`#translateProgress${response.video_id}`).css('width', response.translate_progress + '%');
+                                    $(`#translateProgress${response.video_id}`).attr('data-translate-progress', response.translate_progress); // обновляем атрибут
+                                    $(`#translateText${response.video_id}`).text(response.translate_progress + '%');
+                                }
                             },
                             error: function(xhr, status, error) {
                                 console.error('Ошибка при выполнении запроса:', error);
@@ -126,9 +139,4 @@
             setInterval(updateProgress, 5000);
         });
     </script>
-    
-    
-        
-
-
 {% endblock content %}

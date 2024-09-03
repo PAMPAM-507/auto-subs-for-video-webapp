@@ -10,6 +10,7 @@ from moviepy.editor import VideoFileClip
 
 from auto_subs.settings import PATH_FOR_SUBTITLES
 from auto_subs.settings import logger
+from web_app_auto_subs.models import UserVideos
 
 
 class StartWhisper():
@@ -113,10 +114,8 @@ class StartWhisper():
                     raise subprocess.CalledProcessError(process.returncode, command)
                 
                 with redis.Redis(host='localhost', port=6380, db=0) as r:
-                    percentages = int(r.get(f'whisper_progress{video_pk}'))
-                    if percentages < 100:
-                        percentages = 100
-                        r.set(f'whisper_progress{video_pk}', percentages)
+                    r.delete(f'whisper_progress{video_pk}')
+                UserVideos.objects.filter(pk=video_pk).update(whisper_progress=100)
 
         except Exception as e:
             logger.error(f'Error occurred: {e}')

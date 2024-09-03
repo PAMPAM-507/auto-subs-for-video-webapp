@@ -26,6 +26,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import connection
 
 from auto_subs.settings import BASE_PATH_OF_VIDEO
+from web_app_auto_subs.utils.business_logic.mixins.progress_bar_api_mixin import ProgressBarAPIMixin
 from web_app_auto_subs.utils.business_logic.mixins.change_email_mixin import ChangeEmailMixin
 from web_app_auto_subs.utils.business_logic.mixins.register_mixin import RegisterMixin
 from web_app_auto_subs.utils.business_logic.mixins.context_mixin import ContextMixin
@@ -338,58 +339,23 @@ class ChangeEmail(PermissionRequiredMixin, LoginRequiredMixin, ChangeEmailMixin,
         return super().form_valid(form)
 
 
-class test(APIView):
+class test(ProgressBarAPIMixin, APIView):
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         video_pk = int(request.GET.get("video_id"))
 
-        moviepy_progress, whisper_progress = 0, 0
+        rendering_progress, whisper_progress = 0, 0
 
         with redis.Redis(host='localhost', port=6380, db=0) as r:
-
-            # print(list(r.scan_iter('*')))
-
-            try:
-                moviepy_progress = int(r.get(f'moviepy_progress{video_pk}'))
-
-                if moviepy_progress == None:
-                    moviepy_progress = 'Выполняется ...'
-
-            except (ValueError, TypeError, ConnectionError) as e:
-                logger.error(f'Error occurred: {e}')
-            except Exception as e:
-                logger.error(f'Error occurred: {e}')
-
-            try:
-                whisper_progress = int(r.get(f'whisper_progress{video_pk}'))
-
-                if whisper_progress == None:
-                    whisper_progress = 'Выполняется ...'
-
-            except (ValueError, TypeError, ConnectionError) as e:
-                logger.error(f'Error occurred: {e}')
-            except Exception as e:
-                logger.error(f'Error occurred: {e}')
-
-            video = UserVideos.objects.filter(pk=video_pk)
-
-            if moviepy_progress == 100 \
-                and whisper_progress == 100 \
-                and video[0].rendering_progress != 100 \
-                and video[0].whisper_progress != 100:
-                    
-                video.update(
-                    rendering_progress=100,
-                    whisper_progress=100,)
-
-            print(moviepy_progress, whisper_progress)
-            if not moviepy_progress and not whisper_progress:
-                moviepy_progress, whisper_progress = video[0].rendering_progress, video[0].whisper_progress
-
-            # print(video_pk, whisper_progress)
-
+            
+            whisper_progress = self.get_progress_info(r, video_pk, 'whisper_progress')
+            translate_progress = self.get_progress_info(r, video_pk, 'translate_progress')
+            rendering_progress = self.get_progress_info(r, video_pk, 'rendering_progress')
+        
+        
         return Response({
             "video_id": video_pk,
-            'moviepy_progress': moviepy_progress,
+            'moviepy_progress': rendering_progress,
+            'translate_progress': translate_progress,
             'whisper_progress': whisper_progress,
         })

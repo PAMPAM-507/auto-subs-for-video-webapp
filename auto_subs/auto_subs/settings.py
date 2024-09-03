@@ -230,14 +230,16 @@ API_URL = 'https://emailvalidation.abstractapi.com/v1/?api_key=' + API_KEY
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-
     'formatters': {
         'main_format': {
-            "format": "{asctime} - {levelname} - {module} - {filename} - {message}",
+            "format": "{asctime} - {levelname} - {module} - {filename}:{lineno} - {funcName} - {message}",
+            "style": "{",
+        },
+        'detailed_format': {
+            "format": "{asctime} - {levelname} - {module} - {filename}:{lineno} - {funcName} - {message}\n{exc_info}",
             "style": "{",
         },
     },
-
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
@@ -245,19 +247,24 @@ LOGGING = {
         },
         'file': {
             'class': 'logging.FileHandler',
-            'formatter': 'main_format',
+            'formatter': 'detailed_format',
             'filename': 'information.log',
         },
     },
-
     'loggers': {
         'main': {
             'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': True,
         },
+        # 'django': {
+        #     'handlers': ['console', 'file'],
+        #     'level': 'ERROR',
+        #     'propagate': True,
+        # },
     },
 }
+
 
 logger = logging.getLogger('main')
 

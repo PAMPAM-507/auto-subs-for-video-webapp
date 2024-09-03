@@ -11,6 +11,8 @@ from colorama import Fore, init
 import redis
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
+from web_app_auto_subs.models import UserVideos
+
 
 class MYTranslatorABC(ABC):
 
@@ -75,8 +77,8 @@ class MyGoogleTranslator(MYTranslatorABC):
                 checking_counter = 0
         
             with redis.Redis(host='localhost', port=6380, db=0) as r:
-                r.set(f'translate_progress{video_pk}', 100)
-                print('Translate progress: ', int(r.get(f'translate_progress{video_pk}')))
+                r.delete(f'translate_progress{video_pk}')
+            UserVideos.objects.filter(pk=video_pk).update(translate_progress=100)
 
         subtitles.save(path_for_subs)
 

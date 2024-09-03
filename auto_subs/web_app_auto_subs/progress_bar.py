@@ -7,6 +7,8 @@ import whisper
 import datetime
 import redis
 
+from web_app_auto_subs.models import UserVideos
+
 class _CustomProgressBar(tqdm.tqdm):
     def __init__(self, video_pk: int=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -38,7 +40,8 @@ class MyBarLogger(ProgressBarLogger):
         
     def __del__(self, ):
         with redis.Redis(host='localhost', port=6380, db=0) as r:
-            r.set(f'moviepy_progress{self.video_pk}', 100)
+            r.delete(f'moviepy_progress{self.video_pk}')
+        UserVideos.objects.filter(pk=self.video_pk).update(rendering_progress=100)
 
     def callback(self, **changes):
         # Every time the logger message is updated, this function is called with

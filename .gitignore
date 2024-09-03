@@ -17,6 +17,8 @@ auto_subs/web_app_auto_subs/utils/business_logic/subtitles1/model
 **/t.py
 **/*.log
 **/db.sqlite3
+**/*sqlite3
+**/*.log
 **/cert.crt
 **/cert.key
 **/.env
