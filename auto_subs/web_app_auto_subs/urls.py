@@ -7,6 +7,7 @@ from .views import *
 urlpatterns = [
     path('', MainMenu.as_view(), name='main'),
     path('upload_video/', UploadVideo.as_view(), name='upload_video'),
+    path('delete_video/<int:video_pk>/', DeleteVideoView.as_view(), name='delete_video'),
 
 
     path('register/', RegisterUser.as_view(), name='register'),

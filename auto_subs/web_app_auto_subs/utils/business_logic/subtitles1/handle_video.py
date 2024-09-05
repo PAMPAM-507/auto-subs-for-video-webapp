@@ -1,4 +1,5 @@
 
+from typing import NoReturn, Union
 import pysrt
 import os
 import sys
@@ -32,14 +33,14 @@ class HandleVideo():
     @staticmethod
     def handle_video(
         video_pk: int,
-        name_of_video, 
-        path_for_video, 
-        path_for_new_video,
-        path_of_audio,
+        name_of_video: str, 
+        path_for_video: str, 
+        path_for_new_video: str,
+        path_of_audio: str,
         path_with_str: str, 
-        translate_var=None,
+        translate_var: Union[bool, str] =None,
         
-        ):
+        ) -> NoReturn:
         
         
         
@@ -53,6 +54,7 @@ class HandleVideo():
             print('handle_video ', e)
         
         try:
+
             
 
             MyGoogleTranslator().make_translate(subtitles, srtfilename, video_pk)
@@ -72,13 +74,21 @@ class HandleVideo():
             # except Exception as e:
             #     print('MakeAudioRecord ', e)
         
-            new_audio_filename, audio_clips = MakeAudioRecord().perform_audio_creation(
-                subtitles=subtitles,
-                base_filename=name_of_video.split(".")[0],
-                path_of_audio=path_of_audio,
-                new_speed_for_audio=1.5, 
-                new_volume_for_audio=6.0,
-                )
+            # new_audio_filename, audio_clips = MakeAudioRecord().perform_audio_creation(
+            #     subtitles=subtitles,
+            #     base_filename=name_of_video.split(".")[0],
+            #     path_of_audio=path_of_audio,
+            #     new_speed_for_audio=1.5, 
+            #     new_volume_for_audio=6.0,
+            #     )
+            
+            new_audio_filename, audio_clips = MakeAudioRecord().make_audio_for_each_subtitles(
+                video_pk=video_pk,
+                subtitles=subtitles, 
+                base_filename=name_of_video.split(".")[0], 
+                path_of_audio=path_of_audio, 
+                new_volume_for_audio=6.0,)
+
 
         # try:
         #     PutSubs(mp4filename, srtfilename, path_for_video,

@@ -13,8 +13,9 @@ from auto_subs.settings import BASE_DIR, BASE_PATH_OF_VIDEO, logger, PATH_FOR_SU
 
 from django.core.mail import send_mail, send_mass_mail
 
+from .models import UserVideos
+
 from web_app_auto_subs.utils.business_logic.subtitles1.start_whisper import StartWhisper
-from web_app_auto_subs.progress_bar import _CustomProgressBar
 from web_app_auto_subs.utils.business_logic.subtitles1.remove_all_helping_files import RemoveAllHelpingFiles
 from web_app_auto_subs.utils.business_logic.subtitles1.handle_video import HandleVideo
 from web_app_auto_subs.utils.services.make_srt import MakingSrt
@@ -151,37 +152,40 @@ def make_subs(video_pk: int,
 
    
     else:
-        try:
+        # try:
             # srt_filepath = PATH_FOR_SUBTITLES + path_of_video.split('/')[-1][:-3] + 'srt'
             # MakingSrt.write_srt(result, srt_filepath)
             
-            name_of_video = path_of_video.split("/")[-1]
+        name_of_video = path_of_video.split("/")[-1]
             
-            HandleVideo.handle_video(
-                video_pk=video_pk,
-                name_of_video=name_of_video,
-                path_for_video=path_of_video,
-                path_for_new_video=PATH_FOR_VIDEO_WITH_SUBS,
-                path_of_audio=PATH_FOR_AUDIO,
-                path_with_str=PATH_FOR_SUBTITLES,
-                translate_var=make_audio_record,
+        HandleVideo.handle_video(
+            video_pk=video_pk,
+            name_of_video=name_of_video,
+            path_for_video=path_of_video,
+            path_for_new_video=PATH_FOR_VIDEO_WITH_SUBS,
+            path_of_audio=PATH_FOR_AUDIO,
+            path_with_str=PATH_FOR_SUBTITLES,
+            translate_var=make_audio_record,
+        )
+        
+        # except Exception as e:
+        #     logger.error(f'Error occurred: {e}')
+        
+        # else:
+        for path in [PATH_FOR_AUDIO, PATH_FOR_SUBTITLES]: #, BASE_PATH_OF_VIDEO+'videos']:
+            RemoveAllHelpingFiles.remove(
+                path=path, 
+                base_filename=name_of_video.split(".")[0]
+                )
+        
+        UserVideos.objects.filter(pk=video_pk).update(
+            rendering_progress=100,
+            whisper_progress=100,
+            translate_progress=100,
+            voiceover_progress=100
             )
         
-        except Exception as e:
-            logger.error(f'Error occurred: {e}')
         
-        else:
-            for path in [PATH_FOR_AUDIO, PATH_FOR_SUBTITLES]: #, BASE_PATH_OF_VIDEO+'videos']:
-                RemoveAllHelpingFiles.remove(
-                    path=path, 
-                    base_filename=name_of_video.split(".")[0]
-                    )
-    
-    # for path in [PATH_FOR_AUDIO, PATH_FOR_SUBTITLES]:
-    #             RemoveAllHelpingFiles.remove(
-    #                 path=path, 
-    #                 base_filename='test_wSZgBpx'
-    #                 )
     
     
 

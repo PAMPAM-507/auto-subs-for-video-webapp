@@ -8,7 +8,7 @@ from moviepy.editor import VideoFileClip, TextClip, CompositeVideoClip
 from .fuzzy_model.model import FuzzyModel
 from .fuzzy_model.defuzzification import DefuzzificationByHeightMethod
 from .fuzzy_model.fazzification import SolveInputValueForModelWithTwoParameters
-from .fuzzy_model.rule_base import MakeRuleBase
+from .fuzzy_model.rule_base import MakeRuleBaseForSubtitles
 
 class MakeSubsABC(ABC):
 
@@ -59,7 +59,7 @@ class MakeSubs(MakeSubsABC):
     def calculate_height_for_subtitle(cls, amount_of_words, amount_of_pixels) -> Tuple:
         result = SolveInputValueForModelWithTwoParameters.solve_input_value(cls.model, amount_of_words, amount_of_pixels)
 
-        result = MakeRuleBase.make_rule_base(result[0][0], result[0][1], result[0][2], result[1][0], result[1][1], result[1][2],)
+        result = MakeRuleBaseForSubtitles.make_rule_base(result[0][0], result[0][1], result[0][2], result[1][0], result[1][1], result[1][2],)
 
         result = DefuzzificationByHeightMethod.get_resulting_value(result, cls.model.border_for_output_term)
         
@@ -77,11 +77,13 @@ class MakeSubs(MakeSubsABC):
             start_time = self.time_to_seconds(subtitle.start)
             end_time = self.time_to_seconds(subtitle.end)
             duration = end_time - start_time
-
+            
+            # print(str(subtitle).split('\n')[1])
             # print(len(str(subtitle).split('\n')[2].split(' ')))
             # print(str(subtitle).split('\n')[2].split(' '))
             # print(video_size)
             # print(len(str(subtitle).split('\n')[2]))
+            
             try:
                 model_value = self.calculate_height_for_subtitle(len(str(subtitle).split('\n')[2].split(' ')), amount_of_pixels)[0]
             except Exception as e:

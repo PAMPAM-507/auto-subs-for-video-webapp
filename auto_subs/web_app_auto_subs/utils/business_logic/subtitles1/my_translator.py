@@ -25,7 +25,7 @@ class MyGoogleTranslator(MYTranslatorABC):
 
     translator = Translator()
 
-    def make_translate(self, subtitles: IO, path_for_subs: str, video_pk: int) -> NoReturn:
+    def make_translate(self, subtitles: pysrt.SubRipFile, path_for_subs: str, video_pk: int) -> NoReturn:
         
         
         

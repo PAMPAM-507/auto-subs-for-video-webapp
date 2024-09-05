@@ -10,10 +10,10 @@
     <div id="progressContainer">
         {% for video in videos %}
             <div class="video-item" data-video-pk="{{ video.pk }}">
-                <a href="{{ video.get_absolute_url }}">{{ video.pk }}: {{ video.name_of_video }}</a>
-                <br>
-                <br>
-                
+                <!-- Ссылка для просмотра видео с классом для неактивного состояния -->
+                <a id="videoLink{{ video.pk }}" href="{{ video.get_absolute_url }}" class="inactive-link">{{ video.pk }}: {{ video.name_of_video }}</a>
+                <br><br>
+
                 <div class="progressBar">
                     <div>Процесс транскрипции: <span id="whisperText{{ video.pk }}">0%</span></div>
                     <span id="whisperProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;" data-whisper-progress="0"></span>
@@ -28,15 +28,24 @@
                     <div>Рендеринг: <span id="moviepyText{{ video.pk }}">0%</span></div>
                     <span id="moviepyProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;" data-moviepy-progress="0"></span>
                 </div>
-                
+
+                <div class="progressBar">
+                    <div>Создание озвучки: <span id="voiceoverText{{ video.pk }}">0%</span></div>
+                    <span id="voiceoverProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;" data-voiceover-progress="0"></span>
+                </div>
+
+                <!-- Форма удаления, скрытая по умолчанию -->
+                <form id="deleteForm{{ video.pk }}" method="post" action="{% url 'delete_video' video.pk %}" style="display: none;">
+                    {% csrf_token %}
+                    <button type="submit">Удалить видео</button>
+                </form>
+
                 <br>
             </div>
         {% endfor %}
     </div>
 
-    <br>
-    <br>
-    <br>
+    <br><br><br>
     
     <nav>
         <ul class="D">
@@ -58,23 +67,19 @@
         </ul>
     </nav>
 
-    <script>
-        // Создаем пустой массив для хранения значений video.pk
-        const videoPKs = [];
+    <style>
+        /* Стиль для неактивной ссылки */
+        .inactive-link {
+            pointer-events: none; /* Отключаем кликабельность */
+            color: grey; /* Ссылка будет серой */
+        }
 
-        // Получаем все элементы с классом "video-item"
-        const videoItems = document.querySelectorAll('.video-item');
-
-        // Проходим по каждому элементу и получаем значение атрибута data-video-pk
-        videoItems.forEach(item => {
-            const pk = item.getAttribute('data-video-pk');
-            videoPKs.push(pk); // Сохраняем значение pk в массив
-        });
-
-        // Теперь массив videoPKs содержит все значения video.pk
-        console.log(videoPKs);
-
-    </script>
+        /* Стиль для активной ссылки */
+        .active-link {
+            pointer-events: auto; /* Включаем кликабельность */
+            color: blue; /* Ссылка станет синей (или другим цветом) */
+        }
+    </style>
 
     <script>
         $(document).ready(function() {
@@ -82,46 +87,58 @@
             function updateProgress() {
                 // Получаем все элементы с классом "video-item"
                 const videoItems = document.querySelectorAll('.video-item');
-        
+
                 // Проходим по каждому элементу
                 videoItems.forEach(item => {
                     const videoPk = item.getAttribute('data-video-pk'); // Получаем значение video.pk
-    
+
                     // Получаем текущее значение прогресса из атрибутов
                     const moviepyProgress = parseInt($(`#moviepyProgress${videoPk}`).attr('data-moviepy-progress')) || 0;
                     const whisperProgress = parseInt($(`#whisperProgress${videoPk}`).attr('data-whisper-progress')) || 0;
-                    const translateProgress = parseInt($(`#translateProgress${videoPk}`).attr('data-translate-progress')) || 0; // Добавлено для перевода
-                    
-                    // Логируем текущие значения прогресса для отладки
-                    console.log(`Видео ID: ${videoPk}, MoviePy Progress: ${moviepyProgress}, Whisper Progress: ${whisperProgress}, Translate Progress: ${translateProgress}`);
-    
+                    const translateProgress = parseInt($(`#translateProgress${videoPk}`).attr('data-translate-progress')) || 0;
+                    const voiceoverProgress = parseInt($(`#voiceoverProgress${videoPk}`).attr('data-voiceover-progress')) || 0;
+
                     // Проверяем прогресс, если он не равен 100, отправляем запрос
-                    if (moviepyProgress < 100 || whisperProgress < 100 || translateProgress < 100) {
+                    if (moviepyProgress < 100 || whisperProgress < 100 || translateProgress < 100 || voiceoverProgress < 100) {
                         // AJAX-запрос для получения прогресса
                         $.ajax({
                             url: `http://localhost:8000/progress_bar/?video_id=${videoPk}`,
                             type: 'GET',
                             success: function(response) {
-                                // Логируем ответ сервера для отладки
-                                console.log(`Ответ сервера для видео ${response.video_id}:`, response);
-    
                                 // Обновляем значения прогресса на странице
                                 if (response.moviepy_progress !== null) {
                                     $(`#moviepyProgress${response.video_id}`).css('width', response.moviepy_progress + '%');
-                                    $(`#moviepyProgress${response.video_id}`).attr('data-moviepy-progress', response.moviepy_progress); // обновляем атрибут
+                                    $(`#moviepyProgress${response.video_id}`).attr('data-moviepy-progress', response.moviepy_progress);
                                     $(`#moviepyText${response.video_id}`).text(response.moviepy_progress + '%');
                                 }
-    
+
                                 if (response.whisper_progress !== null) {
                                     $(`#whisperProgress${response.video_id}`).css('width', response.whisper_progress + '%');
-                                    $(`#whisperProgress${response.video_id}`).attr('data-whisper-progress', response.whisper_progress); // обновляем атрибут
+                                    $(`#whisperProgress${response.video_id}`).attr('data-whisper-progress', response.whisper_progress);
                                     $(`#whisperText${response.video_id}`).text(response.whisper_progress + '%');
                                 }
-    
+
                                 if (response.translate_progress !== null) {
                                     $(`#translateProgress${response.video_id}`).css('width', response.translate_progress + '%');
-                                    $(`#translateProgress${response.video_id}`).attr('data-translate-progress', response.translate_progress); // обновляем атрибут
+                                    $(`#translateProgress${response.video_id}`).attr('data-translate-progress', response.translate_progress);
                                     $(`#translateText${response.video_id}`).text(response.translate_progress + '%');
+                                }
+
+                                if (response.voiceover_progress !== null) {
+                                    $(`#voiceoverProgress${response.video_id}`).css('width', response.voiceover_progress + '%');
+                                    $(`#voiceoverProgress${response.video_id}`).attr('data-voiceover-progress', response.voiceover_progress);
+                                    $(`#voiceoverText${response.video_id}`).text(response.voiceover_progress + '%');
+                                }
+
+                                // Проверяем, если все прогрессы равны 100%
+                                if (response.moviepy_progress === 100 && response.whisper_progress === 100 && response.translate_progress === 100 && response.voiceover_progress === 100) {
+                                    // Делаем ссылку кликабельной
+                                    const videoLink = $(`#videoLink${response.video_id}`);
+                                    videoLink.removeClass('inactive-link');
+                                    videoLink.addClass('active-link');
+
+                                    // Показываем форму для удаления видео
+                                    $(`#deleteForm${response.video_id}`).show();
                                 }
                             },
                             error: function(xhr, status, error) {
@@ -131,12 +148,14 @@
                     }
                 });
             }
-        
+
             // Выполняем первый запрос сразу при загрузке страницы
             updateProgress();
-        
+
             // Устанавливаем интервал для выполнения запроса каждые 5 секунд (5000 мс)
             setInterval(updateProgress, 5000);
         });
     </script>
+
+    
 {% endblock content %}

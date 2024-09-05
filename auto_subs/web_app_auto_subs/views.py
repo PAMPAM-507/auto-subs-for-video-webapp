@@ -13,7 +13,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth import get_user_model
-from django.views.generic.edit import CreateView, FormView, UpdateView
+from django.views.generic.edit import CreateView, FormView, UpdateView, DeleteView
 from django.views.generic import ListView, DetailView
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
@@ -25,7 +25,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import connection
 
-from auto_subs.settings import BASE_PATH_OF_VIDEO
+from auto_subs.settings import BASE_PATH_OF_VIDEO, PATH_FOR_VIDEO_WITH_SUBS, PATH_FOR_VIDEOS
 from web_app_auto_subs.utils.business_logic.mixins.progress_bar_api_mixin import ProgressBarAPIMixin
 from web_app_auto_subs.utils.business_logic.mixins.change_email_mixin import ChangeEmailMixin
 from web_app_auto_subs.utils.business_logic.mixins.register_mixin import RegisterMixin
@@ -219,6 +219,28 @@ class PersonalAccount(LoginRequiredMixin, ContextMixin, ListView):
         return context
 
 
+class DeleteVideoView(DeleteView):
+    model: Model = UserVideos
+    success_url: str = reverse_lazy('personal_account')
+    pk_url_kwarg: str = 'video_pk'
+    
+    def form_valid(self, form):
+        
+        video = UserVideos.objects.get(pk=self.kwargs[self.pk_url_kwarg])
+        
+        RemoveAllHelpingFiles.remove(
+            path=PATH_FOR_VIDEO_WITH_SUBS, 
+            base_filename=video.name_of_video + '_subtitled'
+            )
+        
+        RemoveAllHelpingFiles.remove(
+            path=PATH_FOR_VIDEOS, 
+            base_filename=video.name_of_video
+            )
+        
+        return super().form_valid(form)
+
+
 class GetVideo(LoginRequiredMixin, ContextMixin, DetailView):
     template_name: str = 'web_app_auto_subs/video.html'
     pk_url_kwarg: str = 'pk'
@@ -351,11 +373,13 @@ class test(ProgressBarAPIMixin, APIView):
             whisper_progress = self.get_progress_info(r, video_pk, 'whisper_progress')
             translate_progress = self.get_progress_info(r, video_pk, 'translate_progress')
             rendering_progress = self.get_progress_info(r, video_pk, 'rendering_progress')
-        
+            voiceover_progress = self.get_progress_info(r, video_pk, 'voiceover_progress')
         
         return Response({
             "video_id": video_pk,
             'moviepy_progress': rendering_progress,
             'translate_progress': translate_progress,
             'whisper_progress': whisper_progress,
+            'voiceover_progress': voiceover_progress,
         })
+

@@ -17,7 +17,9 @@ DEBUG = True
 ALLOWED_HOSTS = ['localhost', '127.0.0.1',
                  'auto-subs.ru', 'subs', 
                  'auto-subs', 'autosubs',]
+
 '192.168.0.109',
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -34,11 +36,17 @@ INSTALLED_APPS = [
     'web_app_auto_subs.apps.WebAppAutoSubsConfig',
     
     'django.contrib.sites',
+    
+    'django_telegram_login',
     # 'allauth',
     # 'allauth.account',
     # 'allauth.socialaccount',
     # 'allauth.socialaccount.providers.google',
 ]
+
+TELEGRAM_BOT_NAME = 'pam_pam_507_bot'
+SOCIAL_AUTH_TELEGRAM_BOT_TOKEN = '5818607721:AAExOmZRhd0R_of7klHeMuV8p5Bjv_oq2oo'
+# TELEGRAM_LOGIN_REDIRECT_URL = 'https://auto-subs.ru/'
 
 
 # SOCIALACCOUNT_PROVIDERS = {
@@ -124,6 +132,7 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.github.GithubOAuth2',
     'social_core.backends.vk.VKOAuth2',
     'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.telegram.TelegramAuth',
     
     # 'allauth.account.auth_backends.AuthenticationBackend',
     
@@ -151,9 +160,9 @@ SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET')
 
 
 # SOCIAL_AUTH_VK_OAUTH2_REDIRECT_URI = 'https://auto-subs.ru/complete/vk-oauth2/'
-# SOCIAL_AUTH_VK_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_VK_OAUTH2_KEY')
-# SOCIAL_AUTH_VK_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_VK_OAUTH2_SECRET')
-# SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
+SOCIAL_AUTH_VK_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_VK_OAUTH2_KEY')
+SOCIAL_AUTH_VK_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_VK_OAUTH2_SECRET')
+SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
 # SOCIAL_AUTH_VK_APP_USER_MODE = 1
 
 
@@ -161,6 +170,10 @@ SITE_ID = 2
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY= os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = 'http://127.0.0.1:8000/social_auth/complete/google-oauth2/'
+
+
+SOCIAL_AUTH_TELEGRAM_KEY = os.environ.get('SOCIAL_AUTH_TELEGRAM_KEY')
+SOCIAL_AUTH_TELEGRAM_SECRET = os.environ.get('SOCIAL_AUTH_TELEGRAM_SECRET')
 
 
 # Internationalization
@@ -198,10 +211,12 @@ LOGIN_REDIRECT_URL = 'main'
 
 CELERY_BROKER_URL = 'redis://localhost:6380/'
 
+
 PATH_FOR_SUBTITLES = str(BASE_DIR) + '/media/subtitles/'
 PATH_FOR_VIDEO_WITH_SUBS = str(BASE_DIR) + '/media/video_with_subs/'
 BASE_PATH_OF_VIDEO = str(BASE_DIR) + '/media/'
 PATH_FOR_AUDIO = str(BASE_DIR) + '/media/records/'
+PATH_FOR_VIDEOS = BASE_PATH_OF_VIDEO + 'videos/'
 
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = 'smtp.yandex.ru'

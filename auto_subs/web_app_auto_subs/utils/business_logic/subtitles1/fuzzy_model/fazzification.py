@@ -30,5 +30,7 @@ class SolveInputValueForModelWithTwoParameters(SolveInputValueABC):
             list_of_degrees_of_owned[2] = cls.calculate_degree_of_owned(x, border[2], border[1])
         if x > border[2]:
             list_of_degrees_of_owned = [0, 0, 1]
+        if x < border[0]:
+            list_of_degrees_of_owned = [1, 0, 0]
 
         return list_of_degrees_of_owned
