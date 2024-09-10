@@ -1,6 +1,6 @@
 from abc import ABC
 from typing import Dict, List, NoReturn, Tuple, Union
-from .descriptor import FuzzyModelABC
+from .model import FuzzyModelABC
 
 class SolveInputValueABC(ABC):
     pass

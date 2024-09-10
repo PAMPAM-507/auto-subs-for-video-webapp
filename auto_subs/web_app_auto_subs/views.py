@@ -75,8 +75,8 @@ class UploadVideo(LoginRequiredMixin, UploadVideoMixin, ContextMixin, FormView):
             user_video.name_of_video)
         user_video.save()
 
-        user_video = UserVideos.objects.filter(
-            user=self.request.user).latest('uploaded_at')
+        # user_video = UserVideos.objects.filter(
+        #     user=self.request.user).latest('uploaded_at')
 
         subs_language = LanguagesForTranslateVideo.objects.get(
             pk=subs_language_pk)

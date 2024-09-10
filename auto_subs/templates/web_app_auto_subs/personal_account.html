@@ -28,11 +28,13 @@
                     <div>Рендеринг: <span id="moviepyText{{ video.pk }}">0%</span></div>
                     <span id="moviepyProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;" data-moviepy-progress="0"></span>
                 </div>
-
-                <div class="progressBar">
-                    <div>Создание озвучки: <span id="voiceoverText{{ video.pk }}">0%</span></div>
-                    <span id="voiceoverProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;" data-voiceover-progress="0"></span>
-                </div>
+                
+                {% if video.make_audio_record %}
+                    <div class="progressBar">
+                        <div>Создание озвучки: <span id="voiceoverText{{ video.pk }}">0%</span></div>
+                        <span id="voiceoverProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;" data-voiceover-progress="0"></span>
+                    </div>
+                {% endif %}
 
                 <!-- Форма удаления, скрытая по умолчанию -->
                 <form id="deleteForm{{ video.pk }}" method="post" action="{% url 'delete_video' video.pk %}" style="display: none;">

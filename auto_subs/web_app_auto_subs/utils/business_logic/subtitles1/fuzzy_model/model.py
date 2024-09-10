@@ -1,6 +1,10 @@
+from abc import ABC
 from typing import List
-from .descriptor import Descriptor, FuzzyModelABC
+from .descriptor import Descriptor
 
+
+class FuzzyModelABC(ABC):
+    pass
 
 class FuzzyModel(FuzzyModelABC):
 

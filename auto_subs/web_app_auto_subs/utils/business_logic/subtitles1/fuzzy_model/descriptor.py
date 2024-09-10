@@ -1,18 +1,17 @@
-from abc import ABC
+
 from typing import Dict, List, NoReturn, Tuple, Union
 
-class FuzzyModelABC(ABC):
-    pass
+
 
 class Descriptor():
 
-    def __set_name__(self, owner: FuzzyModelABC, name: str) -> NoReturn:
+    def __set_name__(self, owner: object, name: str) -> NoReturn:
         self.name = '_' + name
     
-    def __get__(self, instance: FuzzyModelABC, owner: FuzzyModelABC) -> Union[List, int]:
+    def __get__(self, instance: object, owner: object) -> Union[List, int]:
         # print('__get__')
         return getattr(instance, self.name)
 
-    def __set__(self, instance: FuzzyModelABC, value: Union[int, list, dict]) -> NoReturn:
+    def __set__(self, instance: object, value: Union[int, list, dict]) -> NoReturn:
         setattr(instance, self.name, value)
 

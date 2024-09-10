@@ -27,7 +27,7 @@ class MyGoogleTranslator(MYTranslatorABC):
 
     def make_translate(self, subtitles: pysrt.SubRipFile, path_for_subs: str, video_pk: int) -> NoReturn:
         
-        
+        redis_client = redis.Redis(host='localhost', port=6380, db=0)
         
         lst = []
         for s in subtitles:
@@ -49,10 +49,11 @@ class MyGoogleTranslator(MYTranslatorABC):
                 checking_counter += 1
                 
                 percentages = int((k * 100 / subs_len) / 2)
+                
                 if checking_counter > 15:
-                    with redis.Redis(host='localhost', port=6380, db=0) as r:
-                        r.set(f'translate_progress{video_pk}', percentages)
-                        print('Translate progress: ', int(r.get(f'translate_progress{video_pk}')))
+
+                    redis_client.set(f'translate_progress{video_pk}', percentages)
+                    print('Translate progress: ', int(redis_client.get(f'translate_progress{video_pk}')))
                     checking_counter = 0
                     
             except Exception as e:
@@ -65,20 +66,22 @@ class MyGoogleTranslator(MYTranslatorABC):
         for i in range(len(subtitles)):
             if sentences[i].start == subtitles[i].start and sentences[i].end == subtitles[i].end:
                 subtitles[i].text = lst[i]
+                
             k += 1
             checking_counter += 1
             
-            
             percentages2 = percentages + int((k * 100 / subs_len) / 2)
+            
             if checking_counter > 15:
-                with redis.Redis(host='localhost', port=6380, db=0) as r:
-                    r.set(f'translate_progress{video_pk}', percentages2)
-                    print('Translate progress: ', int(r.get(f'translate_progress{video_pk}')))
+                
+                redis_client.set(f'translate_progress{video_pk}', percentages2)
+                print('Translate progress: ', int(redis_client.get(f'translate_progress{video_pk}')))
                 checking_counter = 0
         
-            with redis.Redis(host='localhost', port=6380, db=0) as r:
-                r.delete(f'translate_progress{video_pk}')
+            redis_client.delete(f'translate_progress{video_pk}')
             UserVideos.objects.filter(pk=video_pk).update(translate_progress=100)
+        
+        redis_client.close()
 
         subtitles.save(path_for_subs)
 

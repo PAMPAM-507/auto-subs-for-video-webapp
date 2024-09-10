@@ -9,6 +9,7 @@ from pydub import AudioSegment
 import redis
 
 
+from web_app_auto_subs.utils.business_logic.subtitles1.progress_bar import CustomProgressBar
 from web_app_auto_subs.models import UserVideos
 from web_app_auto_subs.utils.business_logic.subtitles1.parse_str_time_to_soconds import ParseStrTimeToSeconds
 from .fuzzy_model.model import FuzzyModel
@@ -102,12 +103,16 @@ class MakeAudioRecord(MakeAudioRecordABC):
         border_for_second_term=[1, 4, 7],
         border_for_output_term = [1.4, 1.6, 1.8],
     )
+    
+    
 
     def make_audio_for_each_subtitles(
             self, video_pk: int, subtitles: pysrt.SubRipFile, base_filename: str, path_of_audio: str, 
             new_volume_for_audio: float=1.0, 
             ) -> Tuple[CompositeAudioClip, List[IO]]:
-
+        
+        redis_client = redis.Redis(host='localhost', port=6380, db=0)
+        
         audio_clips = []
         
         subtitles_len = len(subtitles)
@@ -129,9 +134,8 @@ class MakeAudioRecord(MakeAudioRecordABC):
                     
                     percentages = int(k * 100 / subtitles_len)
                     
-                    with redis.Redis(host='localhost', port=6380, db=0) as r:
-                        r.set(f'voiceover_progress{video_pk}', percentages)
-                        print('voiceover progress: ', int(r.get(f'voiceover_progress{video_pk}')))
+                    redis_client.set(f'voiceover_progress{video_pk}', percentages)
+                    print('voiceover progress: ', int(redis_client.get(f'voiceover_progress{video_pk}')))
                     checking_counter = 0
                 
 
@@ -162,10 +166,10 @@ class MakeAudioRecord(MakeAudioRecordABC):
 
                 audio_clips.append(audio_clip)
         
-        with redis.Redis(host='localhost', port=6380, db=0) as r:
-            r.delete(f'voiceover_progress{video_pk}')
-            UserVideos.objects.filter(pk=video_pk).update(translate_progress=100)
+        redis_client.delete(f'voiceover_progress{video_pk}')
+        UserVideos.objects.filter(pk=video_pk).update(voiceover_progress=100)
 
+        redis_client.close()
             
         return CompositeAudioClip(audio_clips), audio_clips
 

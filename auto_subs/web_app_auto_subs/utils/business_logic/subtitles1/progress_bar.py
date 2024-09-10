@@ -1,14 +1,17 @@
 import os
 import sys
 import time
-from typing import NoReturn
+from typing import List, NoReturn, Union
 import tqdm
 import whisper
 import datetime
 import redis
 
+from django.db.models.base import Model as Model
+
 from web_app_auto_subs.models import UserVideos
 from proglog import ProgressBarLogger
+from .fuzzy_model.descriptor import Descriptor
 
 class MyBarLogger(ProgressBarLogger):
 
@@ -46,20 +49,25 @@ class MyBarLogger(ProgressBarLogger):
                         self.k = 0
 
 
-
-
-
-
 class CustomProgressBar():
     
-    def __init__(self, redis: redis.Redis, 
+    redis_client = Descriptor()
+    variable_for_calculate_degrees = Descriptor()
+    video_pk = Descriptor()
+    redis_variable = Descriptor()
+    
+    def __init__(self, redis_client: redis.Redis, 
                  redis_variable: str, 
                  variable_for_calculate_degrees: int, 
                  video_pk: int) -> NoReturn:
-        self.__redis = redis
-        self.__variable_for_calculate_degrees = variable_for_calculate_degrees
-        self.__video_pk = video_pk
-        self.__redis_variable = redis_variable
+        self.redis_client = redis_client
+        self.variable_for_calculate_degrees = variable_for_calculate_degrees
+        self.video_pk = video_pk
+        self.redis_variable = redis_variable
+    
+
+
+    
         
         
 
@@ -84,26 +92,27 @@ class CustomProgressBar():
 
 
 class SaveResultsOfProgress():
+
     
-    
-    def print_dict(self):
-        print(self.__dict__)
-    
-    def save_to_redis(self, bar: CustomProgressBar,
-                      ) -> NoReturn:
+    def save_to_redis(self, redis_client: redis.Redis, 
+                      bar: CustomProgressBar, 
+                      counter: int,
+                      checking_counter: int) -> int:
         
         if checking_counter >= 10:
         
             percentages = self.calculate_percentages(counter, self.__variable_for_calculate_degrees)
             
-            redis.set(f'{redis_variable}{video_pk}', percentages)
-            print(f'{redis_variable}: ', int(redis.get(f'{redis_variable}{self.__video_pk}')))
+            redis_client.set(f'{bar.redis_variable}{bar.video_pk}', percentages)
+            print(f'{bar.redis_variable}: ', int(redis_client.get(f'{bar.redis_variable}{self.__video_pk}')))
             checking_counter = 0
+            
+            return checking_counter
+        
+        return checking_counter
     
-    def save_to_bd_and_delete_from_redis(model, ):
-        pass
-
-
-
-
+    def save_to_bd_and_delete_from_redis(model: Model, bar: CustomProgressBar, redis_client: redis.Redis, ):
+        redis_client.delete(f'voiceover_progress{bar.video_pk}')
+        var = getattr(model, bar.redis_variable)
+        model.objects.filter(pk=bar.video_pk).update(var=100, )
                     
