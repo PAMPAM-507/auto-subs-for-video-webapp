@@ -29,116 +29,8 @@ def make_subs(video_pk: int,
               make_audio_record: bool,
               size_of_model: str = 'tiny',
               language_for_model: str = 'en',) -> NoReturn:
-    # try:
-    #     command = f'cd {PATH_FOR_SUBTITLES} && whisper {path_of_video} --model {size_of_model} --language {language_for_model}'
-    #     logger.info(f'Executing command: {command}')
-    #     os.system(command)
-    #     logger.info('Command executed successfully')
-    # except Exception as e:
-    #     logger.error(f'Error occurred: {e}')
-    # try:
-    #     import whisper.transcribe
-    #     transcribe_module = sys.modules['whisper.transcribe']
-    #     # model = whisper.load_model(size_of_model)
-    #     # result = model.transcribe(path_of_video, language=language_for_model, fp16=False, verbose=None)
-    #     import contextlib
-
-        # @contextlib.contextmanager
-        # def temporary_tqdm_replacement():
-        #     original_tqdm = transcribe_module.tqdm.tqdm
-        #     transcribe_module.tqdm.tqdm = _CustomProgressBar
-        #     try:
-        #         yield
-        #     finally:
-        #         transcribe_module.tqdm.tqdm = original_tqdm
-        
-        
-    #     @contextlib.contextmanager
-    #     def temporary_tqdm_replacement(video_pk):
-    #         original_tqdm = transcribe_module.tqdm.tqdm
-    #         transcribe_module.tqdm.tqdm = lambda *args, **kwargs: _CustomProgressBar(*args, video_pk=video_pk, **kwargs)
-    #         try:
-    #             yield
-    #         finally:
-    #             transcribe_module.tqdm.tqdm = original_tqdm
-
-        
-    #     with temporary_tqdm_replacement(video_pk):
-    #         model = whisper.load_model(size_of_model)
-    #         result = model.transcribe(path_of_video, language=language_for_model, fp16=False, verbose=None)
-
-    #     print('whisper')
-        
-
-    # except Exception as e:
-    #     logger.error(f'Error occurred: {e}')
     
     try:
-        # import subprocess
-        # import contextlib
-        # import whisper.transcribe
-        # import sys
-        
-        # from moviepy.editor import VideoFileClip
-
-
-        # def run_whisper_command_with_progress(video_pk, path_of_video, size_of_model, language_for_model):
-        #     command = f'cd {PATH_FOR_SUBTITLES} && whisper {path_of_video} --model {size_of_model} --language {language_for_model}'
-            
-        #     # Создание объекта VideoFileClip
-        #     video_clip = VideoFileClip(path_of_video)
-
-        #     # Получение продолжительности видео в секундах
-        #     duration_in_seconds = video_clip.duration
-        #     percentages = 0.0
-
-
-        #     try:
-        #         process = subprocess.Popen(
-        #             command, 
-        #             shell=True, 
-        #             stdout=subprocess.PIPE, 
-        #             stderr=subprocess.PIPE,
-        #             text=True
-        #         )
-
-        #         # Считываем вывод процесса построчно и обновляем прогресс-бар
-        #         for line in process.stdout:
-        #             # print(line[0:25], end='')
-                    
-        #             # line[1:7]
-        #             time_str = line[15:20]
-        #             minutes, seconds = time_str.split(':')
-        #             total_seconds = int(minutes) * 60 + int(seconds)
-                    
-        #             percentages = total_seconds * 100 / duration_in_seconds
-        #             percentages = int(percentages)
-                    
-        #             if percentages > 100:
-        #                 percentages = 100
-                        
-        #             with redis.Redis(host='localhost', port=6380, db=0) as r:
-        #                 r.set(f'whisper_progress{video_pk}', percentages)
-        #                 print('Progress of transcription process: ', int(r.get(f'whisper_progress{video_pk}')))
-                    
-        #             # print(percentages)
-
-
-        #         process.wait()
-
-        #         if process.returncode != 0:
-        #             raise subprocess.CalledProcessError(process.returncode, command)
-
-        #     except Exception as e:
-        #         print(f"Error occurred: {e}")
-
-        # # Пример вызова функции
-        # run_whisper_command_with_progress(
-        #     video_pk=video_pk,
-        #     path_of_video=path_of_video,
-        #     size_of_model=size_of_model,
-        #     language_for_model=language_for_model
-        # )
         
         StartWhisper().run(
             video_pk=video_pk, 
@@ -166,6 +58,8 @@ def make_subs(video_pk: int,
             path_of_audio=PATH_FOR_AUDIO,
             path_with_str=PATH_FOR_SUBTITLES,
             translate_var=make_audio_record,
+            src_language=language_for_model, 
+            dest_language=subs_language,
         )
         
         # except Exception as e:

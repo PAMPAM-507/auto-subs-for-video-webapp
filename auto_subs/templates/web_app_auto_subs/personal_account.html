@@ -24,11 +24,6 @@
                     <span id="translateProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;" data-translate-progress="0"></span>
                 </div>
 
-                <div class="progressBar">
-                    <div>Рендеринг: <span id="moviepyText{{ video.pk }}">0%</span></div>
-                    <span id="moviepyProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;" data-moviepy-progress="0"></span>
-                </div>
-                
                 {% if video.make_audio_record %}
                     <div class="progressBar">
                         <div>Создание озвучки: <span id="voiceoverText{{ video.pk }}">0%</span></div>
@@ -36,11 +31,22 @@
                     </div>
                 {% endif %}
 
+                <div class="progressBar">
+                    <div>Рендеринг: <span id="moviepyText{{ video.pk }}">0%</span></div>
+                    <span id="moviepyProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;" data-moviepy-progress="0"></span>
+                </div>
+                
+                
+                <form id="downloadForm{{ video.pk }}" method="post" action="{% url 'download_video' video.pk %}" style="display: none;">
+                    {% csrf_token %}
+                    <button type="submit">Скачать видео</button>
+                </form>
                 <!-- Форма удаления, скрытая по умолчанию -->
                 <form id="deleteForm{{ video.pk }}" method="post" action="{% url 'delete_video' video.pk %}" style="display: none;">
                     {% csrf_token %}
                     <button type="submit">Удалить видео</button>
                 </form>
+                
 
                 <br>
             </div>
@@ -104,7 +110,9 @@
                     if (moviepyProgress < 100 || whisperProgress < 100 || translateProgress < 100 || voiceoverProgress < 100) {
                         // AJAX-запрос для получения прогресса
                         $.ajax({
-                            url: `http://localhost:8000/progress_bar/?video_id=${videoPk}`,
+                            url: `http://127.0.0.1:8000/progress_bar/?video_id=${videoPk}`,
+                            {% comment %} url: `https://127.0.0.1/progress_bar/?video_id=${videoPk}`, {% endcomment %}
+                            {% comment %} url: `https://192.168.0.109/progress_bar/?video_id=${videoPk}`, {% endcomment %}
                             type: 'GET',
                             success: function(response) {
                                 // Обновляем значения прогресса на странице
@@ -141,6 +149,7 @@
 
                                     // Показываем форму для удаления видео
                                     $(`#deleteForm${response.video_id}`).show();
+                                    $(`#downloadForm${response.video_id}`).show();
                                 }
                             },
                             error: function(xhr, status, error) {

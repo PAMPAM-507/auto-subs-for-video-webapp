@@ -25,7 +25,11 @@ class MyGoogleTranslator(MYTranslatorABC):
 
     translator = Translator()
 
-    def make_translate(self, subtitles: pysrt.SubRipFile, path_for_subs: str, video_pk: int) -> NoReturn:
+    def make_translate(self, subtitles: pysrt.SubRipFile, 
+                       path_for_subs: str, 
+                       video_pk: int, 
+                       src_language: str='en', 
+                       dest_language: str='ru') -> NoReturn:
         
         redis_client = redis.Redis(host='localhost', port=6380, db=0)
         
@@ -43,7 +47,7 @@ class MyGoogleTranslator(MYTranslatorABC):
         for j in range(len(sentences)):
             try:
                 translation = self.translator.translate(
-                    text=sentences[j].text, src='en', dest="ru")
+                    text=sentences[j].text, src=src_language, dest=dest_language)
                 lst.append(translation.text)
                 k += 1
                 checking_counter += 1

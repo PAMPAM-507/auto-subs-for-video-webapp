@@ -1,5 +1,6 @@
 from django.urls import path
-from django.contrib.auth.views import LogoutView, PasswordChangeDoneView
+from django.contrib.auth.views import LogoutView, PasswordChangeDoneView, \
+    PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 
 
 from .views import *
@@ -21,7 +22,8 @@ urlpatterns = [
     
     path('personal_account/<int:pk>/', GetVideo.as_view(), name='watch_video'),
     path('stream/<int:pk>/', get_streaming_video, name='stream'),
-
+    path('download_video/<int:video_pk>/', download_video, name='download_video'),
+    
     path('edit_profile/', ChangeUserInfo.as_view(), name='edit_profile'),
     
     path('change_password/', PasswordChange.as_view(), name='password_change'),
@@ -32,4 +34,21 @@ urlpatterns = [
 
 
     path('progress_bar/', test.as_view(), name='progress_bar'),
+    
+    
+    path('password_reset/', PasswordResetView.as_view(template_name='web_app_auto_subs/password_reset_form.html', 
+                                                      email_template_name='web_app_auto_subs/password_reset_email.html',
+                                                      success_url=reverse_lazy('password_reset_done'),), 
+         name='password_reset'),
+    # path('password_reset/', MyPasswordResetView.as_view(), name='password_reset'),
+    path('password_reset/done/', PasswordResetDoneView.as_view(template_name='web_app_auto_subs/password_reset_done.html',), 
+        name='password_reset_done'),
+    path('password_reset/<uidb64>/<token>/', PasswordResetConfirmView.as_view(template_name='web_app_auto_subs/password_reset_confirm.html',
+                                                                    success_url=reverse_lazy('password_reset_complete')), 
+        name='password_reset_confirm'),
+    path('password_reset/complete/', PasswordResetCompleteView.as_view(template_name='web_app_auto_subs/password_reset_complete.html',
+                                                                       ), 
+        name='password_reset_complete'),
+    
+    
 ]

@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.contrib.auth import update_session_auth_hash
 from django.db.models import QuerySet
-from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse, HttpRequest
+from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse, HttpRequest, FileResponse
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
@@ -16,7 +16,7 @@ from django.contrib.auth import get_user_model
 from django.views.generic.edit import CreateView, FormView, UpdateView, DeleteView
 from django.views.generic import ListView, DetailView
 from django.views.generic import TemplateView
-from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordResetView
 from django.contrib.auth import logout
 from django.contrib.auth.models import Group
 from django.urls import reverse_lazy
@@ -63,6 +63,7 @@ class UploadVideo(LoginRequiredMixin, UploadVideoMixin, ContextMixin, FormView):
         form = form.save(commit=False)
 
         subs_language_pk = self.request.POST.get('subs_language')
+        video_language_pk = self.request.POST.get('video_language')
 
         form.user = self.request.user
 
@@ -75,17 +76,17 @@ class UploadVideo(LoginRequiredMixin, UploadVideoMixin, ContextMixin, FormView):
             user_video.name_of_video)
         user_video.save()
 
-        # user_video = UserVideos.objects.filter(
-        #     user=self.request.user).latest('uploaded_at')
-
         subs_language = LanguagesForTranslateVideo.objects.get(
             pk=subs_language_pk)
-
+        video_language = LanguagesForTranslateVideo.objects.get(
+            pk=video_language_pk)
+        
         make_subs.delay(user_video.pk,
                         BASE_PATH_OF_VIDEO +
                         str(user_video.video),
                         str(subs_language.language),
                         bool(user_video.make_audio_record),
+                        language_for_model=video_language.language
                         )
 
         return super().form_valid(form)
@@ -265,6 +266,40 @@ def get_streaming_video(request, pk: int) -> StreamingHttpResponse:
     response['Cache-Control'] = 'no-cache'
     response['Content-Range'] = content_range
     return response
+
+
+def download_video(request, video_pk):
+    video = get_object_or_404(UserVideos, pk=video_pk)
+    file_path = video.videos_with_subs.path
+    response = FileResponse(open(file_path, 'rb'))
+    response['Content-Type'] = 'application/octet-stream'
+    response['Content-Disposition'] = f'attachment; filename="{video.name_of_video}.mp4"'
+    return response
+
+
+class MyPasswordResetView(PasswordResetView,):
+    template_name='web_app_auto_subs/password_reset_form.html'
+    email_template_name='web_app_auto_subs/password_reset_email.html'
+    success_url=reverse_lazy('password_reset_done')
+    # PasswordResetMixin, 
+    
+    def form_valid(self, form: Form) -> HttpResponse:
+        
+        print(form.cleaned_data.get('email'))
+        
+        user = get_user_model().objects.get(username=form.cleaned_data.get('email'))
+        
+        try:
+            self.send_mail_to_confirm_registration(user)
+
+        except:
+            form.add_error(None, 'Не удалось отправить сообщение')
+
+            self.handle_errors_related_to_wrong_adding_user(user)
+
+        return super().form_valid(form)
+        
+    
 
 
 class ChangeUserInfo(PermissionRequiredMixin, LoginRequiredMixin, FormView):

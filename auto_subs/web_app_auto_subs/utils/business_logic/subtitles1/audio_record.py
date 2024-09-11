@@ -100,12 +100,10 @@ class MakeAudioRecord(MakeAudioRecordABC):
     
     model = FuzzyModel(
         border_for_first_term=[0, 8, 16], 
-        border_for_second_term=[1, 4, 7],
-        border_for_output_term = [1.4, 1.6, 1.8],
+        border_for_second_term=[1, 3, 5],
+        border_for_output_term = [1.4, 1.7, 2.0],
     )
     
-    
-
     def make_audio_for_each_subtitles(
             self, video_pk: int, subtitles: pysrt.SubRipFile, base_filename: str, path_of_audio: str, 
             new_volume_for_audio: float=1.0, 

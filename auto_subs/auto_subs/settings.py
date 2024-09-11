@@ -16,9 +16,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1',
                  'auto-subs.ru', 'subs', 
-                 'auto-subs', 'autosubs',]
+                 'auto-subs', 'autosubs', 
+                 '192.168.0.109',]
 
-'192.168.0.109',
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -137,7 +138,11 @@ AUTHENTICATION_BACKENDS = (
     # 'allauth.account.auth_backends.AuthenticationBackend',
     
     'django.contrib.auth.backends.ModelBackend',
+    'web_app_auto_subs.auth.EmailAuthBackend',
 )
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',

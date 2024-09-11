@@ -39,7 +39,8 @@ class HandleVideo():
         path_of_audio: str,
         path_with_str: str, 
         translate_var: Union[bool, str] =None,
-        
+        src_language='en', 
+        dest_language='ru',
         ) -> NoReturn:
         
         
@@ -57,7 +58,11 @@ class HandleVideo():
 
             
 
-            MyGoogleTranslator().make_translate(subtitles, srtfilename, video_pk)
+            MyGoogleTranslator().make_translate(subtitles, 
+                                                srtfilename, 
+                                                video_pk, 
+                                                src_language=src_language, 
+                                                dest_language=dest_language,)
             # MyLocalTranslator().make_translate(subtitles, srtfilename)
 
         except Exception as e:

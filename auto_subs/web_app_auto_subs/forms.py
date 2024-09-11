@@ -8,11 +8,19 @@ from django.core.exceptions import ValidationError
 
 
 class DocumentForm(forms.ModelForm):
+    
+    video_language = forms.ModelChoiceField(
+        queryset=LanguagesForTranslateVideo.objects.all(),
+        label='Выберите язык, использующийся в оригинальном видео',
+        # initial ='Русский',
+    )
+    
     subs_language = forms.ModelChoiceField(
         queryset=LanguagesForTranslateVideo.objects.all(),
         label='Выберите язык для субтитров',
         # initial ='Русский',
     )
+    
     video = forms.FileField(
         validators=[FileExtensionValidator(allowed_extensions=['mp4'])],
         label='Загрузка видео'                  
@@ -22,7 +30,17 @@ class DocumentForm(forms.ModelForm):
         model = UserVideos
         fields = ('video', 'make_audio_record')
         widgets = {'user': forms.HiddenInput(),}
+    
+    
+    def clean_subs_language(self):
+        subs_language = self.cleaned_data['subs_language']
+        video_language = self.cleaned_data['video_language']
+        make_audio_record = self.cleaned_data['make_audio_record']
+        
+        if subs_language == video_language and make_audio_record:
+            raise ValidationError('Языки для субтитров и язык, использующийся в видео не должны совпадать при включенном аудио переводе')
 
+        return subs_language
 
 class RegisterUserForm(UserCreationForm):
     username = forms.EmailField(label='Email ')

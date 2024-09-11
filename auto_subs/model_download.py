@@ -20,15 +20,15 @@
 #     print("CUDA is not available. No GPU found.")
 
 
-import redis
+# import redis
 
 
-with redis.Redis(host='localhost', port=6380, db=0) as r:
+# with redis.Redis(host='localhost', port=6380, db=0) as r:
         
         
-    r.delete(f'moviepy_progress{10}')
-    r.delete(f'whisper_progress{10}')
+#     r.delete(f'moviepy_progress{10}')
+#     r.delete(f'whisper_progress{10}')
     
     
     
-    print(list(r.scan_iter('*')))
+#     print(list(r.scan_iter('*')))
