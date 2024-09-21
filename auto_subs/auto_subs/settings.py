@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'social_django',
-
+    
     'web_app_auto_subs.apps.WebAppAutoSubsConfig',
     
     'django.contrib.sites',
@@ -45,8 +45,13 @@ INSTALLED_APPS = [
     # 'allauth.socialaccount.providers.google',
 ]
 
-TELEGRAM_BOT_NAME = 'pam_pam_507_bot'
-SOCIAL_AUTH_TELEGRAM_BOT_TOKEN = '5818607721:AAExOmZRhd0R_of7klHeMuV8p5Bjv_oq2oo'
+TELEGRAM_BOT_NAME = 'subsTelegramLoginBot'
+TELEGRAM_BOT_TOKEN = '8032773057:AAFdoGlv588mM68VOGv4mrfaTLxhrJcdRx4'
+TELEGRAM_LOGIN_REDIRECT_URL = 'https://auto-subs.ru/'
+
+
+# TELEGRAM_BOT_NAME = 'pam_pam_507_bot'
+# SOCIAL_AUTH_TELEGRAM_BOT_TOKEN = '5818607721:AAExOmZRhd0R_of7klHeMuV8p5Bjv_oq2oo'
 # TELEGRAM_LOGIN_REDIRECT_URL = 'https://auto-subs.ru/'
 
 
@@ -177,8 +182,8 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SEC
 SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = 'http://127.0.0.1:8000/social_auth/complete/google-oauth2/'
 
 
-SOCIAL_AUTH_TELEGRAM_KEY = os.environ.get('SOCIAL_AUTH_TELEGRAM_KEY')
-SOCIAL_AUTH_TELEGRAM_SECRET = os.environ.get('SOCIAL_AUTH_TELEGRAM_SECRET')
+# SOCIAL_AUTH_TELEGRAM_KEY = os.environ.get('SOCIAL_AUTH_TELEGRAM_KEY')
+# SOCIAL_AUTH_TELEGRAM_SECRET = os.environ.get('SOCIAL_AUTH_TELEGRAM_SECRET')
 
 
 # Internationalization

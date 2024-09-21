@@ -4,10 +4,13 @@ import pysrt
 import os
 import sys
 
+import redis
+
 
 from .put_subs import PutSubs
 from .my_translator import MyGoogleTranslator, MyLocalTranslator
 from .audio_record import MakeAudioRecord
+from .progress_bar import RedisProgressValue
 
 # class HandleVideo():
 
@@ -38,7 +41,7 @@ class HandleVideo():
         path_for_new_video: str,
         path_of_audio: str,
         path_with_str: str, 
-        translate_var: Union[bool, str] =None,
+        translate_var: Union[bool, str]=None,
         src_language='en', 
         dest_language='ru',
         ) -> NoReturn:
@@ -61,6 +64,7 @@ class HandleVideo():
             MyGoogleTranslator().make_translate(subtitles, 
                                                 srtfilename, 
                                                 video_pk, 
+                                                progress_value=RedisProgressValue(redis_client=redis.Redis(host='localhost', port=6380, db=0)),
                                                 src_language=src_language, 
                                                 dest_language=dest_language,)
             # MyLocalTranslator().make_translate(subtitles, srtfilename)
@@ -92,6 +96,7 @@ class HandleVideo():
                 subtitles=subtitles, 
                 base_filename=name_of_video.split(".")[0], 
                 path_of_audio=path_of_audio, 
+                progress_value=RedisProgressValue(redis_client=redis.Redis(host='localhost', port=6380, db=0)),
                 new_volume_for_audio=6.0,)
 
 

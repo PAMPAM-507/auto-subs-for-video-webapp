@@ -51,4 +51,7 @@ urlpatterns = [
         name='password_reset_complete'),
     
     
+    path('test', callback, name='callback')
+    
+    
 ]

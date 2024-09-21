@@ -11,6 +11,7 @@ from colorama import Fore, init
 import redis
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
+from .progress_bar import ABCProgressValue
 from web_app_auto_subs.models import UserVideos
 
 
@@ -25,14 +26,13 @@ class MyGoogleTranslator(MYTranslatorABC):
 
     translator = Translator()
 
-    def make_translate(self, subtitles: pysrt.SubRipFile, 
+    def make_translate(self, subtitles: pysrt.SubRipFile,
                        path_for_subs: str, 
                        video_pk: int, 
+                       progress_value: ABCProgressValue,
                        src_language: str='en', 
                        dest_language: str='ru') -> NoReturn:
-        
-        redis_client = redis.Redis(host='localhost', port=6380, db=0)
-        
+                
         lst = []
         for s in subtitles:
             lst.append(s)
@@ -55,9 +55,12 @@ class MyGoogleTranslator(MYTranslatorABC):
                 percentages = int((k * 100 / subs_len) / 2)
                 
                 if checking_counter > 15:
-
-                    redis_client.set(f'translate_progress{video_pk}', percentages)
-                    print('Translate progress: ', int(redis_client.get(f'translate_progress{video_pk}')))
+                    
+                    progress_value.set_progress_value(f'translate_progress{video_pk}', percentages)
+                    print('Translate progress: ', int(progress_value.get_progress_value(f'translate_progress{video_pk}')))
+                    
+                    # redis_client.set(f'translate_progress{video_pk}', percentages)
+                    # print('Translate progress: ', int(redis_client.get(f'translate_progress{video_pk}')))
                     checking_counter = 0
                     
             except Exception as e:
@@ -78,14 +81,20 @@ class MyGoogleTranslator(MYTranslatorABC):
             
             if checking_counter > 15:
                 
-                redis_client.set(f'translate_progress{video_pk}', percentages2)
-                print('Translate progress: ', int(redis_client.get(f'translate_progress{video_pk}')))
+                progress_value.set_progress_value(f'translate_progress{video_pk}', percentages2)
+                print('Translate progress: ', int(progress_value.get_progress_value(f'translate_progress{video_pk}')))
+                
+                # redis_client.set(f'translate_progress{video_pk}', percentages2)
+                # print('Translate progress: ', int(redis_client.get(f'translate_progress{video_pk}')))
                 checking_counter = 0
-        
-            redis_client.delete(f'translate_progress{video_pk}')
+
+            progress_value.delete_progress_value(f'translate_progress{video_pk}')
+            
+            # redis_client.delete(f'translate_progress{video_pk}')
             UserVideos.objects.filter(pk=video_pk).update(translate_progress=100)
         
-        redis_client.close()
+        progress_value.close()
+        # redis_client.close()
 
         subtitles.save(path_for_subs)
 
@@ -95,9 +104,9 @@ class MyLocalTranslator(MYTranslatorABC):
     init()
 
     tokenizer = AutoTokenizer.from_pretrained(
-        Path.cwd() / 'web_app_auto_subs' / 'utils' / 'business_logic' / 'subtitles1' / 'model' / 'en-ru-local')
+        Path.cwd() / 'web_app_auto_subs' / 'utils' / 'services' / 'subtitles1' / 'model' / 'en-ru-local')
     model = AutoModelForSeq2SeqLM.from_pretrained(
-        Path.cwd() / 'web_app_auto_subs' / 'utils' / 'business_logic' / 'subtitles1' / 'model' / 'en-ru-local')
+        Path.cwd() / 'web_app_auto_subs' / 'utils' / 'services' / 'subtitles1' / 'model' / 'en-ru-local')
 
     def translate_phrase(self, phrase: str) -> str:
         inputs = self.tokenizer(phrase, return_tensors="pt")

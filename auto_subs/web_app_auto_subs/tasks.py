@@ -13,11 +13,13 @@ from auto_subs.settings import BASE_DIR, BASE_PATH_OF_VIDEO, logger, PATH_FOR_SU
 
 from django.core.mail import send_mail, send_mass_mail
 
+from web_app_auto_subs.utils.services.subtitles1.progress_bar import RedisProgressValue
+
 from .models import UserVideos
 
-from web_app_auto_subs.utils.business_logic.subtitles1.start_whisper import StartWhisper
-from web_app_auto_subs.utils.business_logic.subtitles1.remove_all_helping_files import RemoveAllHelpingFiles
-from web_app_auto_subs.utils.business_logic.subtitles1.handle_video import HandleVideo
+from web_app_auto_subs.utils.services.subtitles1.start_whisper import StartWhisper
+from web_app_auto_subs.utils.services.subtitles1.remove_all_helping_files import RemoveAllHelpingFiles
+from web_app_auto_subs.utils.services.subtitles1.handle_video import HandleVideo
 from web_app_auto_subs.utils.services.make_srt import MakingSrt
 from .utils.services.email.send_email import SendEmail
 
@@ -32,11 +34,11 @@ def make_subs(video_pk: int,
     
     try:
         
-        StartWhisper().run(
-            video_pk=video_pk, 
-            path_of_video=path_of_video, 
-            size_of_model=size_of_model, 
-            language_for_model=language_for_model
+        StartWhisper(progress_value=RedisProgressValue(redis_client=redis.Redis(host='localhost', port=6380, db=0)),).run(
+            video_pk=video_pk,
+            path_of_video=path_of_video,
+            size_of_model=size_of_model,
+            language_for_model=language_for_model,
         )
     
     except Exception as e:

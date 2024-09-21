@@ -26,11 +26,11 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import connection
 
 from auto_subs.settings import BASE_PATH_OF_VIDEO, PATH_FOR_VIDEO_WITH_SUBS, PATH_FOR_VIDEOS
-from web_app_auto_subs.utils.business_logic.mixins.progress_bar_api_mixin import ProgressBarAPIMixin
-from web_app_auto_subs.utils.business_logic.mixins.change_email_mixin import ChangeEmailMixin
-from web_app_auto_subs.utils.business_logic.mixins.register_mixin import RegisterMixin
-from web_app_auto_subs.utils.business_logic.mixins.context_mixin import ContextMixin
-from web_app_auto_subs.utils.business_logic.mixins.upload_video_mixin import UploadVideoMixin
+from web_app_auto_subs.utils.services.mixins.progress_bar_api_mixin import ProgressBarAPIMixin
+from web_app_auto_subs.utils.services.mixins.change_email_mixin import ChangeEmailMixin
+from web_app_auto_subs.utils.services.mixins.register_mixin import RegisterMixin
+from web_app_auto_subs.utils.services.mixins.context_mixin import ContextMixin
+from web_app_auto_subs.utils.services.mixins.upload_video_mixin import UploadVideoMixin
 
 from .forms import *
 from .tasks import *
@@ -91,6 +91,17 @@ class UploadVideo(LoginRequiredMixin, UploadVideoMixin, ContextMixin, FormView):
 
         return super().form_valid(form)
 
+from django.conf import settings
+
+from django_telegram_login.authentication import verify_telegram_authentication
+from django_telegram_login.errors import (
+    NotTelegramDataError, 
+    TelegramDataIsOutdatedError,
+)
+
+bot_name = settings.TELEGRAM_BOT_NAME
+bot_token = settings.TELEGRAM_BOT_TOKEN
+redirect_url = settings.TELEGRAM_LOGIN_REDIRECT_URL
 
 class MainMenu(ContextMixin, TemplateView):
     template_name: str = 'web_app_auto_subs/base.html'
@@ -99,7 +110,33 @@ class MainMenu(ContextMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context = self.get_mixin_context(
             context, message=Title.objects.get(name='Описание').title, cur_menu='Главная')
+        
+        if self.request.GET.get('hash'):
+            result = verify_telegram_authentication(
+            bot_token=bot_token, request_data=self.request.GET
+        )
+            return HttpResponse('Hello, ' + result['first_name'] + '!')
+
+            
+            
         return context
+
+from django_telegram_login.widgets.generator import (
+    create_callback_login_widget,
+    create_redirect_login_widget,
+)
+from django_telegram_login.widgets.constants import (
+    SMALL, 
+    MEDIUM, 
+    LARGE,
+    DISABLE_USER_PHOTO,
+)
+def callback(request):
+    telegram_login_widget = create_callback_login_widget(bot_name, size=SMALL)
+
+    context = {'telegram_login_widget': telegram_login_widget}
+    return render(request, 'test.html', context)
+
 
 
 class RegisterUser(RegisterMixin, ContextMixin, CreateView):

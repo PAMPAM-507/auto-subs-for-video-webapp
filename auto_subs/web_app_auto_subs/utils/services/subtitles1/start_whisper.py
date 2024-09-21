@@ -8,6 +8,7 @@ import redis
 import whisper.transcribe
 from moviepy.editor import VideoFileClip
 
+from .progress_bar import ABCProgressValue
 from auto_subs.settings import PATH_FOR_SUBTITLES
 from auto_subs.settings import logger
 from web_app_auto_subs.models import UserVideos
@@ -15,8 +16,11 @@ from web_app_auto_subs.models import UserVideos
 
 class StartWhisper():
     
+    def __init__(self, progress_value: ABCProgressValue) -> NoReturn:
+        self.progress_value = progress_value
+    
     @staticmethod
-    def calculate_percentages(total_seconds: int, duration_in_seconds: int) -> int:
+    def __calculate_percentages(total_seconds: int, duration_in_seconds: int) -> int:
         """Method to calculate percentage by duration in seconds=100% and total_seconds - 
         amount of seconds which were executed
         """
@@ -39,7 +43,7 @@ class StartWhisper():
     
     
     @staticmethod
-    def parse_str_time_to_seconds(time_str: str) -> int:
+    def __parse_str_time_to_seconds(time_str: str) -> int:
         """Method parse time string to seconds
 
         Args:
@@ -99,22 +103,28 @@ class StartWhisper():
                 
                 for line in process.stdout:
 
-                    total_seconds = self.parse_str_time_to_seconds(time_str=line[15:20])
+                    total_seconds = self.__parse_str_time_to_seconds(time_str=line[15:20])
                     
-                    percentages = self.calculate_percentages(total_seconds, duration_in_seconds)
+                    percentages = self.__calculate_percentages(total_seconds, duration_in_seconds)
                     
+                    self.progress_value.set_progress_value(f'whisper_progress{video_pk}', percentages)
+                    print('Progress of transcription process: ', int(self.progress_value.get_progress_value(f'whisper_progress{video_pk}')))
                     
-                    with redis.Redis(host='localhost', port=6380, db=0) as r:
-                        r.set(f'whisper_progress{video_pk}', percentages)
-                        print('Progress of transcription process: ', int(r.get(f'whisper_progress{video_pk}')))
+                    # with redis.Redis(host='localhost', port=6380, db=0) as r:
+                    #     r.set(f'whisper_progress{video_pk}', percentages)
+                    #     print('Progress of transcription process: ', int(r.get(f'whisper_progress{video_pk}')))
 
                 process.wait()
 
                 if process.returncode != 0:
                     raise subprocess.CalledProcessError(process.returncode, command)
                 
-                with redis.Redis(host='localhost', port=6380, db=0) as r:
-                    r.delete(f'whisper_progress{video_pk}')
+                self.progress_value.delete_progress_value(f'whisper_progress{video_pk}')
+                self.progress_value.close()
+                
+                # with redis.Redis(host='localhost', port=6380, db=0) as r:
+                #     r.delete(f'whisper_progress{video_pk}')
+                
                 UserVideos.objects.filter(pk=video_pk).update(whisper_progress=100)
 
         except Exception as e:

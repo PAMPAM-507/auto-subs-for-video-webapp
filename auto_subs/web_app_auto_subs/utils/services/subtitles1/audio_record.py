@@ -9,9 +9,9 @@ from pydub import AudioSegment
 import redis
 
 
-from web_app_auto_subs.utils.business_logic.subtitles1.progress_bar import CustomProgressBar
+from .progress_bar import ABCProgressValue
 from web_app_auto_subs.models import UserVideos
-from web_app_auto_subs.utils.business_logic.subtitles1.parse_str_time_to_soconds import ParseStrTimeToSeconds
+from web_app_auto_subs.utils.services.subtitles1.parse_str_time_to_soconds import ParseStrTimeToSeconds
 from .fuzzy_model.model import FuzzyModel
 from .fuzzy_model.defuzzification import DefuzzificationByHeightMethod
 from .fuzzy_model.fazzification import SolveInputValueForModelWithTwoParameters
@@ -104,12 +104,18 @@ class MakeAudioRecord(MakeAudioRecordABC):
         border_for_output_term = [1.4, 1.7, 2.0],
     )
     
+    
+    
     def make_audio_for_each_subtitles(
-            self, video_pk: int, subtitles: pysrt.SubRipFile, base_filename: str, path_of_audio: str, 
+            self, video_pk: int, 
+            subtitles: pysrt.SubRipFile, 
+            base_filename: str, 
+            path_of_audio: str, 
+            progress_value: ABCProgressValue, 
             new_volume_for_audio: float=1.0, 
             ) -> Tuple[CompositeAudioClip, List[IO]]:
         
-        redis_client = redis.Redis(host='localhost', port=6380, db=0)
+        
         
         audio_clips = []
         
@@ -132,8 +138,11 @@ class MakeAudioRecord(MakeAudioRecordABC):
                     
                     percentages = int(k * 100 / subtitles_len)
                     
-                    redis_client.set(f'voiceover_progress{video_pk}', percentages)
-                    print('voiceover progress: ', int(redis_client.get(f'voiceover_progress{video_pk}')))
+                    progress_value.set_progress_value(f'voiceover_progress{video_pk}', percentages)
+                    print('voiceover progress: ', int(progress_value.get_progress_value(f'voiceover_progress{video_pk}')))
+                    
+                    # redis_client.set(f'voiceover_progress{video_pk}', percentages)
+                    # print('voiceover progress: ', int(redis_client.get(f'voiceover_progress{video_pk}')))
                     checking_counter = 0
                 
 
@@ -164,10 +173,15 @@ class MakeAudioRecord(MakeAudioRecordABC):
 
                 audio_clips.append(audio_clip)
         
-        redis_client.delete(f'voiceover_progress{video_pk}')
+        progress_value.delete_progress_value(f'voiceover_progress{video_pk}')
+        progress_value.close()
+        
+        # redis_client.delete(f'voiceover_progress{video_pk}')
+        # redis_client.close()
+        
         UserVideos.objects.filter(pk=video_pk).update(voiceover_progress=100)
 
-        redis_client.close()
+        
             
         return CompositeAudioClip(audio_clips), audio_clips
 

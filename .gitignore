@@ -1,5 +1,5 @@
 venv*
-auto_subs/web_app_auto_subs/utils/business_logic/subtitles1/model
+auto_subs/web_app_auto_subs/utils/services/subtitles1/model
 **/__pycache__
 **/.idea
 **/.vscode
