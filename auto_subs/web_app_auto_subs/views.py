@@ -24,6 +24,8 @@ import redis
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import connection
+from django.core.cache import cache
+
 
 from auto_subs.settings import BASE_PATH_OF_VIDEO, PATH_FOR_VIDEO_WITH_SUBS, PATH_FOR_VIDEOS
 from web_app_auto_subs.utils.services.mixins.progress_bar_api_mixin import ProgressBarAPIMixin
@@ -59,13 +61,15 @@ class UploadVideo(LoginRequiredMixin, UploadVideoMixin, ContextMixin, FormView):
         return context
 
     def form_valid(self, form: Form) -> HttpResponse:
+        
+        user = self.request.user
 
         form = form.save(commit=False)
 
         subs_language_pk = self.request.POST.get('subs_language')
         video_language_pk = self.request.POST.get('video_language')
 
-        form.user = self.request.user
+        form.user = user
 
         form.save()
 
@@ -81,12 +85,17 @@ class UploadVideo(LoginRequiredMixin, UploadVideoMixin, ContextMixin, FormView):
         video_language = LanguagesForTranslateVideo.objects.get(
             pk=video_language_pk)
         
+        user_videos = UserVideos.objects.filter(user=self.request.user)
+        count_videos = user_videos.count()
+        
         make_subs.delay(user_video.pk,
                         BASE_PATH_OF_VIDEO +
                         str(user_video.video),
                         str(subs_language.language),
                         bool(user_video.make_audio_record),
-                        language_for_model=video_language.language
+                        user_email=user.email,
+                        page_number=count_videos,
+                        language_for_model=video_language.language,
                         )
 
         return super().form_valid(form)
@@ -108,8 +117,14 @@ class MainMenu(ContextMixin, TemplateView):
 
     def get_context_data(self, **kwargs) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
+        
+        message = cache.get('Description')
+        if not message:
+            message = Title.objects.get(name='Описание').title
+            cache.set('Description', message, 1000)
+            
         context = self.get_mixin_context(
-            context, message=Title.objects.get(name='Описание').title, cur_menu='Главная')
+            context, message=message, cur_menu='Главная')
         
         if self.request.GET.get('hash'):
             result = verify_telegram_authentication(
@@ -140,7 +155,7 @@ def callback(request):
 
 
 class RegisterUser(RegisterMixin, ContextMixin, CreateView):
-    form_class: Form = RegisterUserForm  # UserCreationForm
+    form_class: Form = RegisterUserForm
     template_name: str = 'web_app_auto_subs/register.html'
     success_url: str = reverse_lazy('login')
 
@@ -155,7 +170,7 @@ class RegisterUser(RegisterMixin, ContextMixin, CreateView):
 
         user = form.save(commit=False)
         user.is_active = False
-
+        user.email = user.username
         user.save()
 
         if group:

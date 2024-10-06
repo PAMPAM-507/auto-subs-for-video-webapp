@@ -18,17 +18,17 @@ class ProgressBarAPIMixin():
         except ConnectionError:
             pass
         except (ValueError, TypeError) as e:
-            logger.error(f'Error occurred: {e}')
+            logger.error(f'ValueError, TypeError in method get_progress_infoError in class ProgressBarAPIMixin. occurred: {e}')
             print(e)
         except Exception as e:
-            logger.error(f'Error occurred: {e}')
+            logger.error(f'ExceptionError in method get_progress_infoError in class ProgressBarAPIMixin. occurred: {e}')
             print(e)
         
 
         try:            
             video = UserVideos.objects.get(pk=video_pk)
         except UserVideos.DoesNotExist:
-            logger.error(f'Video with pk={video_pk} not found')
+            logger.error(f'Video with pk={video_pk} not found. in class ProgressBarAPIMixin')
             
         
         if not progress:

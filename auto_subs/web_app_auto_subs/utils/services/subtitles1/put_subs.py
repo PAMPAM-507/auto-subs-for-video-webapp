@@ -7,7 +7,7 @@ import tqdm
 import pysrt
 from moviepy.editor import VideoFileClip, TextClip, CompositeVideoClip, CompositeAudioClip
 
-from .progress_bar import MyBarLogger, RedisProgressValue
+from .progress_bar import MyBarLogger
 from .make_subs import MakeSubs
 
 
@@ -36,7 +36,8 @@ class PutSubs(PutSubsABC):
                  video_pk: int,
                  path_for_video: str,
                  path_for_new_video: str,
-                 new_audio_filename: str = None,
+                 logger: MyBarLogger,
+                 new_audio_filename: CompositeAudioClip,
                  old_audio_volume_reduction: float = 0.5):
         """
         Initializes the PutSubs object with the provided video file, subtitles file, and paths.
@@ -57,8 +58,8 @@ class PutSubs(PutSubsABC):
         self.__path_for_new_video = str(path_for_new_video)
         self.__new_audio = new_audio_filename
         self.__old_audio = self.__video.audio
-        self.logger = MyBarLogger(video_pk=video_pk, 
-                                  write_progress_value=RedisProgressValue(redis_client=redis.Redis(host='localhost', port=6380, db=0)))
+        self.logger = logger
+        
         self.__old_audio_volume_reduction = old_audio_volume_reduction
 
     @staticmethod

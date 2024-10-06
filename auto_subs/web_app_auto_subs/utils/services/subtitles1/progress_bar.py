@@ -15,18 +15,18 @@ from proglog import ProgressBarLogger
 from .fuzzy_model.descriptor import Descriptor
 
 
-class ABCProgressValue(ABC):
+class IProgressValue(ABC):
     
     @abstractmethod
-    def get_progress_value(self, key: str) -> Union[int, float]:
+    def get_progress_value(self, key: str|int) -> Union[int, float]:
         pass
     
     @abstractmethod
-    def delete_progress_value(self, key: str) -> NoReturn:
+    def delete_progress_value(self, key: str|int) -> NoReturn:
         pass
     
     @abstractmethod
-    def set_progress_value(self, key: str, value: Union[int, float]) -> NoReturn:
+    def set_progress_value(self, key: str|int, value: Union[int, float]) -> NoReturn:
         pass
     
     @abstractmethod
@@ -34,18 +34,41 @@ class ABCProgressValue(ABC):
         pass
 
 
-class RedisProgressValue(ABCProgressValue):
+from typing import Union, NoReturn
+from django.db.models import Model
+
+class DjangoORMProgressValue(IProgressValue):
+    
+    def __init__(self, model: Model, attribute: str):
+        self.model = model
+        self.attribute = attribute
+    
+    def get_progress_value(self, key: str | int):
+        obj = self.model.objects.get(pk=key)
+        return getattr(obj, self.attribute)
+
+    def delete_progress_value(self, key: str | int) -> NoReturn:
+        pass
+    
+    def set_progress_value(self, key: str | int, value: Union[int, float]) -> NoReturn:
+        self.model.objects.filter(pk=key).update(**{self.attribute: value})
+    
+    def close(self) -> NoReturn:
+        pass
+
+
+class RedisProgressValue(IProgressValue):
     
     def __init__(self, redis_client: redis.Redis):
         self.redis_client = redis_client
     
-    def get_progress_value(self, key: str) -> Union[int, float]:
+    def get_progress_value(self, key: str|int) -> Union[int, float]:
         return self.redis_client.get(key)
     
-    def delete_progress_value(self, key: str) -> NoReturn:
+    def delete_progress_value(self, key: str|int) -> NoReturn:
         self.redis_client.delete(key)
     
-    def set_progress_value(self, key: str, value: Union[int, float]) -> NoReturn:
+    def set_progress_value(self, key: str|int, value: Union[int, float]) -> NoReturn:
         self.redis_client.set(key, value)
     
     def close(self):
@@ -55,13 +78,15 @@ class RedisProgressValue(ABCProgressValue):
 class MyBarLogger(ProgressBarLogger):
 
     def __init__(self, video_pk: int, 
-                 write_progress_value: ABCProgressValue):
+                 write_progress_value: IProgressValue,
+                 saver_progress_results: IProgressValue,):
         super().__init__()
         self.last_message = ''
         self.previous_percentage = 0
         self.video_pk = video_pk
         self.k = 0
         self.write_progress_value = write_progress_value
+        self.saver_progress_results = saver_progress_results
         
     def __del__(self, ):
         self.write_progress_value.delete_progress_value(f'moviepy_progress{self.video_pk}')
@@ -69,7 +94,8 @@ class MyBarLogger(ProgressBarLogger):
         
         # with redis.Redis(host='localhost', port=6380, db=0) as r:
         #     r.delete(f'moviepy_progress{self.video_pk}')
-        UserVideos.objects.filter(pk=self.video_pk).update(rendering_progress=100)
+        # UserVideos.objects.filter(pk=self.video_pk).update(rendering_progress=100)
+        self.saver_progress_results.set_progress_value(key=self.video_pk, value=100)
 
     def callback(self, **changes):
         # Every time the logger message is updated, this function is called with

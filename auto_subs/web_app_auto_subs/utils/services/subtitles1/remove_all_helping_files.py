@@ -16,12 +16,13 @@ class RemoveAllHelpingFiles:
             return
 
         files = os.listdir(path)
-
-        for file in files:
-            if file.split('.')[0] == base_filename:
-                file_path = os.path.join(path, file)
-                try:
-                    os.remove(file_path)
-                    print(f"Файл {file_path} успешно удалён.")
-                except Exception as e:
-                    print(f"Ошибка при удалении файла {file_path}: {e}")
+        
+        if files:
+            for file in files:
+                if file.split('.')[0] == base_filename:
+                    file_path = os.path.join(path, file)
+                    try:
+                        os.remove(file_path)
+                        print(f"Файл {file_path} успешно удалён.")
+                    except Exception as e:
+                        print(f"Ошибка при удалении файла {file_path}: {e}")

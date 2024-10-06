@@ -4,7 +4,7 @@ import re
 class ParseStrTimeToSeconds:
     
     @staticmethod
-    def time_to_seconds(time_str) -> int:
+    def __time_to_seconds(time_str: str) -> int:
         """Конвертирует строку времени в формате 'hh:mm:ss,ms' в секунды"""
         hours, minutes, seconds_ms = time_str.split(':')
         seconds, milliseconds = seconds_ms.split(',')
@@ -26,8 +26,8 @@ class ParseStrTimeToSeconds:
             end_time = match.group(2)
             
             # Конвертируем время в секунды
-            start_seconds = cls.time_to_seconds(start_time)
-            end_seconds = cls.time_to_seconds(end_time)
+            start_seconds = cls.__time_to_seconds(start_time)
+            end_seconds = cls.__time_to_seconds(end_time)
             
             # Подсчитываем продолжительность
             total_duration += (end_seconds - start_seconds)

@@ -1,6 +1,12 @@
+import os
+import subprocess
+from typing import NoReturn
+import uuid
 from django import forms
+
 from .models import *
 
+from auto_subs.settings import BASE_PATH_OF_VIDEO
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
@@ -41,8 +47,48 @@ class DocumentForm(forms.ModelForm):
             raise ValidationError('Языки для субтитров и язык, использующийся в видео не должны совпадать при включенном аудио переводе')
 
         return subs_language
+    
+    
+    def clean_video(self):
+        
+        def delete_temp_video(path: str) -> NoReturn:
+            try:
+                os.remove(path)
+                print(f"Файл {path} успешно удалён.")
+            except FileNotFoundError:
+                print(f"Файл {path} не найден.")
+            except PermissionError:
+                print(f"Нет прав для удаления файла {path}.")
+            except Exception as e:
+                print(f"Ошибка при удалении файла: {e}")
+        
+        
+        video = self.cleaned_data['video']
+        path = f'{BASE_PATH_OF_VIDEO}/temp_video{uuid.uuid4()}.mp4'
+        
+        with open(path, 'wb+') as temp_file:
+            for chunk in video.chunks():
+                temp_file.write(chunk)
+    
+        try:
+            # Запуск ffmpeg для анализа файла
+            result = subprocess.run(['ffmpeg', '-v', 'error', '-i', path, '-f', 'null', '-'],
+                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if result.returncode != 0:
+                delete_temp_video(path)
+                raise ValidationError('Этот файл не является допустимым видеофайлом.')
+        
+        except subprocess.CalledProcessError:
+            delete_temp_video(path)
+            raise ValidationError('Ошибка при проверке видеофайла.')
+        
+        else:
+            delete_temp_video(path)
+            return video
 
 class RegisterUserForm(UserCreationForm):
+    usable_password = None
+    
     username = forms.EmailField(label='Email ')
     password1 = forms.CharField(widget=forms.PasswordInput, label='Пароль ')
     password2 = forms.CharField(
