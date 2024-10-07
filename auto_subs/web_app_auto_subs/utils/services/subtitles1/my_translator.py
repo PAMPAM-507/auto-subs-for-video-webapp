@@ -7,9 +7,10 @@ import pysrt
 from googletrans import Translator, constants
 from pprint import pprint
 from pathlib import Path
-from colorama import Fore, init
 import redis
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
+from .open_file_with_subtitles import IFileParser
 
 from .progress_bar import IProgressValue
 
@@ -44,7 +45,7 @@ class MakeTranslating(IMakeTranslating):
         self.saver_progress_results.set_progress_value(key=key, value=value)
     
 
-    def execute(self, subtitles: pysrt.SubRipFile,
+    def execute(self, subtitles: IFileParser,
                        path_for_subs: str, 
                        video_pk: int, 
                        progress_value: IProgressValue,
@@ -62,11 +63,11 @@ class MakeTranslating(IMakeTranslating):
         checking_counter = 0
         k = 0
 
-        for j in range(len(sentences)):
+        for j in sentences:
             try:
                 translation = self.translator.translate(
-                    text=sentences[j].text, src=src_language, dest=dest_language)
-                lst.append(translation.text)
+                    text=subtitles.get_text(j), src=src_language, dest=dest_language)
+                lst.append(subtitles.get_text(translation))
                 k += 1
                 checking_counter += 1
                 
@@ -82,15 +83,15 @@ class MakeTranslating(IMakeTranslating):
                     checking_counter = 0
                     
             except Exception as e:
-                lst.append(sentences[j].text)
+                lst.append(subtitles.get_text(j))
 
 
         checking_counter = 0
         k = 0
         
         for i in range(len(subtitles)):
-            if sentences[i].start == subtitles[i].start and sentences[i].end == subtitles[i].end:
-                subtitles[i].text = lst[i]
+            if subtitles.get_start_time(sentences[i]) == subtitles.get_start_time(subtitles[i]) and subtitles.get_end_time(sentences[i]) == subtitles.get_end_time(subtitles[i]):
+                subtitles.set_text(subtitles[i], value=lst[i])
                 
             k += 1
             checking_counter += 1

@@ -27,7 +27,7 @@ from django.db import connection
 from django.core.cache import cache
 
 
-from auto_subs.settings import BASE_PATH_OF_VIDEO, PATH_FOR_VIDEO_WITH_SUBS, PATH_FOR_VIDEOS
+from auto_subs.settings import BASE_PATH_OF_VIDEO, PATH_FOR_VIDEO_WITH_SUBS, PATH_FOR_VIDEOS, REDIS_HOST, REDIS_PORT
 from web_app_auto_subs.utils.services.mixins.progress_bar_api_mixin import ProgressBarAPIMixin
 from web_app_auto_subs.utils.services.mixins.change_email_mixin import ChangeEmailMixin
 from web_app_auto_subs.utils.services.mixins.register_mixin import RegisterMixin
@@ -455,7 +455,7 @@ class test(ProgressBarAPIMixin, APIView):
 
         rendering_progress, whisper_progress = 0, 0
 
-        with redis.Redis(host='localhost', port=6380, db=0) as r:
+        with redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0) as r:
             
             whisper_progress = self.get_progress_info(r, video_pk, 'whisper_progress')
             translate_progress = self.get_progress_info(r, video_pk, 'translate_progress')

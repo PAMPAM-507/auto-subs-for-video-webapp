@@ -119,9 +119,20 @@ DATABASES = {
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6380",
+        # "LOCATION": "redis://127.0.0.1:6380",
+        "LOCATION": "redis://redis:6379",
     }
 }
+
+# CELERY_BROKER_URL = 'redis://localhost:6380/'
+# REDIS_HOST = 'localhost'
+# REDIS_PORT = '6380'
+
+
+
+CELERY_BROKER_URL = 'redis://redis:6379/'
+REDIS_HOST = 'redis'
+REDIS_PORT = '6379'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -226,7 +237,7 @@ LOGIN_URL = 'login'
 LOGOUT_REDIRECT_URL = 'main'
 LOGIN_REDIRECT_URL = 'main'
 
-CELERY_BROKER_URL = 'redis://localhost:6380/'
+
 
 
 PATH_FOR_SUBTITLES = str(BASE_DIR) + '/media/subtitles/'

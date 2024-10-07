@@ -16,7 +16,7 @@ from .fuzzy_model.model import FuzzyModel
 from .fuzzy_model.defuzzification import DefuzzificationByHeightMethod
 from .fuzzy_model.fazzification import SolveInputValueForModelWithTwoParameters
 from .fuzzy_model.rule_base import MakeRuleBaseForAudioRecords
-
+from .open_file_with_subtitles import IFileParser
 
 # class IMakeAudioRecord(ABC):
 
@@ -109,7 +109,7 @@ class MakeAudioRecord():
     
     def make_audio_for_each_subtitles(
             self, video_pk: int, 
-            subtitles: pysrt.SubRipFile, 
+            subtitles: IFileParser, 
             base_filename: str, 
             path_of_audio: str, 
             progress_value: IProgressValue, 
@@ -126,11 +126,11 @@ class MakeAudioRecord():
         checking_counter = 0
 
         for i, subtitle in enumerate(subtitles):
-            start_time = self.time_to_seconds(subtitle.start)
-            end_time = self.time_to_seconds(subtitle.end)
+            start_time = self.time_to_seconds(subtitles.get_start_time(subtitle))
+            end_time = self.time_to_seconds(subtitles.get_end_time(subtitle))
             duration = end_time - start_time
             
-            text = subtitle.text
+            text = subtitles.get_text(subtitle)
 
             audio_file = f"{path_of_audio}/{base_filename}.{i}.mp3"
             if self.text_to_speech(text, audio_file):

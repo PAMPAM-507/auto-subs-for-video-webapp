@@ -8,6 +8,7 @@ import redis
 from moviepy.editor import CompositeAudioClip
 
 from auto_subs.settings import logger
+from .open_file_with_subtitles import PysrtFileParser
 from .put_subs import PutSubs
 from .my_translator import MakeTranslating, GoogleTranslator
 from .audio_record import MakeAudioRecord
@@ -34,8 +35,10 @@ class HandleVideo():
         try:
             mp4filename = name_of_video
             srtfilename = path_with_str + (name_of_video)[0:-4] + '.srt'
+            
+            subtitles = PysrtFileParser(srtfilename)
 
-            subtitles = pysrt.open(srtfilename)
+            # subtitles = pysrt.open(srtfilename)
 
         except Exception as e:
             logger.error(f'try to pysrt.open(srtfilename) in handle_video, error occurred: {e}')
@@ -78,6 +81,8 @@ class HandleVideo():
 
                     new_volume_for_audio=6.0,)
                 
+                new_audio_filename = CompositeAudioClip(audio_clips)
+                
             except Exception as e:
                 logger.error(f'try to MakeAudioRecord().make_audio_for_each_subtitles(...) in handle_video, error occurred: {e}')
         
@@ -94,7 +99,7 @@ class HandleVideo():
                                 saver_progress_results=DjangoORMProgressValue(
                                     model=UserVideos,
                                     attribute='rendering_progress'),),
-                    new_audio_filename=CompositeAudioClip(audio_clips)).generate_video_with_subtitles()
+                    new_audio_filename=new_audio_filename).generate_video_with_subtitles()
         except Exception as e:
             logger.error(f'try to PutSubs(...).generate_video_with_subtitles() in handle_video, error occurred: {e}')
                 

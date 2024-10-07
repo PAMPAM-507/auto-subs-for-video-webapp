@@ -82,6 +82,7 @@ def make_subs(video_pk: int,
 
         # else:
         # , BASE_PATH_OF_VIDEO+'videos']:
+        
         for path in [PATH_FOR_AUDIO, PATH_FOR_SUBTITLES]:
             RemoveAllHelpingFiles.remove(
                 path=path,
