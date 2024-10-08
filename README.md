@@ -30,6 +30,16 @@ activate virtual environment
 ```
 install requirements for linux
 ```
-pip3 install -r requirements3.11.3rocm.txt;
+pip3 install -r requirements3.11.3rocm.txt
+```
+After installing requirements you need to start django server, celery, redis. For redis I used docker (REDIS_HOST = 'localhost'
+REDIS_PORT = '6380', you can change them in setting.py). You must use commands below in directory with manage.py.
+django server
+```
+python manage.py runserver
+```
+celery
+```
+celery -A auto_subs worker --loglevel=info
 ```
 
