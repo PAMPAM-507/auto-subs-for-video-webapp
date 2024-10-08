@@ -41,7 +41,7 @@ class MakeTranslating(IMakeTranslating):
         self.translator = translator
         self.saver_progress_results = saver_progress_results
     
-    def save_progress_results(self, key: int, value: int) -> NoReturn:
+    def __save_progress_results(self, key: int, value: int) -> NoReturn:
         self.saver_progress_results.set_progress_value(key=key, value=value)
     
 
@@ -111,7 +111,7 @@ class MakeTranslating(IMakeTranslating):
             
             # redis_client.delete(f'translate_progress{video_pk}')
             # UserVideos.objects.filter(pk=video_pk).update(translate_progress=100)
-            self.save_progress_results(key=video_pk, value=100)
+            self.__save_progress_results(key=video_pk, value=100)
             
         progress_value.close()
         # redis_client.close()

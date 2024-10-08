@@ -33,7 +33,7 @@ urlpatterns = [
     path('change_email_done/', ChangeEmailDone.as_view(), name='change_email_done'),
 
 
-    path('progress_bar/', test.as_view(), name='progress_bar'),
+    path('progress_bar/', ProgressAPI.as_view(), name='progress_bar'),
     
     
     path('password_reset/', PasswordResetView.as_view(template_name='web_app_auto_subs/password_reset_form.html', 
@@ -51,7 +51,7 @@ urlpatterns = [
         name='password_reset_complete'),
     
     
-    path('test', callback, name='callback')
+    path('test/', test, name='callback')
     
     
 ]

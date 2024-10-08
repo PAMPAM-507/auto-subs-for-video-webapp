@@ -7,11 +7,14 @@ import whisper.transcribe
 from celery import shared_task
 from auto_subs.celery import app
 
-from auto_subs.settings import BASE_DIR, BASE_PATH_OF_VIDEO, logger, PATH_FOR_SUBTITLES, PATH_FOR_VIDEO_WITH_SUBS, EMAIL_HOST_PASSWORD, EMAIL_HOST, \
+from auto_subs.settings import BASE_DIR, BASE_PATH_OF_VIDEO, \
+    REDIS_HOST, REDIS_PORT, logger, PATH_FOR_SUBTITLES, \
+    PATH_FOR_VIDEO_WITH_SUBS, EMAIL_HOST_PASSWORD, EMAIL_HOST, \
     EMAIL_BACKEND, EMAIL_PORT, \
     EMAIL_USE_TLS, EMAIL_HOST_USER, PATH_FOR_AUDIO
 
 from django.core.mail import send_mail, send_mass_mail
+from django.db.models import F
 
 
 from .models import UserVideos
@@ -33,6 +36,28 @@ def send_email(subject: str, message: str, to_email: list) -> NoReturn:
         to_email,
     )
 
+from django.db import transaction
+
+# @transaction.on_commit
+@app.task
+def test_task():
+    print(UserVideos.objects.all())
+    print(round(UserVideos.objects.get(\
+                pk=70).videos_with_subs.file.size / (1024 * 1024)))
+    
+    
+
+    
+    UserVideos.objects.filter(pk=70).update(
+            rendering_progress=100,
+            whisper_progress=100,
+            translate_progress=100,
+            voiceover_progress=100,
+            # video_size=round(UserVideos.objects.get(
+            #     pk=video_pk).videos_with_subs.file.size / (1024 * 1024))
+        )
+
+
 @app.task
 def make_subs(video_pk: int,
               path_of_video: str,
@@ -43,9 +68,18 @@ def make_subs(video_pk: int,
               size_of_model: str = 'tiny',
               language_for_model: str = 'en',) -> NoReturn:
 
+    import torch
+
+    print(torch.cuda.is_available())
+    if torch.cuda.is_available():
+        for i in range(torch.cuda.device_count()):
+            print(f"GPU {i}: {torch.cuda.get_device_name(i)}")
+    else:
+        print("CUDA is not available. No GPU found.")
+
     try:
 
-        StartWhisper(progress_value=RedisProgressValue(redis_client=redis.Redis(host='localhost', port=6380, db=0)),
+        StartWhisper(progress_value=RedisProgressValue(redis_client=redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)),
                      saver_progress_results=DjangoORMProgressValue(
                          model=UserVideos,
                          attribute='whisper_progress')).run(
@@ -82,7 +116,7 @@ def make_subs(video_pk: int,
 
         # else:
         # , BASE_PATH_OF_VIDEO+'videos']:
-        
+
         for path in [PATH_FOR_AUDIO, PATH_FOR_SUBTITLES]:
             RemoveAllHelpingFiles.remove(
                 path=path,
@@ -93,15 +127,15 @@ def make_subs(video_pk: int,
             rendering_progress=100,
             whisper_progress=100,
             translate_progress=100,
-            voiceover_progress=100
+            voiceover_progress=100,
+            video_size=round(UserVideos.objects.get(
+                pk=video_pk).videos_with_subs.file.size / (1024 * 1024))
         )
-        
+
         if user_email:
             message = f'Здравствуйте, {user_email}, видео обработано!  Перейдите по ссылке, чтобы посмотреть: http://127.0.0.1:8000/personal_account/?page={page_number}'
-            send_email(subject='PAMPAM-auto-subs.ru. Ссылка на обработанное видео', message=message, to_email=[user_email,])
-
-
-
+            send_email(subject='PAMPAM-auto-subs.ru. Ссылка на обработанное видео',
+                       message=message, to_email=[user_email,])
 
    # model = whisper.load_model(size_of_model,)
     # result = model.transcribe(

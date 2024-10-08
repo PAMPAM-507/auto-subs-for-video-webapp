@@ -7,7 +7,7 @@ import sys
 import redis
 from moviepy.editor import CompositeAudioClip
 
-from auto_subs.settings import logger
+from auto_subs.settings import logger, REDIS_HOST, REDIS_PORT
 from .open_file_with_subtitles import PysrtFileParser
 from .put_subs import PutSubs
 from .my_translator import MakeTranslating, GoogleTranslator
@@ -55,7 +55,9 @@ class HandleVideo():
                         srtfilename,
                         video_pk,
                         progress_value=RedisProgressValue(
-                            redis_client=redis.Redis(host='localhost', port=6380, db=0)),
+                            redis_client=redis.Redis(host=REDIS_HOST, 
+                                                     port=REDIS_PORT, 
+                                                     db=0)),
                         src_language=src_language,
                         dest_language=dest_language,)
 
@@ -73,7 +75,9 @@ class HandleVideo():
                     base_filename=name_of_video.split(".")[0],
                     path_of_audio=path_of_audio,
                     progress_value=RedisProgressValue(
-                        redis_client=redis.Redis(host='localhost', port=6380, db=0)),
+                        redis_client=redis.Redis(host=REDIS_HOST, 
+                                                 port=REDIS_PORT, 
+                                                 db=0)),
 
                     saver_progress_results=DjangoORMProgressValue(
                         model=UserVideos,
@@ -94,8 +98,9 @@ class HandleVideo():
                     path_for_new_video,
                     MyBarLogger(video_pk=video_pk,
                                 write_progress_value=RedisProgressValue(
-                                    redis_client=redis.Redis(host='localhost',
-                                                            port=6380, db=0)),
+                                    redis_client=redis.Redis(host=REDIS_HOST, 
+                                                             port=REDIS_PORT, 
+                                                             db=0)),
                                 saver_progress_results=DjangoORMProgressValue(
                                     model=UserVideos,
                                     attribute='rendering_progress'),),

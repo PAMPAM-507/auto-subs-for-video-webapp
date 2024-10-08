@@ -110,7 +110,7 @@
                     if (moviepyProgress < 100 || whisperProgress < 100 || translateProgress < 100 || voiceoverProgress < 100) {
                         // AJAX-запрос для получения прогресса
                         $.ajax({
-                            url: `http://127.0.0.1:8000/progress_bar/?video_id=${videoPk}`,
+                            url: `http://{{ host }}/progress_bar/?video_id=${videoPk}`,
                             {% comment %} url: `https://127.0.0.1/progress_bar/?video_id=${videoPk}`, {% endcomment %}
                             {% comment %} url: `https://192.168.0.109/progress_bar/?video_id=${videoPk}`, {% endcomment %}
                             type: 'GET',

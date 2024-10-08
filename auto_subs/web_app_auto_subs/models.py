@@ -25,6 +25,8 @@ class UserVideos(models.Model):
     name_of_video = models.CharField(max_length=50,
                                      verbose_name='Название видео', null=True, blank=True)
     
+    video_size = models.FloatField(null=True, blank=True, verbose_name='Размер видео в мб',)
+    
     make_audio_record = models.BooleanField(null=True, default=False, verbose_name='Нужно ли сделать аудио перевод',)
     
     rendering_progress = models.IntegerField(null=True, blank=True, verbose_name='Прогресс рендеринга')
@@ -34,6 +36,9 @@ class UserVideos(models.Model):
     
     def get_absolute_url(self):
         return reverse('watch_video', kwargs={'pk': self.pk})
+    
+    def __str__(self):
+        return 'Пользовательское видео, Id: ' + str(self.pk) + ', Название: ' + str(self.name_of_video )
 
     class Meta:
         verbose_name = 'Пользовательское видео'

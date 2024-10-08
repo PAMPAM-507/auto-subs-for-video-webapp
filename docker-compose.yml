@@ -1,16 +1,51 @@
-version: "3"
+version: '3.8'
+
+x-environment-defaults: &environment-defaults
+  dockerenv: "true"
 
 services:
   redis:
     image: redis:latest
     ports:
       - '6380:6379'
-      
-  # worker:
-  #   build:
-  #     context: ./
-  #   command: ['celery', '-A', 'auto_subs', 'worker', '--loglevel=INFO']
-  #   depends_on:
-  #     - redis
+
+  # rabbitmq:
+  #   image: rabbitmq:latest
+  #   environment:
+  #     - RABBITMQ_DEFAULT_USER=guest
+  #     - RABBITMQ_DEFAULT_PASS=guest
+  #   ports:
+  #     - "5672:5672"
+
+  webapp:
+    build:
+      context: ./
+    command: bash -c "python3 ./auto_subs/manage.py makemigrations && python3 ./auto_subs/manage.py migrate && python3 ./auto_subs/manage.py runserver 0.0.0.0:8000"
+    # command: ["python3", "./auto_subs/manage.py", "runserver", "0.0.0.0:8000"]
+    # command: bash -c "cd ./ClinicProject && gunicorn ClinicProject.wsgi:application --bind 0.0.0.0:8000"
+    environment:
+      <<: *environment-defaults
+    ports:
+    - '8000:8000'
+    volumes:
+      - ./auto_subs/db.sqlite3:/subs/db.sqlite3
+      - ./auto_subs/media:/subs/auto_subs/media
+      - ./policy.xml:/etc/ImageMagick-6/policy.xml
+      - .:/subs/
+  
+  worker:
+    build:
+      context: ./
+    command: ['celery', '--workdir=./auto_subs', '-A', 'auto_subs', 'worker', '--loglevel=INFO']
+    environment:
+      <<: *environment-defaults
+    volumes:
+      - ./auto_subs/db.sqlite3:/subs/db.sqlite3
+      - ./auto_subs/media:/subs/auto_subs/media
+      - ./policy.xml:/etc/ImageMagick-6/policy.xml
+      - .:/subs/
+    depends_on:
+      - redis
+      # - rabbitmq
 
 

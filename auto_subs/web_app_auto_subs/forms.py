@@ -18,19 +18,21 @@ class DocumentForm(forms.ModelForm):
     video_language = forms.ModelChoiceField(
         queryset=LanguagesForTranslateVideo.objects.all(),
         label='Выберите язык, использующийся в оригинальном видео',
-        # initial ='Русский',
+        initial =LanguagesForTranslateVideo.objects.get(language='en'),
     )
     
     subs_language = forms.ModelChoiceField(
         queryset=LanguagesForTranslateVideo.objects.all(),
         label='Выберите язык для субтитров',
-        # initial ='Русский',
+        initial =LanguagesForTranslateVideo.objects.get(language='ru'),
     )
     
     video = forms.FileField(
         validators=[FileExtensionValidator(allowed_extensions=['mp4'])],
         label='Загрузка видео'                  
         )
+    
+    make_audio_record = forms.BooleanField(label='Нужно ли сделать аудио перевод', initial=False, required=False)
 
     class Meta:
         model = UserVideos

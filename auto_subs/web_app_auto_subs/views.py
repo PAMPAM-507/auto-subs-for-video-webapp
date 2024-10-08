@@ -27,7 +27,7 @@ from django.db import connection
 from django.core.cache import cache
 
 
-from auto_subs.settings import BASE_PATH_OF_VIDEO, PATH_FOR_VIDEO_WITH_SUBS, PATH_FOR_VIDEOS, REDIS_HOST, REDIS_PORT
+from auto_subs.settings import BASE_PATH_OF_VIDEO, PATH_FOR_VIDEO_WITH_SUBS, PATH_FOR_VIDEOS, REDIS_HOST, REDIS_PORT, RESULT_HOST
 from web_app_auto_subs.utils.services.mixins.progress_bar_api_mixin import ProgressBarAPIMixin
 from web_app_auto_subs.utils.services.mixins.change_email_mixin import ChangeEmailMixin
 from web_app_auto_subs.utils.services.mixins.register_mixin import RegisterMixin
@@ -48,6 +48,14 @@ menu = [
     # {'title': 'Профиль', 'url_name': 'personal_account'}
 
 ]
+
+
+def test(request):
+    test_task.delay()
+    
+    return HttpResponse('hi')
+    
+    
 
 
 class UploadVideo(LoginRequiredMixin, UploadVideoMixin, ContextMixin, FormView):
@@ -264,6 +272,8 @@ class PersonalAccount(LoginRequiredMixin, ContextMixin, ListView):
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
         context = self.get_mixin_context(context, cur_menu='Профиль')
+        # context['host'] = 'webapp'
+        context['host'] = RESULT_HOST
 
         # Получение списка идентификаторов видео и добавление их в контекст
         video_ids = list(context['videos'].values_list('pk', flat=True))
@@ -448,7 +458,7 @@ class ChangeEmail(PermissionRequiredMixin, LoginRequiredMixin, ChangeEmailMixin,
         return super().form_valid(form)
 
 
-class test(ProgressBarAPIMixin, APIView):
+class ProgressAPI(ProgressBarAPIMixin, APIView):
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
         video_pk = int(request.GET.get("video_id"))

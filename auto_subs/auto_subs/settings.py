@@ -17,7 +17,9 @@ DEBUG = True
 ALLOWED_HOSTS = ['localhost', '127.0.0.1',
                  'auto-subs.ru', 'subs', 
                  'auto-subs', 'autosubs', 
-                 '192.168.0.109',]
+                 '192.168.0.109', 'webapp', ]
+
+RESULT_HOST = 'webapp:8000'
 
 
 
@@ -119,20 +121,32 @@ DATABASES = {
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        # "LOCATION": "redis://127.0.0.1:6380",
-        "LOCATION": "redis://redis:6379",
+        "LOCATION": "redis://127.0.0.1:6380",
+        # "LOCATION": "redis://redis:6379",
     }
 }
 
-# CELERY_BROKER_URL = 'redis://localhost:6380/'
-# REDIS_HOST = 'localhost'
-# REDIS_PORT = '6380'
+# CELERY_BROKER_URL = 'amqp://localhost:5672/'
+CELERY_BROKER_URL = 'redis://localhost:6380/'
+REDIS_HOST = 'localhost'
+REDIS_PORT = '6380'
+
+if os.getenv('dockerenv'):
+    
+    print('Docker!!!')
+
+    CELERY_BROKER_URL = 'redis://redis:6379/'
+    REDIS_HOST = 'redis'
+    REDIS_PORT = '6379'
+    
+    CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://redis:6379",
+        }
+    }
 
 
-
-CELERY_BROKER_URL = 'redis://redis:6379/'
-REDIS_HOST = 'redis'
-REDIS_PORT = '6379'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -208,7 +222,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = 'http://127.0.0.1:8000/social_auth/comp
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 # LANGUAGE_CODE = 'ru-RU'
-LANGUAGE_CODE = 'en-EN'
+LANGUAGE_CODE = 'ru-Ru'
 
 TIME_ZONE = 'UTC'
 
