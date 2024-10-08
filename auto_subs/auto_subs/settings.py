@@ -19,7 +19,7 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1',
                  'auto-subs', 'autosubs', 
                  '192.168.0.109', 'webapp', ]
 
-RESULT_HOST = 'webapp:8000'
+RESULT_HOST = 'localhost:8000'
 
 
 

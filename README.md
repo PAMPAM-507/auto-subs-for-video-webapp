@@ -12,6 +12,8 @@ Information system based on Whisper-AI, which can transcription audio, video. Us
    4) After that go randering
 3. User can download and watch video online
 
+![alt text](2024-10-08-20-54-01.gif)
+
 ## Using guide
 ### 1. Use Docker and Docker-compose
 ```
