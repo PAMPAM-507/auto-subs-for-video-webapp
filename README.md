@@ -19,11 +19,17 @@ docker-compose up --build
 ```
 
 ### 2. Local installing
-First you need to install imagemagick, ffmpeg, python 3.11.3 for linux. If you get some errors related to ffmpeg you'll need to fix them yourself.
-Before install requirements it is better to make python virtualenv.
+First you need to install imagemagick, ffmpeg, python 3.11.3 for linux. If you get some errors related to ffmpeg you'll need to fix them yourself. In docker containers I fixed problems with ffmpeg and imagemagick but in container you can't use GPU for calculating.
+Before install requirements it is better to make python virtualenv. I use ROCm for AMD GPU in this project. If you have Nvidia GPU you should go and download torch for your system (https://pytorch.org/). You can use my requirements for cpu even if you don't have AMD GPU. System will work on CPU.
 ```
 python3.11 -m venv venv
 ```
+activate virtual environment
 ```
 . ./venv/bin/activate
 ```
+install requirements for linux
+```
+pip3 install -r requirements3.11.3rocm.txt;
+```
+
