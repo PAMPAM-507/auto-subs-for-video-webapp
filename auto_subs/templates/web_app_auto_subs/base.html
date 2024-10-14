@@ -34,13 +34,13 @@
             <ul class="auth-links">
                 {% block register %}
                     {% if request.user.is_authenticated %}
-                        <li class="profile-link"><a href="{% url 'personal_account' %}">Профиль</a></li>
+                        <li class="profile-link"><a href="{% url 'personal_account' %}">Profile</a></li>
                         <li class="profile-link">
                             <span class="username">{{ request.user.username }}</span> | 
-                            <a href="{% url 'logout' %}">Выйти</a>
+                            <a href="{% url 'logout' %}">Log out</a>
                         </li>
                     {% else %}
-                        <li><a href="{% url 'register' %}">Регистрация</a> ||| <a href="{% url 'login' %}">Войти</a></li>
+                        <li><a href="{% url 'register' %}">Sign up</a> ||| <a href="{% url 'login' %}">Sign in</a></li>
                     {% endif %}
                 {% endblock register %}
             </ul>

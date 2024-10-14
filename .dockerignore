@@ -1,3 +1,17 @@
-*venv*
-# venv311
-# venv
+!**/*requirements.txt
+!**/*requirements3.11.3.txt
+!**/for_make_folder.txt
+!**/requirements3.11.3rocm.txt
+
+venv
+venv311
+.git
+**/*venv*
+**/__pycache__
+**/.idea
+**/.vscode
+**/*.srt
+**/*.tsv
+**/*.vtt
+**/*.mp4
+**/*.mp3

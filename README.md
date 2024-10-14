@@ -1,7 +1,7 @@
 # Information system automatically making subtitles, over original video with possibility voicing persons 
 
 ## Description
-Information system based on Whisper-AI, which can transcription audio, video. User can upload a video after sign up, then maked transcription by whisper. Ffter that google translator translating text. If user check the special box on uploading video form, system will make voicing. Also in system realized most of the standard functions like reset password, change password, authentication by social. User can download video, watch one on system. For correct position subtitles using fuzzy model which develepment by autor. That fuzzy model contains two input parameters, one output parameter. For deffazificasii using method of height, rule base implication - prod, rule base aggregation - max. Also the second fuzzy model using for putting voice. The both models use the same methods. Voicing made by gTTS model.
+Information system based on Whisper-AI, which can transcription audio, video. User can upload a video after sign up, then maked transcription by whisper. After that google translator translating text. If user check the special box on uploading video form, system will make voicing. Also in system realized most of the standard functions like reset password, change password, authentication by social. User can download video, watch one on system. For correct position subtitles using fuzzy model which develepment by author. That fuzzy model contains two input parameters, one output parameter. For deffazificasii using method of height, rule base implication - prod, rule base aggregation - max. Also the second fuzzy model using for putting voice. The both models use the same methods. Voicing made by gTTS model.
 
 ## Short scheme  work
 1. System get video from client
@@ -15,12 +15,33 @@ Information system based on Whisper-AI, which can transcription audio, video. Us
 ![alt text](2024-10-08-20-54-01.gif)
 
 ## Using guide
-### 1. Use Docker and Docker-compose
+
+### 1. Creating .env
+You need to create .env with constants below
+
+EMAIL_HOST_PASSWORD='...'
+SECRET_KEY='...'
+EMAIL_HOST_USER='...'
+
+SOCIAL_AUTH_GITHUB_KEY='...'
+SOCIAL_AUTH_GITHUB_SECRET='...'
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET='...'
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY='...'
+
+Application will open on 127.0.0.1:8000 or localhost:8000
+
+If you have installed django you can generate SECRET_KEY by this command
 ```
-docker-compose up --build
+python3 -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
-### 2. Local installing
+### 2. Use Docker and Docker-compose
+```
+docker-compose up
+```
+
+### 3. Local installing
 First you need to install imagemagick, ffmpeg, python 3.11.3 for linux. If you get some errors related to ffmpeg you'll need to fix them yourself. In docker containers I fixed problems with ffmpeg and imagemagick but in container you can't use GPU for calculating.
 Before install requirements it is better to make python virtualenv. I use ROCm for AMD GPU in this project. If you have Nvidia GPU you should go and download torch for your system (https://pytorch.org/). You can use my requirements for cpu even if you don't have AMD GPU. System will work on CPU.
 ```

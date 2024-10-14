@@ -2,7 +2,7 @@
 
 {% block content %}
     {% if not perms.auth.social_auth %}
-        <a href="{% url 'edit_profile' %}" class="edit-profile-link">Изменить пользовательские данные</a>
+        <a href="{% url 'edit_profile' %}" class="edit-profile-link">Edit user data</a>
     {% endif %}
 
     <br><br><br>
@@ -10,44 +10,42 @@
     <div id="progressContainer">
         {% for video in videos %}
             <div class="video-item" data-video-pk="{{ video.pk }}">
-                <!-- Ссылка для просмотра видео с классом для неактивного состояния -->
+                <!-- Link to view video with inactive state class -->
                 <a id="videoLink{{ video.pk }}" href="{{ video.get_absolute_url }}" class="inactive-link">{{ video.pk }}: {{ video.name_of_video }}</a>
                 <br><br>
 
                 <div class="progressBar">
-                    <div>Процесс транскрипции: <span id="whisperText{{ video.pk }}">0%</span></div>
+                    <div>Transcription process: <span id="whisperText{{ video.pk }}">0%</span></div>
                     <span id="whisperProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;" data-whisper-progress="0"></span>
                 </div>
 
                 <div class="progressBar">
-                    <div>Прогресс перевода: <span id="translateText{{ video.pk }}">0%</span></div>
+                    <div>Translation progress: <span id="translateText{{ video.pk }}">0%</span></div>
                     <span id="translateProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;" data-translate-progress="0"></span>
                 </div>
 
                 {% if video.make_audio_record %}
                     <div class="progressBar">
-                        <div>Создание озвучки: <span id="voiceoverText{{ video.pk }}">0%</span></div>
+                        <div>Voiceover creation: <span id="voiceoverText{{ video.pk }}">0%</span></div>
                         <span id="voiceoverProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;" data-voiceover-progress="0"></span>
                     </div>
                 {% endif %}
 
                 <div class="progressBar">
-                    <div>Рендеринг: <span id="moviepyText{{ video.pk }}">0%</span></div>
+                    <div>Rendering: <span id="moviepyText{{ video.pk }}">0%</span></div>
                     <span id="moviepyProgress{{ video.pk }}" style="display: block; height: 20px; background: #4caf50; border-radius: 5px; width: 0;" data-moviepy-progress="0"></span>
                 </div>
                 
-                
                 <form id="downloadForm{{ video.pk }}" method="post" action="{% url 'download_video' video.pk %}" style="display: none;">
                     {% csrf_token %}
-                    <button type="submit">Скачать видео</button>
+                    <button type="submit">Download video</button>
                 </form>
-                <!-- Форма удаления, скрытая по умолчанию -->
+                <!-- Deletion form, hidden by default -->
                 <form id="deleteForm{{ video.pk }}" method="post" action="{% url 'delete_video' video.pk %}" style="display: none;">
                     {% csrf_token %}
-                    <button type="submit">Удалить видео</button>
+                    <button type="submit">&nbsp;&nbsp;&nbsp;&nbsp;Delete&nbsp;video&nbsp;&nbsp;&nbsp;&nbsp;</button>
                 </form>
                 
-
                 <br>
             </div>
         {% endfor %}
@@ -76,46 +74,46 @@
     </nav>
 
     <style>
-        /* Стиль для неактивной ссылки */
+        /* Style for inactive link */
         .inactive-link {
-            pointer-events: none; /* Отключаем кликабельность */
-            color: grey; /* Ссылка будет серой */
+            pointer-events: none; /* Disable clickability */
+            color: grey; /* Link will be grey */
         }
 
-        /* Стиль для активной ссылки */
+        /* Style for active link */
         .active-link {
-            pointer-events: auto; /* Включаем кликабельность */
-            color: blue; /* Ссылка станет синей (или другим цветом) */
+            pointer-events: auto; /* Enable clickability */
+            color: blue; /* Link will be blue (or another color) */
         }
     </style>
 
     <script>
         $(document).ready(function() {
-            // Функция для выполнения AJAX-запросов и обновления прогресса
+            // Function to perform AJAX requests and update progress
             function updateProgress() {
-                // Получаем все элементы с классом "video-item"
+                // Get all elements with class "video-item"
                 const videoItems = document.querySelectorAll('.video-item');
 
-                // Проходим по каждому элементу
+                // Loop through each element
                 videoItems.forEach(item => {
-                    const videoPk = item.getAttribute('data-video-pk'); // Получаем значение video.pk
+                    const videoPk = item.getAttribute('data-video-pk'); // Get video.pk value
 
-                    // Получаем текущее значение прогресса из атрибутов
+                    // Get current progress values from attributes
                     const moviepyProgress = parseInt($(`#moviepyProgress${videoPk}`).attr('data-moviepy-progress')) || 0;
                     const whisperProgress = parseInt($(`#whisperProgress${videoPk}`).attr('data-whisper-progress')) || 0;
                     const translateProgress = parseInt($(`#translateProgress${videoPk}`).attr('data-translate-progress')) || 0;
                     const voiceoverProgress = parseInt($(`#voiceoverProgress${videoPk}`).attr('data-voiceover-progress')) || 0;
 
-                    // Проверяем прогресс, если он не равен 100, отправляем запрос
+                    // Check progress; if it's not 100, send a request
                     if (moviepyProgress < 100 || whisperProgress < 100 || translateProgress < 100 || voiceoverProgress < 100) {
-                        // AJAX-запрос для получения прогресса
+                        // AJAX request to get progress
                         $.ajax({
                             url: `http://{{ host }}/progress_bar/?video_id=${videoPk}`,
                             {% comment %} url: `https://127.0.0.1/progress_bar/?video_id=${videoPk}`, {% endcomment %}
                             {% comment %} url: `https://192.168.0.109/progress_bar/?video_id=${videoPk}`, {% endcomment %}
                             type: 'GET',
                             success: function(response) {
-                                // Обновляем значения прогресса на странице
+                                // Update progress values on the page
                                 if (response.moviepy_progress !== null) {
                                     $(`#moviepyProgress${response.video_id}`).css('width', response.moviepy_progress + '%');
                                     $(`#moviepyProgress${response.video_id}`).attr('data-moviepy-progress', response.moviepy_progress);
@@ -140,30 +138,30 @@
                                     $(`#voiceoverText${response.video_id}`).text(response.voiceover_progress + '%');
                                 }
 
-                                // Проверяем, если все прогрессы равны 100%
+                                // Check if all progresses are equal to 100%
                                 if (response.moviepy_progress === 100 && response.whisper_progress === 100 && response.translate_progress === 100 && response.voiceover_progress === 100) {
-                                    // Делаем ссылку кликабельной
+                                    // Make the link clickable
                                     const videoLink = $(`#videoLink${response.video_id}`);
                                     videoLink.removeClass('inactive-link');
                                     videoLink.addClass('active-link');
 
-                                    // Показываем форму для удаления видео
+                                    // Show the delete video form
                                     $(`#deleteForm${response.video_id}`).show();
                                     $(`#downloadForm${response.video_id}`).show();
                                 }
                             },
                             error: function(xhr, status, error) {
-                                console.error('Ошибка при выполнении запроса:', error);
+                                console.error('Error when executing the request:', error);
                             }
                         });
                     }
                 });
             }
 
-            // Выполняем первый запрос сразу при загрузке страницы
+            // Perform the first request immediately upon page load
             updateProgress();
 
-            // Устанавливаем интервал для выполнения запроса каждые 5 секунд (5000 мс)
+            // Set interval to perform the request every 5 seconds (5000 ms)
             setInterval(updateProgress, 5000);
         });
     </script>

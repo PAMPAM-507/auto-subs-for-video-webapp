@@ -3,12 +3,12 @@
 
 {% block content %}
 
-<h2>Редактирование пользовательских данных</h2>
+<h2>Editing user data</h2>
   <br>
   <form method="post" action="">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Выбрать</button>
+    <button type="submit">Choose</button>
   </form>
 
 {% endblock content %}

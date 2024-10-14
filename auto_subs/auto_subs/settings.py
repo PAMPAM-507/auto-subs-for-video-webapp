@@ -3,24 +3,61 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-
-
-load_dotenv()
+from django.core.management.utils import get_random_secret_key
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.environ.get('SECRET_KEY_SUBS')
 
-DEBUG = True
+if not os.getenv('dockerenv'):
+    print('local')
+    load_dotenv()
+    
+    DEBUG = True
+    RESULT_HOST = 'localhost:8000'
+    
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }   
+
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6380",
+            # "LOCATION": "redis://redis:6379",
+        }
+    }
+
+    # CELERY_BROKER_URL = 'amqp://localhost:5672/'
+    CELERY_BROKER_URL = 'redis://localhost:6380/'
+    REDIS_HOST = 'localhost'
+    REDIS_PORT = '6380'
+    
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }  
+SECRET_KEY = os.environ.get('SECRET_KEY')
+
+if not SECRET_KEY:
+    # Генерация нового ключа, если его нет в переменных окружения
+    SECRET_KEY = get_random_secret_key()
+    print(f'Generated new SECRET_KEY: {SECRET_KEY}')
+
+
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1',
                  'auto-subs.ru', 'subs', 
                  'auto-subs', 'autosubs', 
                  '192.168.0.109', 'webapp', ]
 
-RESULT_HOST = 'localhost:8000'
 
+SITE_ID = 2
 
 
 INSTALLED_APPS = [
@@ -50,11 +87,6 @@ INSTALLED_APPS = [
 TELEGRAM_BOT_NAME = 'subsTelegramLoginBot'
 TELEGRAM_BOT_TOKEN = '8032773057:AAFdoGlv588mM68VOGv4mrfaTLxhrJcdRx4'
 TELEGRAM_LOGIN_REDIRECT_URL = 'https://auto-subs.ru/'
-
-
-# TELEGRAM_BOT_NAME = 'pam_pam_507_bot'
-# SOCIAL_AUTH_TELEGRAM_BOT_TOKEN = '5818607721:AAExOmZRhd0R_of7klHeMuV8p5Bjv_oq2oo'
-# TELEGRAM_LOGIN_REDIRECT_URL = 'https://auto-subs.ru/'
 
 
 # SOCIALACCOUNT_PROVIDERS = {
@@ -108,43 +140,37 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'auto_subs.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6380",
-        # "LOCATION": "redis://redis:6379",
-    }
-}
-
-# CELERY_BROKER_URL = 'amqp://localhost:5672/'
-CELERY_BROKER_URL = 'redis://localhost:6380/'
-REDIS_HOST = 'localhost'
-REDIS_PORT = '6380'
 
 if os.getenv('dockerenv'):
     
     print('Docker!!!')
+    
+    DEBUG = os.environ.get('DEBUG')
+    RESULT_HOST = os.environ.get('RESULT_HOST')
 
-    CELERY_BROKER_URL = 'redis://redis:6379/'
-    REDIS_HOST = 'redis'
-    REDIS_PORT = '6379'
+    CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
+    CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
+    REDIS_HOST = os.environ.get('REDIS_HOST')
+    REDIS_PORT = os.environ.get('REDIS_PORT')
     
     CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://redis:6379",
+        "LOCATION": os.environ.get('REDIS_URL'),
         }
     }
+    
+    # DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': os.environ.get("DB_NAME"),
+    #     'USER': os.environ.get("DB_USER"),
+    #     'PASSWORD': os.environ.get("DB_PASSWORD"),
+    #     'HOST': os.environ.get("DB_HOST"),
+    #     'PORT': os.environ.get("DB_PORT"),
+    #     }
+    # }
 
 
 
@@ -222,7 +248,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = 'http://127.0.0.1:8000/social_auth/comp
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 # LANGUAGE_CODE = 'ru-RU'
-LANGUAGE_CODE = 'ru-Ru'
+LANGUAGE_CODE = 'en-EN'
 
 TIME_ZONE = 'UTC'
 

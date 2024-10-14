@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<h2>Введите новый email</h2>
+<h2>Enter a new email address</h2>
   <br>
   <form method="post" action="">
     {% csrf_token %}
@@ -14,7 +14,7 @@
     {% endfor %}
     
 
-    <button type="submit">Выбрать</button>
+    <button type="submit">Choose</button>
   </form>
 
 {% endblock content %}

@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.contrib.auth import update_session_auth_hash
 from django.db.models import QuerySet
-from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse, HttpRequest, FileResponse
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, StreamingHttpResponse, HttpRequest, FileResponse
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
@@ -43,8 +43,8 @@ from .utils.services.sending_video_stream.video_stream import VideoStream
 from .utils.services.email.abstractapi import validate_email
 
 menu = [
-    {'title': 'Главная', 'url_name': 'main'},
-    {'title': 'Загрузить видео', 'url_name': 'upload_video'},
+    {'title': 'Main', 'url_name': 'main'},
+    {'title': 'Upload video', 'url_name': 'upload_video'},
     # {'title': 'Профиль', 'url_name': 'personal_account'}
 
 ]
@@ -56,7 +56,9 @@ def test(request):
     return HttpResponse('hi')
     
     
-
+def page_not_found(request, exception):
+    return render(request, 'web_app_auto_subs/page_not_found.html')
+    
 
 class UploadVideo(LoginRequiredMixin, UploadVideoMixin, ContextMixin, FormView):
     template_name: str = 'web_app_auto_subs/upload_video.html'
@@ -128,7 +130,7 @@ class MainMenu(ContextMixin, TemplateView):
         
         message = cache.get('Description')
         if not message:
-            message = Title.objects.get(name='Описание').title
+            message = Title.objects.get(name='Description').title
             cache.set('Description', message, 1000)
             
         context = self.get_mixin_context(
@@ -271,7 +273,7 @@ class PersonalAccount(LoginRequiredMixin, ContextMixin, ListView):
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        context = self.get_mixin_context(context, cur_menu='Профиль')
+        context = self.get_mixin_context(context, cur_menu='Profile')
         # context['host'] = 'webapp'
         context['host'] = RESULT_HOST
 

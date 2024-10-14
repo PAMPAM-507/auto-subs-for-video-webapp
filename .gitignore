@@ -22,6 +22,9 @@ auto_subs/web_app_auto_subs/utils/services/subtitles1/model
 **/cert.crt
 **/cert.key
 **/.env
+**/*celerybeat-schedule*
+**/.key
+**/my-docker-compose.yml
 
 !**/*requirements.txt
 !**/*requirements3.11.3.txt

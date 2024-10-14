@@ -1,7 +1,31 @@
 version: '3.8'
 
 x-environment-defaults: &environment-defaults
-  dockerenv: "true"
+  dockerenv: 'true'
+  DEBUG: 'False'
+  DB_NAME: 'autosubtitles'
+  DB_USER: 'autosubtitles'
+  DB_PASSWORD: 'autosubtitles'
+  DB_HOST: 'postgres'
+  DB_PORT: 5432
+  CELERY_BROKER_URL: 'redis://redis:6379/'
+  CELERY_RESULT_BACKEND: 'redis://redis:6379/'
+  REDIS_HOST: 'redis'
+  REDIS_PORT: '6379'
+  REDIS_URL: 'redis://redis:6379'
+
+  # You need to fill in or you can use .env
+  RESULT_HOST: 'localhost:8000'
+  SECRET_KEY: 'secret'
+  # EMAIL_HOST_USER: 'example@example.com'
+  # EMAIL_HOST_PASSWORD: 'example'
+  # SOCIAL_AUTH_GITHUB_KEY: ''
+  # SOCIAL_AUTH_GITHUB_SECRET: ''
+  # SOCIAL_AUTH_GOOGLE_OAUTH2_KEY: ''
+  # SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET: ''
+
+
+
 
 services:
   redis:
@@ -15,14 +39,27 @@ services:
   #     - RABBITMQ_DEFAULT_USER=guest
   #     - RABBITMQ_DEFAULT_PASS=guest
   #   ports:
-  #     - "5672:5672"
+  #     - '5672:5672'
+
+  # postgres:
+  #   image: postgres:latest
+  #   ports:
+  #     - '5432:5432'
+    # volumes:
+    #   - pgdata:/var/lib/postgresql/data
+  #   environment:
+  #     POSTGRES_DB: autosubtitles
+  #     POSTGRES_USER: autosubtitles
+  #     POSTGRES_PASSWORD: autosubtitles
 
   webapp:
     build:
       context: ./
-    command: bash -c "python3 ./auto_subs/manage.py makemigrations && python3 ./auto_subs/manage.py migrate && python3 ./auto_subs/manage.py runserver 0.0.0.0:8000"
-    # command: ["python3", "./auto_subs/manage.py", "runserver", "0.0.0.0:8000"]
-    # command: bash -c "cd ./ClinicProject && gunicorn ClinicProject.wsgi:application --bind 0.0.0.0:8000"
+    # command: bash -c 'python3 ./auto_subs/manage.py makemigrations && python3 ./auto_subs/manage.py migrate && python3 ./auto_subs/manage.py runserver 0.0.0.0:8000'
+    # command: ['python3', './auto_subs/manage.py', 'runserver', '0.0.0.0:8000']
+    # command: bash -c 'cd ./ClinicProject && gunicorn ClinicProject.wsgi:application --bind 0.0.0.0:8000'
+    env_file:
+      - .env
     environment:
       <<: *environment-defaults
     ports:
@@ -31,21 +68,39 @@ services:
       - ./auto_subs/db.sqlite3:/subs/db.sqlite3
       - ./auto_subs/media:/subs/auto_subs/media
       - ./policy.xml:/etc/ImageMagick-6/policy.xml
-      - .:/subs/
+      # - .:/subs/
+      - static_volume:/subs/auto_subs/static
+    depends_on:
+      # - postgres
+      - redis
   
   worker:
     build:
       context: ./
     command: ['celery', '--workdir=./auto_subs', '-A', 'auto_subs', 'worker', '--loglevel=INFO']
+    env_file:
+      - .env
     environment:
       <<: *environment-defaults
-    volumes:
-      - ./auto_subs/db.sqlite3:/subs/db.sqlite3
-      - ./auto_subs/media:/subs/auto_subs/media
-      - ./policy.xml:/etc/ImageMagick-6/policy.xml
-      - .:/subs/
+    # volumes:
+    #   - ./auto_subs/db.sqlite3:/subs/db.sqlite3
+    #   - ./auto_subs/media:/subs/auto_subs/media
+    #   - ./policy.xml:/etc/ImageMagick-6/policy.xml
+      # - .:/subs/
     depends_on:
+      # - postgres
       - redis
-      # - rabbitmq
 
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./conf/nginx.conf:/etc/nginx/nginx.conf
+      - static_volume:/static
+    ports:
+      - '1337:80'
+    depends_on:
+      - webapp
+
+volumes:
+  static_volume:
 

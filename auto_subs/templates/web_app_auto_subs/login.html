@@ -10,18 +10,19 @@
             <div>{{ f.errors }}</div>
         {% endfor %}
 
-        <button type="submit">Авторизоваться</button>
+        <button type="submit">Log in</button>
     </form>
 
     <br>
-    <button><a href="{% url 'password_reset' %}">Забыли пароль?</a></button>
+    <button><a href="{% url 'password_reset' %}">Forgot your password?</a></button>
 
     <p class="social-auth">
-        <p>Авторизоваться с помощью</p>
+        <p>Log in using</p>
 
         <a href="{% url 'social:begin' 'github' %}"><img src="/static/github.png" alt="GitHub" style="width: 40px; height: 40px;"/></a>
-        {% comment %} <a href="{% url 'social:begin' 'vk-oauth2' %}"><img src="/static/vkimg.png" alt="VK" style="width: 40px; height: 40px;"/></a> {% endcomment %}
         <a href="{% url 'social:begin' 'google-oauth2' %}"><img src="/static/google.png" alt="Google" style="width: 40px; height: 40px;"/></a>
+        
+        {% comment %} <a href="{% url 'social:begin' 'vk-oauth2' %}"><img src="/static/vkimg.png" alt="VK" style="width: 40px; height: 40px;"/></a> {% endcomment %}
         {% comment %} <a href="{% url 'social:begin' 'telegram' %}">Login with Telegram</a> {% endcomment %}
     </p>
 
@@ -29,11 +30,11 @@
     {% comment %} <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="pam_pam_507_bot" data-size="small" data-userpic="false" data-auth-url="https://auto-subs.ru/social_auth/complete/telegram" data-request-access="write"></script>     {% endcomment %}
     {% comment %} <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="subsTelegramLoginBot" data-size="small" data-userpic="false" data-auth-url="https://auto-subs.ru/" data-request-access="write"></script> {% endcomment %}
     
-    <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="subsTelegramLoginBot" data-size="small" data-userpic="false" data-onauth="onTelegramAuth(user)" data-request-access="write"></script>
+    {% comment %} <script async src="https://telegram.org/js/telegram-widget.js?22" data-telegram-login="subsTelegramLoginBot" data-size="small" data-userpic="false" data-onauth="onTelegramAuth(user)" data-request-access="write"></script>
 <script type="text/javascript">
   function onTelegramAuth(user) {
     console.log('123')
     alert('Logged in as ' + user.first_name + ' ' + user.last_name + '!');   }
-</script>
+</script> {% endcomment %}
 
     {% endblock content %} 

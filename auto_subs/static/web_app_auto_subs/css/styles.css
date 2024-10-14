@@ -1,0 +1,354 @@
+/* Основные стили для страницы */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Стили для шапки */
+header {
+    background-color: #3a3f44;
+    color: #ffffff;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+/* .social-auth img {
+    width: 10px;
+    height: 10px;
+} */
+
+/* Стили для навигационной панели */
+nav {
+    background-color: #1b1d20;
+    padding: 10px 20px;
+    /* display: flex; */
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(228, 135, 135, 0.1);
+}
+
+/* Стили для контейнера меню */
+.menu-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.username {
+    color: #ffffff; /* замените #ff0000 на нужный вам цвет */
+}
+
+/* Стили для списка меню */
+.menu-list, .auth-links {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.menu-list li, .auth-links li {
+    margin-right: 30px;
+}
+
+.menu-list li a, .auth-links li a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.menu-list li a:hover, .auth-links li a:hover {
+    background-color: #4a4f54;
+}
+
+/* Стили для сообщения */
+.message {
+    text-align: center;
+    margin: 20px auto;
+    padding: 15px;
+    background-color: #ffeeba;
+    color: #856404;
+    border-radius: 5px;
+    width: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.5s;
+}
+
+/* Основной контент */
+.content {
+    padding: 30px;
+    background-color: #ffffff;
+    margin: 20px auto;
+    width: 80%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    flex: 1;
+}
+
+/* Анимация появления сообщения */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Футер */
+footer {
+    background-color: #3a3f44;
+    color: #ffffff;
+    text-align: center;
+    padding: 10px 0;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .menu-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .menu-list, .auth-links {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .menu-list li, .auth-links li {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .content {
+        width: 90%;
+    }
+
+    .message {
+        width: 80%;
+    }
+}
+
+@media (max-width: 480px) {
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .menu-list, .auth-links {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .menu-list li, .auth-links li {
+        margin-bottom: 5px;
+    }
+}
+
+/* Стили для ссылки "Профиль" */
+.auth-links li.profile-link {
+    margin-left: auto !important; /* Отодвигает элемент вправо */
+}
+
+
+/* Дополнительные стили для страниц, наследующих base.html */
+.content a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.content a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.content nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.content nav ul li {
+    margin: 0 5px;
+}
+
+.content nav a {
+    /* color: #333; */
+    text-decoration: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    transition: background-color 0.3s;
+}
+
+.content nav a:hover {
+    background-color: #e9ecef;
+}
+
+/* Стили для пагинации */
+.content .pagination {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.content .pagination a {
+    color: #0056b3;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+    margin: 0 2px;
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.content .pagination a:hover {
+    background-color: #e9ecef;
+    border-color: #ccc;
+}
+
+.content .pagination span.current {
+    background-color: #007bff;
+    color: #fff;
+    border-color: #007bff;
+}
+
+/* Стили для ссылок на изменение профиля */
+.content .edit-profile-link {
+    display: block;
+    margin: 20px 0;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.content .edit-profile-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+
+.curr {
+    color: #ddd;
+}
+
+
+
+/* Дополнительные стили для формы */
+.content form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 10px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.content form p {
+    margin-bottom: 15px;
+}
+
+.content form label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.content form input[type="text"],
+.content form input[type="email"],
+.content form input[type="file"],
+.content form textarea {
+    /* width: 100%; */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+.content form input[type="file"] {
+    padding: 5px;
+}
+
+.content form .form-errors {
+    color: #dc3545;
+    font-size: 0.875em;
+    margin-bottom: 15px;
+}
+
+.content form button {
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.content form button:hover {
+    background-color: #0056b3;
+}
+
+
+
+/* Дополнительные стили для страницы видео */
+.content {
+    text-align: center; /* Выравнивание содержимого по центру */
+}
+
+.content h1 {
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.content .video-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.content .video-js {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.content .video-info {
+    font-size: 1.2em;
+    margin: 20px 0;
+    color: #333;
+}
+
+.content .video-info span {
+    font-weight: bold;
+}
+
+.content .video-info br {
+    display: none;
+}
+
+
+

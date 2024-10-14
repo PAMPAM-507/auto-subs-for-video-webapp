@@ -6,23 +6,23 @@ from django.template.loader import render_to_string
 from .models import *
 
 
-# Верхний заголовок (в левом верхнем углу)
-admin.site.site_header = "Админ-панель"
-# Заголовок страницы (вкладки браузера)
-admin.site.site_title = "Админ-панель сайта"
-# Заголовок на главной странице админки
-admin.site.index_title = "Добро пожаловать в Админ-панель"
+# Upper header (in the top left corner)
+admin.site.site_header = "Admin Panel"
+# Page title (browser tabs)
+admin.site.site_title = "Site Admin Panel"
+# Title on the main admin page
+admin.site.index_title = "Welcome to the Admin Panel"
 
 
 class VideoSizeFilter(admin.SimpleListFilter):
-    title = 'Размер видео'
+    title = 'Video Size'
     parameter_name = 'video_size'
 
     def lookups(self, request, model_admin):
         return [
-            ('Small', 'Маленькое (до 20 МБ)'),
-            ('Medium', 'Среднее (от 20 до 50 МБ)'),
-            ('Large', 'Большое (больше 50 МБ)')
+            ('Small', 'Small (up to 20 MB)'),
+            ('Medium', 'Medium (from 20 to 50 MB)'),
+            ('Large', 'Large (more than 50 MB)')
         ]
 
     def queryset(self, request, queryset):
@@ -61,7 +61,7 @@ class UserVideosAdmin(admin.ModelAdmin):
     search_fields = ('user', 'uploaded_at', 'name_of_video',)
     list_filter = ('uploaded_at', VideoSizeFilter)
 
-    @admin.display(description='Обработанной видео')
+    @admin.display(description='Processed Video')
     def watch_video(self, object: Model):
         if object.videos_with_subs:
             html = f"""
@@ -81,7 +81,7 @@ class UserVideosAdmin(admin.ModelAdmin):
             """
             return mark_safe(html)
         else:
-            return "Видео не загружено"
+            return "Video not uploaded"
 
 
 @admin.register(Title)
@@ -94,7 +94,7 @@ class TitleAdmin(admin.ModelAdmin):
 
 @admin.register(LanguagesForTranslateVideo)
 class LanguagesForTranslateVideoAdmin(admin.ModelAdmin):
-    list_display = ('id', 'language',)
+    list_display = ('id', 'language', 'name_of_language',)
     list_display_links = ('id', 'language',)
     search_fields = ('id', 'language',)
     # list_filter = ('language', )
