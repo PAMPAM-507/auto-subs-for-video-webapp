@@ -35,13 +35,9 @@ if not os.getenv('dockerenv'):
     CELERY_BROKER_URL = 'redis://localhost:6380/'
     REDIS_HOST = 'localhost'
     REDIS_PORT = '6380'
-    
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }  
+
+
+
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 if not SECRET_KEY:
@@ -151,6 +147,7 @@ if os.getenv('dockerenv'):
 
     CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
     CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
+    
     REDIS_HOST = os.environ.get('REDIS_HOST')
     REDIS_PORT = os.environ.get('REDIS_PORT')
     
@@ -161,16 +158,16 @@ if os.getenv('dockerenv'):
         }
     }
     
-    # DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': os.environ.get("DB_NAME"),
-    #     'USER': os.environ.get("DB_USER"),
-    #     'PASSWORD': os.environ.get("DB_PASSWORD"),
-    #     'HOST': os.environ.get("DB_HOST"),
-    #     'PORT': os.environ.get("DB_PORT"),
-    #     }
-    # }
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get("DB_NAME"),
+        'USER': os.environ.get("DB_USER"),
+        'PASSWORD': os.environ.get("DB_PASSWORD"),
+        'HOST': os.environ.get("DB_HOST"),
+        'PORT': os.environ.get("DB_PORT"),
+        }
+    }
 
 
 

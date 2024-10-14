@@ -1,14 +1,14 @@
 version: '3.8'
 
 x-environment-defaults: &environment-defaults
-  dockerenv: 'true'
+  dockerenv: 'True'
   DEBUG: 'False'
-  DB_NAME: 'autosubtitles'
-  DB_USER: 'autosubtitles'
-  DB_PASSWORD: 'autosubtitles'
+  DB_NAME: 'webapp'
+  DB_USER: 'webapp'
+  DB_PASSWORD: 'webapp'
   DB_HOST: 'postgres'
   DB_PORT: 5432
-  CELERY_BROKER_URL: 'redis://redis:6379/'
+  CELERY_BROKER_URL: 'redis://redis:6379/' # 'amqp://localhost:5672/'
   CELERY_RESULT_BACKEND: 'redis://redis:6379/'
   REDIS_HOST: 'redis'
   REDIS_PORT: '6379'
@@ -16,7 +16,7 @@ x-environment-defaults: &environment-defaults
 
   # You need to fill in or you can use .env
   RESULT_HOST: 'localhost:8000'
-  SECRET_KEY: 'secret'
+  # SECRET_KEY: 'secret'
   # EMAIL_HOST_USER: 'example@example.com'
   # EMAIL_HOST_PASSWORD: 'example'
   # SOCIAL_AUTH_GITHUB_KEY: ''
@@ -36,21 +36,35 @@ services:
   # rabbitmq:
   #   image: rabbitmq:latest
   #   environment:
-  #     - RABBITMQ_DEFAULT_USER=guest
-  #     - RABBITMQ_DEFAULT_PASS=guest
+  #     - RABBITMQ_DEFAULT_USER=autosubtitles
+  #     - RABBITMQ_DEFAULT_PASS=autosubtitles
   #   ports:
   #     - '5672:5672'
 
-  # postgres:
-  #   image: postgres:latest
-  #   ports:
-  #     - '5432:5432'
+  postgres:
+    image: postgres:latest
+    ports:
+      - '5432:5432'
     # volumes:
     #   - pgdata:/var/lib/postgresql/data
-  #   environment:
-  #     POSTGRES_DB: autosubtitles
-  #     POSTGRES_USER: autosubtitles
-  #     POSTGRES_PASSWORD: autosubtitles
+    environment:
+      POSTGRES_DB: webapp
+      POSTGRES_USER: webapp
+      POSTGRES_PASSWORD: webapp
+  
+
+  help:
+    build:
+      context: ./help
+    environment:
+      <<: *environment-defaults
+    ports:
+    - '8001:8000'
+    # volumes:
+      # - static_volume:/subs/auto_subs/static
+    depends_on:
+      - postgres
+
 
   webapp:
     build:
@@ -71,13 +85,14 @@ services:
       # - .:/subs/
       - static_volume:/subs/auto_subs/static
     depends_on:
-      # - postgres
+      - postgres
       - redis
+      - help
   
   worker:
     build:
       context: ./
-    command: ['celery', '--workdir=./auto_subs', '-A', 'auto_subs', 'worker', '--loglevel=INFO']
+    command: ['/subs/wait-for-postgres.sh', 'celery', '--workdir=./auto_subs', '-A', 'auto_subs', 'worker', '--loglevel=INFO']
     env_file:
       - .env
     environment:
@@ -88,8 +103,9 @@ services:
     #   - ./policy.xml:/etc/ImageMagick-6/policy.xml
       # - .:/subs/
     depends_on:
-      # - postgres
+      - postgres
       - redis
+      - help
 
   nginx:
     image: nginx:latest
@@ -103,4 +119,5 @@ services:
 
 volumes:
   static_volume:
+  # pgdata:
 

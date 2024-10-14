@@ -1,0 +1,74 @@
+[
+  {
+    "model": "web_app_auto_subs.languagesfortranslatevideo",
+    "pk": 1,
+    "fields": {
+      "language": "ru",
+      "name_of_language": "Russian"
+    }
+  },
+  {
+    "model": "web_app_auto_subs.languagesfortranslatevideo",
+    "pk": 2,
+    "fields": {
+      "language": "en",
+      "name_of_language": "English"
+    }
+  },
+  {
+    "model": "web_app_auto_subs.title",
+    "pk": 1,
+    "fields": {
+      "title": "The site allows you to automatically generate subtitles",
+      "name": "Description"
+    }
+  },
+  {
+    "model": "sites.site",
+    "pk": 2,
+    "fields": {
+      "domain": "127.0.0.1:8000",
+      "name": "127.0.0.1:8000"
+    }
+  },
+  {
+    "model": "auth.group",
+    "pk": 1,
+    "fields": {
+      "name": "social",
+      "permissions": [
+        66
+      ]
+    }
+  },
+  {
+    "model": "auth.group",
+    "pk": 2,
+    "fields": {
+      "name": "Usual user",
+      "permissions": [
+        65
+      ]
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 65,
+    "fields": {
+      "name": "Usual user",
+      "content_type": 4,
+      "codename": "usual_user"
+    }
+  },
+  {
+    "model": "auth.permission",
+    "pk": 66,
+    "fields": {
+      "name": "Social auth",
+      "content_type": 4,
+      "codename": "social_auth"
+    }
+  }
+  
+  ]
+  

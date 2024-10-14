@@ -18,16 +18,19 @@ Information system based on Whisper-AI, which can transcription audio, video. Us
 
 ### 1. Creating .env
 You need to create .env with constants below
+You should put .env in project's root directory
 
-EMAIL_HOST_PASSWORD='...'
-SECRET_KEY='...'
-EMAIL_HOST_USER='...'
+EMAIL_HOST_PASSWORD='...'  
+SECRET_KEY='...'  
+EMAIL_HOST_USER='...'  
 
-SOCIAL_AUTH_GITHUB_KEY='...'
-SOCIAL_AUTH_GITHUB_SECRET='...'
+SOCIAL_AUTH_GITHUB_KEY='...'  
+SOCIAL_AUTH_GITHUB_SECRET='...'  
 
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET='...'
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY='...'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET='...'  
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY='...'  
+
+Or you can fill in constants in docker-compose.yml
 
 Application will open on 127.0.0.1:8000 or localhost:8000
 

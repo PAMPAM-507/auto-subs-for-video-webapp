@@ -30,4 +30,6 @@ auto_subs/web_app_auto_subs/utils/services/subtitles1/model
 !**/*requirements3.11.3.txt
 !**/for_make_folder.txt
 !**/requirements3.11.3rocm.txt
+!**/req.txt
+!**/help/initialize_db.json
 

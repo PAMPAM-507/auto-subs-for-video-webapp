@@ -34,14 +34,16 @@ COPY . /subs/
 RUN pip install --upgrade pip
 RUN pip install -r requirements3.11.3.txt
 
+RUN chmod +x /subs/wait-for-postgres.sh
 
-CMD python3 ./auto_subs/manage.py migrate \
+
+CMD /subs/wait-for-postgres.sh \
+    # && python3 ./auto_subs/manage.py migrate \
     && python3 ./auto_subs/manage.py makemigrations \
     && python3 ./auto_subs/manage.py migrate \
-    && python3 ./auto_subs/manage.py shell -c "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='root').exists() or User.objects.create_superuser('root', 'root@example.com', 'root')" \
-    && python3 ./auto_subs/manage.py loaddata ./auto_subs/fixtures/initialize_db.json \
+    # && python3 ./auto_subs/manage.py shell -c "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='root').exists() or User.objects.create_superuser('root', 'root@example.com', 'root')" \
+    # && python3 ./auto_subs/manage.py loaddata ./auto_subs/fixtures/initialize_db.json \
     && cd ./auto_subs \
     && gunicorn auto_subs.wsgi:application --bind 0.0.0.0:8000 --log-level info
-    # && python3 ./auto_subs/manage.py runserver 0.0.0.0:8000
 
 

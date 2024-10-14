@@ -8,7 +8,7 @@ from .models import *
 
 from auto_subs.settings import BASE_PATH_OF_VIDEO
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, UserChangeForm
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
 from django.core.exceptions import ValidationError
 
@@ -97,7 +97,7 @@ class RegisterUserForm(UserCreationForm):
         widget=forms.PasswordInput, label='Password repetition ')
 
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ('username', 'password1', 'password2')
 
 
@@ -106,7 +106,7 @@ class LoginUserFrom(AuthenticationForm):
     password = forms.CharField(widget=forms.PasswordInput, label='Password ')
 
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ('username', 'password',)
 
 
@@ -156,7 +156,7 @@ class ChangeEmailForm(forms.ModelForm):
     username = forms.EmailField(label='New email address ')
     
     class Meta:
-        model = User
+        model = get_user_model()
         fields = ('username',)
 
 # <!--<form method="post" enctype="multipart/form-data">
