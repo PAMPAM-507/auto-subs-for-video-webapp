@@ -17,7 +17,7 @@ class UserVideos(models.Model):
 
     videos_with_subs = models.FileField(
         # upload_to='videos_with_subs/%Y/%m/%d/',
-        upload_to='videos_with_subs/',
+        upload_to='video_with_subs/',
         null=True, verbose_name='Video with subtitles',
         blank=True
     )

@@ -2,6 +2,7 @@ import subprocess
 import contextlib
 import sys
 import os
+import traceback
 from typing import NoReturn
 
 import redis
@@ -11,7 +12,6 @@ from moviepy.editor import VideoFileClip
 from .progress_bar import IProgressValue
 from auto_subs.settings import PATH_FOR_SUBTITLES
 from auto_subs.settings import logger
-from web_app_auto_subs.models import UserVideos
 
 
 class StartWhisper():
@@ -36,11 +36,14 @@ class StartWhisper():
         try:
             percentages = total_seconds * 100 / duration_in_seconds
         except ZeroDivisionError as e:
-            logger.error(f'ZeroDivisionError in __calculate_percentages in class StartWhisper, Error occurred: {e}')
+            tb_message = traceback.format_exc()
+            logger.error(f'ZeroDivisionError in __calculate_percentages in class StartWhisper, Error occurred: {tb_message}')
         except TypeError as e:
-            logger.error(f'TypeError in __calculate_percentages in class StartWhisper, Error occurred: {e}')
+            tb_message = traceback.format_exc()
+            logger.error(f'TypeError in __calculate_percentages in class StartWhisper, Error occurred: {tb_message}')
         except Exception as e:
-            logger.error(f'Exception in __calculate_percentages in class StartWhisper, Error occurred: {e}')
+            tb_message = traceback.format_exc()
+            logger.error(f'Exception in __calculate_percentages in class StartWhisper, Error occurred: {tb_message}')
 
         percentages = int(percentages)
 
@@ -63,17 +66,21 @@ class StartWhisper():
         try:
             minutes, seconds = time_str.split(':')
         except ValueError as e:
-            logger.error(f' ValueError in __parse_str_time_to_seconds in class StartWhisper. Error occurred: {e}')
+            tb_message = traceback.format_exc()
+            logger.error(f' ValueError in __parse_str_time_to_seconds in class StartWhisper. Error occurred: {tb_message}')
         except Exception as e:
-            logger.error(f'Exception in __parse_str_time_to_seconds in class StartWhisper. Error occurred: {e}')
+            tb_message = traceback.format_exc()
+            logger.error(f'Exception in __parse_str_time_to_seconds in class StartWhisper. Error occurred: {tb_message}')
 
         else:
             try:
                 result = int(minutes) * 60 + int(seconds)
             except ValueError as e:
-                logger.error(f'ValueError in __parse_str_time_to_seconds in class StartWhisper. Error occurred: {e}')
+                tb_message = traceback.format_exc()
+                logger.error(f'ValueError in __parse_str_time_to_seconds in class StartWhisper. Error occurred: {tb_message}')
             except Exception as e:
-                logger.error(f'Exception in __parse_str_time_to_seconds in class StartWhisper. Error occurred: {e}')
+                tb_message = traceback.format_exc()
+                logger.error(f'Exception in __parse_str_time_to_seconds in class StartWhisper. Error occurred: {tb_message}')
 
         return result
 
@@ -87,7 +94,7 @@ class StartWhisper():
             language_for_model (str): en, ru, etc
 
         """
-
+        print(path_of_video)
         if not os.path.exists(path_of_video):
             logger.info(f'Error occurred: video file does not exist')
             raise FileExistsError('Video file does not exist')
@@ -140,4 +147,5 @@ class StartWhisper():
             self.save_progress_results(key=video_pk, value=100)
 
         except Exception as e:
-            logger.error(f'Error occurred: {e}')
+            tb_message = traceback.format_exc()
+            logger.error(f'Error occurred: {tb_message}')

@@ -25,6 +25,9 @@ auto_subs/web_app_auto_subs/utils/services/subtitles1/model
 **/*celerybeat-schedule*
 **/.key
 **/my-docker-compose.yml
+**/*celerybeat-schedule.bak
+**/*celerybeat-schedule.dat
+**/*celerybeat-schedule.dir
 
 !**/*requirements.txt
 !**/*requirements3.11.3.txt

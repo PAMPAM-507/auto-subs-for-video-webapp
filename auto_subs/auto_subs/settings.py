@@ -15,6 +15,7 @@ if not os.getenv('dockerenv'):
     
     DEBUG = True
     RESULT_HOST = 'localhost:8000'
+    SITE_ID = 2
     
     DATABASES = {
     'default': {
@@ -52,8 +53,20 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1',
                  'auto-subs', 'autosubs', 
                  '192.168.0.109', 'webapp', ]
 
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:1337',
+                        'http://127.0.0.1:8000',
+                        'http://127.0.0.1:8002',
+                        'http://127.0.0.1', 
+                        'http://localhost:1337', 
+                        'https://yourdomain.com']
 
-SITE_ID = 2
+USE_X_FORWARDED_HOST = True
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+# SOCIAL_AUTH_GITHUB_REDIRECT_URI = 'http://127.0.0.1:1337/social_auth/complete/github/'
+
+
+
 
 
 INSTALLED_APPS = [
@@ -74,27 +87,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     
     'django_telegram_login',
-    # 'allauth',
-    # 'allauth.account',
-    # 'allauth.socialaccount',
-    # 'allauth.socialaccount.providers.google',
 ]
-
-TELEGRAM_BOT_NAME = 'subsTelegramLoginBot'
-TELEGRAM_BOT_TOKEN = '8032773057:AAFdoGlv588mM68VOGv4mrfaTLxhrJcdRx4'
-TELEGRAM_LOGIN_REDIRECT_URL = 'https://auto-subs.ru/'
-
-
-# SOCIALACCOUNT_PROVIDERS = {
-#     'google': {
-#         'SCOPE': [
-#             'profile',
-#             'email',
-#         ]
-#     },
-#     'AUTH_PARAMS': {'access_type': 'online'}
-        
-# }
 
 
 MIDDLEWARE = [
@@ -110,7 +103,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'social_django.middleware.SocialAuthExceptionMiddleware',
-    # 'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'auto_subs.urls'
@@ -142,6 +134,7 @@ if os.getenv('dockerenv'):
     
     print('Docker!!!')
     
+    SITE_ID = 3
     DEBUG = os.environ.get('DEBUG')
     RESULT_HOST = os.environ.get('RESULT_HOST')
 
@@ -224,14 +217,11 @@ SOCIAL_AUTH_GITHUB_KEY = os.environ.get('SOCIAL_AUTH_GITHUB_KEY')
 SOCIAL_AUTH_GITHUB_SECRET = os.environ.get('SOCIAL_AUTH_GITHUB_SECRET')
 
 
-# SOCIAL_AUTH_VK_OAUTH2_REDIRECT_URI = 'https://auto-subs.ru/complete/vk-oauth2/'
 SOCIAL_AUTH_VK_OAUTH2_KEY = os.environ.get('SOCIAL_AUTH_VK_OAUTH2_KEY')
 SOCIAL_AUTH_VK_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_VK_OAUTH2_SECRET')
 SOCIAL_AUTH_VK_OAUTH2_SCOPE = ['email']
-# SOCIAL_AUTH_VK_APP_USER_MODE = 1
 
 
-SITE_ID = 2
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY= os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
 SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = 'http://127.0.0.1:8000/social_auth/complete/google-oauth2/'

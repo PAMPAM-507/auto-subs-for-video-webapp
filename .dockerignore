@@ -10,8 +10,4 @@ venv311
 **/__pycache__
 **/.idea
 **/.vscode
-**/*.srt
-**/*.tsv
-**/*.vtt
-**/*.mp4
-**/*.mp3
+

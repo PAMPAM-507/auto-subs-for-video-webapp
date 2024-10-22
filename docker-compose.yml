@@ -79,7 +79,7 @@ services:
     ports:
     - '8000:8000'
     volumes:
-      - ./auto_subs/db.sqlite3:/subs/db.sqlite3
+      # - ./auto_subs/db.sqlite3:/subs/db.sqlite3
       - ./auto_subs/media:/subs/auto_subs/media
       - ./policy.xml:/etc/ImageMagick-6/policy.xml
       # - .:/subs/
@@ -92,15 +92,16 @@ services:
   worker:
     build:
       context: ./
-    command: ['/subs/wait-for-postgres.sh', 'celery', '--workdir=./auto_subs', '-A', 'auto_subs', 'worker', '--loglevel=INFO']
+    # command: ['. /subs/wait-for-postgres.sh', 'celery', '--workdir=./auto_subs', '-A', 'auto_subs', 'worker', '--loglevel=INFO']
+    command: bash -c '. /subs/wait-for-postgres.sh && celery --workdir=./auto_subs -A auto_subs worker --loglevel=INFO' 
     env_file:
       - .env
     environment:
       <<: *environment-defaults
-    # volumes:
-    #   - ./auto_subs/db.sqlite3:/subs/db.sqlite3
-    #   - ./auto_subs/media:/subs/auto_subs/media
-    #   - ./policy.xml:/etc/ImageMagick-6/policy.xml
+    volumes:
+      # - ./auto_subs/db.sqlite3:/subs/db.sqlite3
+      - ./auto_subs/media:/subs/auto_subs/media
+      - ./policy.xml:/etc/ImageMagick-6/policy.xml
       # - .:/subs/
     depends_on:
       - postgres

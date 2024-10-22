@@ -32,6 +32,14 @@
     }
   },
   {
+    "model": "sites.site",
+    "pk": 3,
+    "fields": {
+      "domain": "127.0.0.1:1337",
+      "name": "127.0.0.1:1337"
+    }
+  },
+  {
     "model": "auth.group",
     "pk": 1,
     "fields": {

@@ -1,5 +1,6 @@
 import os
 import sys
+import traceback
 from typing import NoReturn
 
 import redis
@@ -90,7 +91,8 @@ def make_subs(video_pk: int,
         )
 
     except Exception as e:
-        logger.error(f'Whisper error occurred: {e}')
+        tb_message = traceback.format_exc()
+        logger.error(f'Whisper error occurred: {tb_message}')
 
     else:
         # try:
@@ -132,15 +134,7 @@ def make_subs(video_pk: int,
                 pk=video_pk).videos_with_subs.file.size / (1024 * 1024))
         )
 
-        if user_email:
-            message = f'Здравствуйте, {user_email}, видео обработано!  Перейдите по ссылке, чтобы посмотреть: http://127.0.0.1:8000/personal_account/?page={page_number}'
-            send_email(subject='PAMPAM-auto-subs.ru. Ссылка на обработанное видео',
-                       message=message, to_email=[user_email,])
-
-   # model = whisper.load_model(size_of_model,)
-    # result = model.transcribe(
-    #     path_of_video,
-    #     language=language_for_model,
-    #     fp16=False,
-    #     verbose=None,
-    #     )
+        # if user_email:
+        #     message = f'Здравствуйте, {user_email}, видео обработано!  Перейдите по ссылке, чтобы посмотреть: http://127.0.0.1:8000/personal_account/?page={page_number}'
+        #     send_email(subject='PAMPAM-auto-subs.ru. Ссылка на обработанное видео',
+        #                message=message, to_email=[user_email,])

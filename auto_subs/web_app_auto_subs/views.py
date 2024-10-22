@@ -110,18 +110,6 @@ class UploadVideo(LoginRequiredMixin, UploadVideoMixin, ContextMixin, FormView):
 
         return super().form_valid(form)
 
-from django.conf import settings
-
-from django_telegram_login.authentication import verify_telegram_authentication
-from django_telegram_login.errors import (
-    NotTelegramDataError, 
-    TelegramDataIsOutdatedError,
-)
-
-bot_name = settings.TELEGRAM_BOT_NAME
-bot_token = settings.TELEGRAM_BOT_TOKEN
-redirect_url = settings.TELEGRAM_LOGIN_REDIRECT_URL
-
 class MainMenu(ContextMixin, TemplateView):
     template_name: str = 'web_app_auto_subs/base.html'
 
@@ -134,35 +122,9 @@ class MainMenu(ContextMixin, TemplateView):
             cache.set('Description', message, 1000)
             
         context = self.get_mixin_context(
-            context, message=message, cur_menu='Главная')
-        
-        if self.request.GET.get('hash'):
-            result = verify_telegram_authentication(
-            bot_token=bot_token, request_data=self.request.GET
-        )
-            return HttpResponse('Hello, ' + result['first_name'] + '!')
-
-            
+            context, message=message, cur_menu='Главная')    
             
         return context
-
-from django_telegram_login.widgets.generator import (
-    create_callback_login_widget,
-    create_redirect_login_widget,
-)
-from django_telegram_login.widgets.constants import (
-    SMALL, 
-    MEDIUM, 
-    LARGE,
-    DISABLE_USER_PHOTO,
-)
-def callback(request):
-    telegram_login_widget = create_callback_login_widget(bot_name, size=SMALL)
-
-    context = {'telegram_login_widget': telegram_login_widget}
-    return render(request, 'test.html', context)
-
-
 
 class RegisterUser(RegisterMixin, ContextMixin, CreateView):
     form_class: Form = RegisterUserForm
