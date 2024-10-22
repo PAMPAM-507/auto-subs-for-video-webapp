@@ -40,6 +40,7 @@ python3 -c "from django.core.management.utils import get_random_secret_key; prin
 ```
 
 ### 2. Use Docker and Docker-compose
+With Docker Application will open on 127.0.0.1:1337
 ```
 docker-compose up
 ```
