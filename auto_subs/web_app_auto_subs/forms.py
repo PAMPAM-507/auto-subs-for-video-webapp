@@ -1,6 +1,5 @@
 import os
 import subprocess
-from typing import NoReturn
 import uuid
 from django import forms
 
@@ -53,7 +52,7 @@ class DocumentForm(forms.ModelForm):
     
     def clean_video(self):
         
-        def delete_temp_video(path: str) -> NoReturn:
+        def delete_temp_video(path: str) -> None:
             try:
                 os.remove(path)
                 print(f"File {path} successfully deleted")

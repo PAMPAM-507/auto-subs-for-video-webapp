@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import IO, NoReturn, Iterable
+from typing import IO, None, Iterable
 
 import pysrt
 
@@ -20,7 +20,7 @@ class IFileParser(ABC):
 
 
 class PysrtFileParser(IFileParser):
-    def __init__(self, file: str) -> NoReturn:
+    def __init__(self, file: str) -> None:
         self.file: Iterable = pysrt.open(file)
         self.file_len = len(self.file)
         self.range = 0
@@ -34,7 +34,7 @@ class PysrtFileParser(IFileParser):
     def get_text(self, subtitle: pysrt.srtitem.SubRipItem) -> str:
         return getattr(subtitle, 'text', None)
 
-    def set_text(self, subtitle: pysrt.srtitem.SubRipItem, value: str) -> NoReturn:
+    def set_text(self, subtitle: pysrt.srtitem.SubRipItem, value: str) -> None:
         setattr(subtitle, 'text', value)
 
     def __len__(self) -> int:

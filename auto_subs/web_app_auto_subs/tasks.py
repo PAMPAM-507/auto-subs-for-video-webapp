@@ -1,7 +1,7 @@
 import os
 import sys
 import traceback
-from typing import NoReturn
+
 
 import redis
 import whisper.transcribe
@@ -29,7 +29,7 @@ from .utils.services.email.send_email import SendEmail
 
 
 @app.task
-def send_email(subject: str, message: str, to_email: list) -> NoReturn:
+def send_email(subject: str, message: str, to_email: list) -> None:
     send_mail(
         subject,
         message,
@@ -67,7 +67,7 @@ def make_subs(video_pk: int,
               user_email: str,
               page_number: int,
               size_of_model: str = 'tiny',
-              language_for_model: str = 'en',) -> NoReturn:
+              language_for_model: str = 'en',) -> None:
 
     import torch
 

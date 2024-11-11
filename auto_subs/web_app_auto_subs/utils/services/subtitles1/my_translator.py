@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import os
 import re
-from typing import Iterable, NoReturn, IO
+from typing import Iterable, None, IO
 
 import pysrt
 from googletrans import Translator, constants
@@ -41,7 +41,7 @@ class MakeTranslating(IMakeTranslating):
         self.translator = translator
         self.saver_progress_results = saver_progress_results
     
-    def __save_progress_results(self, key: int, value: int) -> NoReturn:
+    def __save_progress_results(self, key: int, value: int) -> None:
         self.saver_progress_results.set_progress_value(key=key, value=value)
     
 
@@ -50,7 +50,7 @@ class MakeTranslating(IMakeTranslating):
                        video_pk: int, 
                        progress_value: IProgressValue,
                        src_language: str='en', 
-                       dest_language: str='ru') -> NoReturn:
+                       dest_language: str='ru') -> None:
                 
         lst = []
         for s in subtitles:
@@ -135,7 +135,7 @@ class MakeTranslating(IMakeTranslating):
 #             output, skip_special_tokens=True)
 #         return out_text[0]
 
-#     def make_translate(self, subtitles: pysrt, path_for_subs: str) -> NoReturn:
+#     def make_translate(self, subtitles: pysrt, path_for_subs: str) -> None:
         
 #         lst = []
 #         for s in subtitles:

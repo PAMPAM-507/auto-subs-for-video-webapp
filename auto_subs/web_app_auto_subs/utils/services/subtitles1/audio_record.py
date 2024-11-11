@@ -1,4 +1,4 @@
-from typing import IO, List, NoReturn, Tuple, Union
+from typing import IO, List, None, Tuple, Union
 import os
 from dataclasses import dataclass
 
@@ -39,14 +39,14 @@ class MakeAudioRecord():
             audio_file: str,  
             path_for_output_file: str,
             speed_factor: float=1.0,
-            ) -> NoReturn:
+            ) -> None:
         
         sound = AudioSegment.from_file(audio_file)
         so = sound.speedup(speed_factor, 150, 25)
         so.export(path_for_output_file, format = 'mp3')
     
     @staticmethod
-    def text_to_speech(text, output_file: str, lang: str ='ru') -> NoReturn:
+    def text_to_speech(text, output_file: str, lang: str ='ru') -> None:
         try:
             tts = gTTS(text=text, lang=lang)
             tts.save(output_file)

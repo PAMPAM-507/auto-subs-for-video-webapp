@@ -1,5 +1,4 @@
 
-from typing import NoReturn
 from django.db.models.base import Model as Model
 
 from web_app_auto_subs.models import ChangeEmailModel
@@ -8,7 +7,7 @@ from web_app_auto_subs.models import ChangeEmailModel
 class ChangeEmailMixin():
     
     @staticmethod
-    def mark_user_for_changing_password(user: Model, email: str) -> NoReturn:
+    def mark_user_for_changing_password(user: Model, email: str) -> None:
         
         
         changing = ChangeEmailModel.objects.filter(user=user)

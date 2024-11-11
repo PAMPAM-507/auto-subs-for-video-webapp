@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 import os
 import sys
 import time
-from typing import List, NoReturn, Union
+from typing import List, None, Union
 import tqdm
 import whisper
 import datetime
@@ -22,19 +22,19 @@ class IProgressValue(ABC):
         pass
     
     @abstractmethod
-    def delete_progress_value(self, key: str|int) -> NoReturn:
+    def delete_progress_value(self, key: str|int) -> None:
         pass
     
     @abstractmethod
-    def set_progress_value(self, key: str|int, value: Union[int, float]) -> NoReturn:
+    def set_progress_value(self, key: str|int, value: Union[int, float]) -> None:
         pass
     
     @abstractmethod
-    def close(self,) -> NoReturn:
+    def close(self,) -> None:
         pass
 
 
-from typing import Union, NoReturn
+from typing import Union, None
 from django.db.models import Model
 
 class DjangoORMProgressValue(IProgressValue):
@@ -47,13 +47,13 @@ class DjangoORMProgressValue(IProgressValue):
         obj = self.model.objects.get(pk=key)
         return getattr(obj, self.attribute)
 
-    def delete_progress_value(self, key: str | int) -> NoReturn:
+    def delete_progress_value(self, key: str | int) -> None:
         pass
     
-    def set_progress_value(self, key: str | int, value: Union[int, float]) -> NoReturn:
+    def set_progress_value(self, key: str | int, value: Union[int, float]) -> None:
         self.model.objects.filter(pk=key).update(**{self.attribute: value})
     
-    def close(self) -> NoReturn:
+    def close(self) -> None:
         pass
 
 
@@ -65,10 +65,10 @@ class RedisProgressValue(IProgressValue):
     def get_progress_value(self, key: str|int) -> Union[int, float]:
         return self.redis_client.get(key)
     
-    def delete_progress_value(self, key: str|int) -> NoReturn:
+    def delete_progress_value(self, key: str|int) -> None:
         self.redis_client.delete(key)
     
-    def set_progress_value(self, key: str|int, value: Union[int, float]) -> NoReturn:
+    def set_progress_value(self, key: str|int, value: Union[int, float]) -> None:
         self.redis_client.set(key, value)
     
     def close(self):
@@ -132,7 +132,7 @@ class MyBarLogger(ProgressBarLogger):
 #     def __init__(self, redis_client: redis.Redis, 
 #                  redis_variable: str, 
 #                  variable_for_calculate_degrees: int, 
-#                  video_pk: int) -> NoReturn:
+#                  video_pk: int) -> None:
 #         self.redis_client = redis_client
 #         self.variable_for_calculate_degrees = variable_for_calculate_degrees
 #         self.video_pk = video_pk
@@ -145,7 +145,7 @@ class MyBarLogger(ProgressBarLogger):
         
 
         
-    # def save_results_of_progress(self, counter: int, checking_counter: int) -> NoReturn:
+    # def save_results_of_progress(self, counter: int, checking_counter: int) -> None:
         
     #     if checking_counter >= 10:
         

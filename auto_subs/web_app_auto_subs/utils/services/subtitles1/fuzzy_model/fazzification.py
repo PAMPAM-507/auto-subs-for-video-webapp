@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Dict, List, NoReturn, Tuple, Union
+from typing import Dict, List, None, Tuple, Union
 from .model import FuzzyModelABC
 
 class SolveInputValueABC(ABC):

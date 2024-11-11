@@ -1,10 +1,10 @@
 import os
-from typing import NoReturn
+
 
 class RemoveAllHelpingFiles:
     
     @staticmethod
-    def remove(path: str, base_filename: str) -> NoReturn:
+    def remove(path: str, base_filename: str) -> None:
         """
         Deletes all files with a specific base name at the specified path.
         

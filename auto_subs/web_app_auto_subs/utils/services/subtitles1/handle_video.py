@@ -1,5 +1,5 @@
 
-from typing import NoReturn, Union
+from typing import Union
 import pysrt
 import os
 import sys
@@ -30,7 +30,7 @@ class HandleVideo():
         translate_var: Union[bool, str] = None,
         src_language='en',
         dest_language='ru',
-    ) -> NoReturn:
+    ) -> None:
 
         try:
             mp4filename = name_of_video

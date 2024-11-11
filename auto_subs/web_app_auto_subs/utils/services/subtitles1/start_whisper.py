@@ -3,7 +3,6 @@ import contextlib
 import sys
 import os
 import traceback
-from typing import NoReturn
 
 import redis
 import whisper.transcribe
@@ -16,11 +15,11 @@ from auto_subs.settings import logger
 
 class StartWhisper():
 
-    def __init__(self, progress_value: IProgressValue, saver_progress_results: IProgressValue) -> NoReturn:
+    def __init__(self, progress_value: IProgressValue, saver_progress_results: IProgressValue) -> None:
         self.progress_value = progress_value
         self.saver_progress_results = saver_progress_results
 
-    def save_progress_results(self, key: int, value: int) -> NoReturn:
+    def save_progress_results(self, key: int, value: int) -> None:
         self.saver_progress_results.set_progress_value(key=key, value=value)
 
     @staticmethod
@@ -84,7 +83,7 @@ class StartWhisper():
 
         return result
 
-    def run(self, video_pk: int, path_of_video: str, size_of_model: str, language_for_model: str) -> NoReturn:
+    def run(self, video_pk: int, path_of_video: str, size_of_model: str, language_for_model: str) -> None:
         """Method run whisper process
 
         Args:

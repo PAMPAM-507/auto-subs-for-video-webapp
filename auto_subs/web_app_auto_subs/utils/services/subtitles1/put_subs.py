@@ -1,6 +1,6 @@
 import sys
 from abc import ABC, abstractmethod
-from typing import List, NoReturn
+from typing import List, None
 
 import redis
 import tqdm
@@ -106,7 +106,7 @@ class PutSubs(PutSubsABC):
     def __save_final_video(final_video: CompositeVideoClip,
                            output_video_file: str,
                            path_for_new_video: str,
-                           logger: MyBarLogger) -> NoReturn:
+                           logger: MyBarLogger) -> None:
         """
         Save the final video to the specified path.
 
@@ -119,7 +119,7 @@ class PutSubs(PutSubsABC):
         final_video.write_videofile(
             f'{path_for_new_video}/{output_video_file}', logger=logger)
 
-    def generate_video_with_subtitles(self) -> NoReturn:
+    def generate_video_with_subtitles(self) -> None:
         """
         Generate a video with subtitles and mixed audio, then save it.
 
