@@ -11,3 +11,4 @@ venv311
 **/.idea
 **/.vscode
 
+pgdata

@@ -1,5 +1,5 @@
 #!/bin/sh
 
-sleep 10
+sleep 15
 
 echo "PostgreSQL is up - continuing..."

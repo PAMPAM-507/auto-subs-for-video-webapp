@@ -51,14 +51,15 @@ if not SECRET_KEY:
 ALLOWED_HOSTS = ['localhost', '127.0.0.1',
                  'auto-subs.ru', 'subs', 
                  'auto-subs', 'autosubs', 
-                 '192.168.0.109', 'webapp', ]
+                 '192.168.0.109', 'webapp', '172.18.0.5']
 
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:1337',
                         'http://127.0.0.1:8000',
                         'http://127.0.0.1:8002',
                         'http://127.0.0.1', 
                         'http://localhost:1337', 
-                        'https://yourdomain.com']
+                        'https://yourdomain.com',
+                        'http://172.18.0.5:8000/']
 
 USE_X_FORWARDED_HOST = True
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

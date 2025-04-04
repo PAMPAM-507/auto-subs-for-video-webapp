@@ -1,22 +1,26 @@
-FROM python:3.11.3-bullseye
-
-RUN apt-get update -y && \
-    apt-get upgrade -y && \
-    apt-get install -y ffmpeg libpng-dev libjpeg-dev \
-    libtiff-dev libmagickwand-dev imagemagick \
-    libmagick++-dev vim \
-    && apt-get install libpq-dev
-
+# FROM python:3.11.3-bullseye
+FROM python:3.11.3-slim
 
 WORKDIR /subs
 
 COPY . /subs/
 
-RUN pip install --upgrade pip
-RUN pip install -r req.txt
+RUN apt-get update -y && \
+    apt-get upgrade -y
+    # pip install --upgrade pip && \
+    # pip install -r req.txt && \
+    # chmod +x /wait-for-postgres.sh
+    # apt-get install -y ffmpeg libpng-dev libjpeg-dev \
+    # libtiff-dev libmagickwand-dev imagemagick \
+    # libmagick++-dev vim \
+    # && apt-get install libpq-dev
 
-COPY wait-for-postgres.sh /wait-for-postgres.sh
-RUN chmod +x /wait-for-postgres.sh
+
+
+# COPY wait-for-postgres.sh /wait-for-postgres.sh
+RUN pip install --upgrade pip && \
+    pip install -r req.txt && \
+    chmod +x /wait-for-postgres.sh
 
 
 CMD /wait-for-postgres.sh \
